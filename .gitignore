@@ -1,3 +1,6 @@
+#ignore reserve shapes
+data/reserve_shapes.gpkg
+
 # History files
 .Rhistory
 .Rapp.history
