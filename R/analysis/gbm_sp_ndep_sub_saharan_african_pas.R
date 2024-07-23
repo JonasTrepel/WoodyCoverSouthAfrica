@@ -24,10 +24,10 @@ library(tictoc)
 library(MetBrewer)
 
 
-sa.pas <- fread("data/clean_data/all_pas_w_covariates.csv") %>% dplyr::select(WDPA_PID) %>% pull()
+sa.pas <- fread("data/south_african_pas_w_covariates.csv") %>% dplyr::select(WDPA_PID) %>% pull()
 
-dt.mod <- fread("data/clean_data/strict_african_pas_w_covariates.csv") %>% 
-  dplyr::select(WDPA_PID, prop_burned_area, woody_trend_venter2019, MAT, MAP, fire_events_since_2001, n_deposition,
+dt.mod <- fread("data/sub_saharan_african_pas_w_covariates.csv") %>% 
+  dplyr::select(WDPA_PID, DESIG_ENG, prop_burned_area, woody_trend_venter2019, MAT, MAP, fire_events_since_2001, n_deposition,
                 spatial_predictor1, spatial_predictor2, spatial_predictor3, spatial_predictor4, spatial_predictor5) %>% 
   filter(complete.cases(.)) %>% 
   mutate(south_africa = ifelse(WDPA_PID %in% c(sa.pas), "yes", "no"))
@@ -78,7 +78,6 @@ for(i in 1:nrow(dt.tier)){
   dt.tier[i, ]$n <- nr
   
 }
-
 
 ## define color values 
 palette.c <- MetBrewer::met.brewer("Pillement", n=14)

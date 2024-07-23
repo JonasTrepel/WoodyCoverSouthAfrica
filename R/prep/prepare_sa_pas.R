@@ -27,9 +27,9 @@ sf_use_s2(FALSE)
 
 ##### FILES NOT INCLUDED #####
 ## all South African PAs 
-pa.1 <- read_sf("data/Protected_Areas/WDPA_WDOECM_Sep2023_Public_ZAF_shp/WDPA_WDOECM_Sep2023_Public_ZAF_shp_0/WDPA_WDOECM_Sep2023_Public_ZAF_shp-polygons.shp")
-pa.2 <- read_sf("data/Protected_Areas/WDPA_WDOECM_Sep2023_Public_ZAF_shp/WDPA_WDOECM_Sep2023_Public_ZAF_shp_1/WDPA_WDOECM_Sep2023_Public_ZAF_shp-polygons.shp")
-pa.3 <- read_sf("data/Protected_Areas/WDPA_WDOECM_Sep2023_Public_ZAF_shp/WDPA_WDOECM_Sep2023_Public_ZAF_shp_2/WDPA_WDOECM_Sep2023_Public_ZAF_shp-polygons.shp")
+pa.1 <- read_sf("../../../../../resources/spatial/WDPA/WDPA_WDOECM_Sep2023_Public_ZAF_shp/WDPA_WDOECM_Sep2023_Public_ZAF_shp_0/WDPA_WDOECM_Sep2023_Public_ZAF_shp-polygons.shp")
+pa.2 <- read_sf("../../../../../resources/spatial/WDPA/WDPA_WDOECM_Sep2023_Public_ZAF_shp/WDPA_WDOECM_Sep2023_Public_ZAF_shp_1/WDPA_WDOECM_Sep2023_Public_ZAF_shp-polygons.shp")
+pa.3 <- read_sf("../../../../../resources/spatial/WDPA/WDPA_WDOECM_Sep2023_Public_ZAF_shp/WDPA_WDOECM_Sep2023_Public_ZAF_shp_2/WDPA_WDOECM_Sep2023_Public_ZAF_shp-polygons.shp")
 
 pa <- rbind(pa.1, pa.2, pa.3)
 
@@ -56,7 +56,7 @@ pa <- pa %>% filter(!grepl("Biosphere Reserve", pa$DESIG_ENG)
                       !grepl("World Heritage Site", pa$DESIG)
                     & !grepl("Botanical Garden", pa$DESIG)
                     & !grepl("Mountain Catchment Area", pa$DESIG)
-                    & !grepl("Marine Protected Area", pa$DESIG) & !grepl("Ramsar Site", pa$DESIG))
+                    & !grepl("Marine Protected Area", pa$DESIG) & !grepl("Ramsar Site", pa$DESIG) & !grepl("Forest", pa$DESIG)) 
 
 #mapview(pa) #WDPAID: 555563456
 
@@ -221,29 +221,22 @@ pa.cov.0.1 <- pa %>%
 
 #### needed to export to get the GEE vars. 
 pa.shp <- pa.cov.0.1 %>% left_join(pa) %>% dplyr::select(WDPA_PID, geometry)
-write_sf(pa.shp, "data/clean_data/sa_pa_shapes.shp")
+write_sf(pa.shp, "data/spatial/sa_pa_shapes.shp")
 
 ### import GEE stuff
-venter.trend <- fread("data/clean_data/data_fragments/saPasVenterWoodyTrend.csv") %>% 
+venter.trend <- fread("data/data_fragments/saPasVenterWoodyTrend.csv") %>% 
   dplyr::select(WDPA_PID, trend) %>% 
   rename(woody_trend_venter2019 = trend) %>% 
   mutate(WDPA_PID = as.character(WDPA_PID))
-meta.tc <- fread("data/clean_data/data_fragments/saPasMetaTreeCover.csv") %>% 
+meta.tc <- fread("data/data_fragments/saPasMetaTreeCover.csv") %>% 
   dplyr::select(mean, WDPA_PID) %>% 
   rename(tree_cover_mean_gee = mean) %>% 
   mutate(WDPA_PID = as.character(WDPA_PID))
 
 
-### import the meta tree cover 
-
-meta.tc2 <- fread("data/clean_data/data_fragments/sa_pas_tree_cover_vars.csv") %>% 
-  mutate(WDPA_PID = as.character(WDPA_PID))
-
-
 pa.cov.0.2 <- pa.cov.0.1 %>% 
   left_join(venter.trend) %>% 
-  left_join(meta.tc2) %>% 
-  mutate(tree_cover_mean_scaled = as.numeric(scale(tree_cover_mean)), 
+  mutate(
          Biome = as.factor(Biome))
 
 pa.cov.shp <- pa.cov.0.2 %>% left_join(pa[, c("NAME", "WDPA_PID", "GIS_AREA")]) %>% st_as_sf()
@@ -314,9 +307,9 @@ pa.cov <- pa.cov.0.2 %>% left_join(s_preds) %>% filter(complete.cases(.))
 
 
 
-fwrite(pa.cov, "data/clean_data/all_pas_w_covariates.csv")
+fwrite(pa.cov, "data/south_african_pas_w_covariates.csv")
 pa.cov.shp <- pa.cov %>% left_join(pa[, c("NAME", "WDPA_PID", "GIS_AREA")]) %>% st_as_sf()
-write_sf(pa.cov.shp, "data/clean_data/all_pas_w_covariates.shp", append = FALSE)
+write_sf(pa.cov.shp, "data/spatial/south_african_pas_w_covariates.shp", append = FALSE)
 summary(pa.cov)
 
 #### test if spatial predictor is even necessary 

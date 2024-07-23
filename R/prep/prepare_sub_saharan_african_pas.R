@@ -16,8 +16,8 @@ library(gridExtra)
 library(rnaturalearth)
 
 ### load reserve data to check something real quick 
-all.pas <- st_read("data/clean_data/african_pas.gpkg") ## output from script: "get_african_pas.R".
-unique(pa.raw$IUCN_CAT)
+all.pas <- st_read("data/spatial/african_pas.gpkg") ## output from script: "get_african_pas.R".
+unique(all.pas$IUCN_CAT)
 africa <- ne_countries(continent = "Africa", type = "map_units")
 
 dt.desig <- as.data.frame(table(all.pas$DESIG_ENG)) %>% arrange(-Freq)
@@ -26,11 +26,12 @@ dt.desig
 #remove the biosphere reserves
 strict.pas.raw <- all.pas %>% filter(!grepl("Biosphere Reserve", DESIG_ENG) 
                         & !WDPA_PID %in% c("555563456", "555512160", "903059")
-                        & !grepl("Protected Environment", DESIG)
-                        & !grepl("World Heritage Site", DESIG)
-                        & !grepl("Botanical Garden", DESIG)
-                        & !grepl("Mountain Catchment Area", DESIG)
-                        & !grepl("Marine Protected Area", DESIG) & !grepl("Ramsar Site", DESIG)) %>% 
+                        & !grepl("Protected Environment", DESIG_ENG)
+                        & !grepl("World Heritage Site", DESIG_ENG)
+                        & !grepl("Botanical Garden", DESIG_ENG)
+                        & !grepl("Mountain Catchment Area", DESIG_ENG)
+                        & !grepl("Marine Protected Area", DESIG_ENG) & !grepl("Ramsar Site", DESIG_ENG) & !grepl("Forest", DESIG_ENG)
+                        & !grepl("Buffer", DESIG_ENG)) %>% 
   filter(DESIG_ENG %in% c("National Park", "National Reserve", "Natural Reserve", "Nature Reserve", "Total Wildlife Reserve", 
                           "Regional Nature Park", "Nature Conservation Reserve", "Wilderness Area", "Private Nature Reserve", 
                           "Area of Absolute Protection", "Nature Forest Reserve", "Biological Reserve", "Protected area", 
@@ -42,12 +43,12 @@ mapview(strict.pas.raw)
 
 #get the ones that were included in the south african scale but are for some reason missing here: 
 ## output from script: "prepare_sa_pas"
-sa.pa.ids <- fread("data/clean_data/all_pas_w_covariates.csv") %>% dplyr::select(WDPA_PID) %>% pull()
+sa.pa.ids <- fread("data/south_african_pas_w_covariates.csv") %>% dplyr::select(WDPA_PID) %>% pull()
 
 alin <- strict.pas.raw %>% dplyr::select(WDPA_PID) %>% as.data.table() %>% mutate(geom = NULL) %>% pull()
 
 ## output from script: "prepare_sa_pas"
-sa.pa.shp <- st_read("data/clean_data/all_pas_w_covariates.shp") %>% rename(WDPA_PID = WDPA_PI,
+sa.pa.shp <- st_read("data/spatial/south_african_pas_w_covariates.shp") %>% rename(WDPA_PID = WDPA_PI,
                                                                             DESIG_ENG = DESIG_E, 
                                                                             GIS_AREA = GIS_ARE, 
                                                                             geom = geometry) %>% dplyr::select(NAME, WDPA_PID, DESIG_ENG, GIS_AREA)
@@ -57,6 +58,7 @@ missing <- sa.pa.shp %>% filter(!WDPA_PID %in% alin)
 
 strict.pas <- rbind(strict.pas.raw, missing)
 nrow(strict.pas %>% filter(WDPA_PID %in% sa.pa.ids))
+table(strict.pas$DESIG_ENG)
 
 #### extract covariates -------------------------
 
@@ -122,12 +124,12 @@ setnames(dsf.burned.extr, c("mean"),
 
 
 ### import GEE stuff
-venter.trend.raw <- fread("data/clean_data/data_fragments/VenterWoodyStatsMeanAfricanPas.csv") %>% 
+venter.trend.raw <- fread("data/data_fragments/VenterWoodyStatsMeanAfricanPas.csv") %>% 
   dplyr::select(WDPA_PID, woody_cover_trend_venter2019) %>% 
   mutate(WDPA_PID = as.character(WDPA_PID)) %>% 
   rename(woody_trend_venter2019 = woody_cover_trend_venter2019)
 
-sa.venter.raw <- fread("data/clean_data/all_pas_w_covariates.csv") %>% dplyr::select(WDPA_PID, woody_trend_venter2019) %>% mutate(WDPA_PID = as.character(WDPA_PID))
+sa.venter.raw <- fread("data/south_african_pas_w_covariates.csv") %>% dplyr::select(WDPA_PID, woody_trend_venter2019) %>% mutate(WDPA_PID = as.character(WDPA_PID))
 
 sa.venter <-  sa.venter.raw %>% filter(!WDPA_PID %in% c(unique(venter.trend.raw$WDPA_PID)))
 
@@ -165,7 +167,7 @@ c2 <- cbind(c1, coords)
 
 distance.matrix <-as.matrix(dist(cbind(c2$X, c2$Y)))
 diag(distance.matrix) <- 0 #ged rid of diagonal 
-distance.thresholds <- unname(round(quantile(distance.matrix, c(seq(0.05, .95, 0.05))), 1))
+distance.thresholds <- unname(round(quantile(distance.matrix, c(seq(0.05, .75, 0.1))), 1))
 
 library(spatialRF)
 
@@ -216,9 +218,9 @@ s_preds <- pa.cov.shp %>% as.data.table() %>% mutate(geometry = NULL, source = N
 
 pa.cov <- pa.cov.0.1 %>% left_join(s_preds) %>% filter(complete.cases(.)) 
 
-fwrite(pa.cov, "data/clean_data/strict_african_pas_w_covariates.csv")
+fwrite(pa.cov, "data/sub_saharan_african_pas_w_covariates.csv")
 pa.cov.shp <- pa.cov %>% left_join(strict.pas[, c("NAME", "WDPA_PID", "GIS_AREA")]) %>% st_as_sf()
-write_sf(pa.cov.shp, "data/clean_data/strict_african_pas_w_covariates.shp", append = FALSE)
+write_sf(pa.cov.shp, "data/spatial/sub_saharan_african_pas_w_covariates.shp", append = FALSE)
 summary(pa.cov)
 
 #### test if spatial predictor is even necessary 
@@ -312,3 +314,4 @@ moran.test.sp <- spatialRF::moran_multithreshold(
 moran.p.nc.sp <- moran.test.sp$plot
 moran.p.nc.sp
 moran.p.nc.sp.top <- grid.arrange(moran.p.nc.sp, top = textGrob("Woody cover change" ,gp=gpar(fontsize=14)))
+

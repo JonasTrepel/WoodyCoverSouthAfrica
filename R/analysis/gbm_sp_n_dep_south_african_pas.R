@@ -25,7 +25,7 @@ library(tictoc)
 library(MetBrewer)
 
 
-dt.mod <- fread("data/clean_data/all_pas_w_covariates.csv") %>% 
+dt.mod <- fread("data/south_african_pas_w_covariates.csv") %>% 
   dplyr::select(WDPA_PID, prop_burned_area, woody_trend_venter2019, MAT, MAP, fire_events_since_2001, Biome, n_deposition,
                 spatial_predictor1, spatial_predictor2, spatial_predictor3) %>% 
   filter(complete.cases(.))

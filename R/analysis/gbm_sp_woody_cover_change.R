@@ -61,7 +61,7 @@ subsets <- c("!is.na(woody_cover_mean_venter2019)", "elephant_yn == 'elephants'"
              "Biome == 'Grassland'", "Biome == 'Fynbos'", 
              "Biome == 'Nama-Karoo'")
 
-tier_labels<- c("Full model", "Reserves with elephants", "Reserves with fire", "Reserves with high herbivore biomass (≥10,000 kg/km2)", "Low biomass", "Reserves established before 2009", "Reserves larger than 24 km2", 
+tier_labels<- c("Full model", "Reserves with elephants", "Reserves with fire", "Reserves with high herbivore biomass (≥10,000 kg/km2)", "Low biomass", "Reserves established before 2010", "Reserves larger than 24 km2", 
                 "Savanna", "Albany thicket", "Grassland", "Fynbos", "Nama Karoo")
 
 tiers <- c("main", "elephants", "fire", "high_biomass", "low_biomass", "old", "large", 
