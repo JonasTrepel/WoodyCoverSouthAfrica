@@ -1,5 +1,13 @@
+
+######## CUSTOM IGNORE ######
+
 #ignore reserve shapes
 data/reserve_shapes.gpkg
+
+#ignore inkscape 
+builds/plots/july/inkscape/
+
+####### DEFAULT IGNORE #######
 
 # History files
 .Rhistory
