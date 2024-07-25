@@ -30,8 +30,8 @@ dt <- fread("data/ReserveDataSouthAfricaFinal.csv")
 
 ### create model data ---------------------------------
 
-complete.reserves <- dt %>% dplyr::select(c(reserve_name, browser_biomass_ha, n_herbi_sp_reserve, grazer_biomass_ha, herbi_biomass_ha, 
-                                            mixed_feeder_biomass_ha, n_herbi_sp_reserve, CW_mean_species_body_mass, MAP, MAT,
+complete.reserves <- dt %>% dplyr::select(c(reserve_name, browser_biomass_kgkm2, n_herbi_sp_reserve, grazer_biomass_kgkm2, herbi_biomass_kgkm2, 
+                                            mixed_feeder_biomass_kgkm2, n_herbi_sp_reserve, CW_mean_species_body_mass, MAP, MAT,
                                             days_since_last_fire, fire_events_since_2001, prop_burned_area, 
                                             woody_cover_mean_venter2019, canopy_height_mean, n_deposition, woody_cover_mean_venter2019)) %>% 
   filter(complete.cases(.)) %>% 
@@ -42,7 +42,7 @@ complete.reserves <- dt %>% dplyr::select(c(reserve_name, browser_biomass_ha, n_
 dt.mod <- dt %>% 
   mutate(
     Biome = as.factor(Biome), 
-    elephant_yn = ifelse(elephant_biomass_ha > 0, "elephants", "no_elephants")) %>% 
+    elephant_yn = ifelse(elephant_biomass_kgkm2 > 0, "elephants", "no_elephants")) %>% 
   filter(reserve_name %in% c(complete.reserves$reserve_name)) 
 
 
@@ -54,7 +54,7 @@ quantile(dt.mod$elevation_sd_1000)
 
 names(dt.mod)               
 subsets <- c("!is.na(woody_cover_mean_venter2019)", "elephant_yn == 'elephants'", "fire_events_since_2001 > 0", 
-             "herbi_biomass_ha >= 100", "herbi_biomass_ha < 100", 
+             "herbi_biomass_kgkm2 >= 100", "herbi_biomass_kgkm2 < 100", 
              "establishment_year <= 2009"," area_ha >= 2400", 
              "Biome == 'Savanna'", "Biome == 'Albany Thicket'",
              "Biome == 'Grassland'", "Biome == 'Fynbos'", 
@@ -159,13 +159,13 @@ foreach.results <- foreach(i = 1:nrow(dt.tier),
                                                MAT, MAP, elevation_sd_1000, 
                                                CW_mean_species_body_mass, 
                                                herbi_fun_div_distq1, n_herbi_sp_reserve,
-                                               grazer_biomass_ha, browser_biomass_ha, mixed_feeder_biomass_ha, herbi_biomass_ha,
+                                               grazer_biomass_kgkm2, browser_biomass_kgkm2, mixed_feeder_biomass_kgkm2, herbi_biomass_kgkm2,
                                                fire_events_since_2001, prop_burned_area, spatial_predictor1)
                                setnames(dt.gbm, c("canopy_height_sd_100", 
                                                   "MAT", "MAP", "elevation_sd_1000",
                                                   "CW_mean_species_body_mass", 
                                                   "herbi_fun_div_distq1", "n_herbi_sp_reserve", 
-                                                  "grazer_biomass_ha", "browser_biomass_ha", "mixed_feeder_biomass_ha", "herbi_biomass_ha",
+                                                  "grazer_biomass_kgkm2", "browser_biomass_kgkm2", "mixed_feeder_biomass_kgkm2", "herbi_biomass_kgkm2",
                                                   "fire_events_since_2001", "prop_burned_area"), 
                                         c("Canopy height heterogeneity", "MAT (°C)", "MAP (mm)", "Elevation SD (m)",  "Mean body mass (kg; cwm)",
                                           "Herbivore functional diversity", "Herbivore species richness", 
@@ -177,14 +177,14 @@ foreach.results <- foreach(i = 1:nrow(dt.tier),
                                  dplyr::select(canopy_height_sd_100, 
                                                MAT, MAP, 
                                                CW_mean_species_body_mass, 
-                                               herbi_fun_div_distq1, n_herbi_sp_reserve, elephant_biomass_ha, herbi_biomass_ha,
+                                               herbi_fun_div_distq1, n_herbi_sp_reserve, elephant_biomass_kgkm2, herbi_biomass_kgkm2,
                                                fire_events_since_2001, spatial_predictor1)
                                
                                setnames(dt.gbm, c("canopy_height_sd_100", 
                                                   "MAT", "MAP", 
                                                   "CW_mean_species_body_mass", 
                                                   "herbi_fun_div_distq1", "n_herbi_sp_reserve", 
-                                                  "elephant_biomass_ha", "herbi_biomass_ha",
+                                                  "elephant_biomass_kgkm2", "herbi_biomass_kgkm2",
                                                   "fire_events_since_2001"), 
                                         c("Canopy height heterogeneity", "MAT (°C)", "MAP (mm)",  "Mean body mass (kg; cwm)",
                                           "Herbivore functional diversity", "Herbivore species richness", 
