@@ -40,7 +40,7 @@ dt <- fread("data/ReserveDataSouthAfricaFinal.csv")  %>%
 
 ##### SUBSET #####
 
-guide.subset <- "response %in% c('tree_cover_sd_100') & tier %in% c('grassland', 'fynbos', 'nama_karoo')"
+guide.subset <- "response %in% c('tree_cover_sd_100', 'woody_cover_trend_venter2019', 'tree_cover_sd_100', 'canopy_height_sd_100')"# & tier %in% c('grassland', 'fynbos', 'nama_karoo')"
 #guide.subset <- NULL
 ##############################################################################            
 ################################## CREATE MODEL GUIDE ########################         
@@ -218,7 +218,7 @@ for(i in 1:nrow(dt.tier)){
                        tuneList=list(
                          gbm=caretModelSpec(method="gbm", tuneGrid=tuneGridGbm),
                          rf=caretModelSpec(method="rf", tuneGrid=tuneGridRf),
-                         xgbTree=caretModelSpec(method="xgbTree", tuneGrid = tuneGridXgbTree, silent = 0) ))
+                         xgbTree=caretModelSpec(method="xgbTree", tuneGrid = tuneGridXgbTree) ))
   
   
   greedyEnsemble <- caretEnsemble(
@@ -276,7 +276,7 @@ for(i in 1:nrow(dt.tier)){
                            tuneList=list(
                              gbm=caretModelSpec(method="gbm", tuneGrid=tuneGridGbmOpt),
                              rf=caretModelSpec(method="rf", tuneGrid=tuneGridRfOpt),
-                             xgbTree=caretModelSpec(method="xgbTree", tuneGrid = tuneGridXgbTreeOpt, silent = 0) ))
+                             xgbTree=caretModelSpec(method="xgbTree", tuneGrid = tuneGridXgbTreeOpt) ))
     
     #get different models ----
     
@@ -663,6 +663,7 @@ for(i in 1:nrow(dt.tier)){
           panel.spacing = unit(0.5, "lines"))
   p.pd.comp
   
+  statMeans <- statMeans %>% as.data.table() %>% mutate_if(is.numeric, round, digits=2)
   stats.label.rmse <- paste0("RMSE: gbm = ", statMeans[method == "gbm"]$mean_rmse, "±", statMeans[method == "gbm"]$sd_rmse, "; rf = ", 
                              statMeans[method == "rf"]$mean_rmse, "±", statMeans[method == "rf"]$sd_rmse, "; xgbTree = ",
                              statMeans[method == "xgbTree"]$mean_rmse, "±", statMeans[method == "xgbTree"]$sd_rmse, "; xgbTree = ",
