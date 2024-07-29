@@ -51,9 +51,13 @@ max(dt[Biome == "Savanna"]$MAT)
 min(dt[Biome == "Savanna"]$MAT)
 
 mean(dt.ele[Biome == "Savanna"]$elephant_biomass_kgkm2)
+median(dt.ele[Biome == "Savanna"]$elephant_biomass_kgkm2)
+quantile(dt.ele[Biome == "Savanna"]$elephant_biomass_kgkm2, c(0.25, 0.75))
 sd(dt.ele[Biome == "Savanna"]$elephant_biomass_kgkm2)
 
 mean(dt.ele[Biome == "Albany Thicket"]$elephant_biomass_kgkm2)
+median(dt.ele[Biome == "Albany Thicket"]$elephant_biomass_kgkm2)
+quantile(dt.ele[Biome == "Albany Thicket"]$elephant_biomass_kgkm2, c(0.25, 0.75))
 sd(dt.ele[Biome == "Albany Thicket"]$elephant_biomass_kgkm2)
 
 

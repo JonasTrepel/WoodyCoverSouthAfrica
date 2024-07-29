@@ -41,8 +41,8 @@ dt <- fread("data/south_african_pas_w_covariates.csv") %>%
 
 ##### SUBSET #####
 
-#guide.subset <- "response %in% c('tree_cover_sd_100') & tier %in% c('grassland', 'fynbos', 'nama_karoo')"
-guide.subset <- NULL
+guide.subset <- "response %in% c('woody_trend_venter2019') & !tier %in% c('main')"
+#guide.subset <- NULL
 ##############################################################################            
 ################################## CREATE MODEL GUIDE ########################         
 ##############################################################################    
@@ -466,8 +466,6 @@ for(i in 1:nrow(dt.tier)){
   
   best_method <- statMeans %>% slice_min(mean_rmse) %>% dplyr::select(method) %>% pull() 
   
-  statMeans[, (names(statMeans)) := lapply(.SD, function(x) if (is.numeric(x)) round(x, 2) else x)]
-  
   
   ## stats label: 
 
@@ -490,9 +488,9 @@ for(i in 1:nrow(dt.tier)){
   
   clean.label <- case_when(
     .default = response, 
-    response == "tree_cover_mean" ~ "Current woody cover", 
-    response == "woody_cover_trend_venter2019" ~ "Woody cover change",
-    response == "woody_trend_venter2019" ~ "Woody cover change",
+    response == "tree_cover_mean" ~ "Current woody cover (%)", 
+    response == "woody_cover_trend_venter2019" ~ "Woody cover change (%/year)",
+    response == "woody_trend_venter2019" ~ "Woody cover change (%/year)",
     response == "tree_cover_sd_100" ~ "Woody cover heterogeneity", 
     response == "canopy_height_sd_100" ~ "Canopy height heterogeneity")
   
@@ -656,14 +654,14 @@ for(i in 1:nrow(dt.tier)){
   
   statMeans <- statMeans %>% as.data.table() %>% mutate_if(is.numeric, round, digits=2)
   stats.label.rmse <- paste0("RMSE: gbm = ", statMeans[method == "gbm"]$mean_rmse, "±", statMeans[method == "gbm"]$sd_rmse, "; rf = ", 
-                        statMeans[method == "rf"]$mean_rmse, "±", statMeans[method == "rf"]$sd_rmse, "; xgbTree = ",
-                        statMeans[method == "xgbTree"]$mean_rmse, "±", statMeans[method == "xgbTree"]$sd_rmse, "; xgbTree = ",
-                        statMeans[method == "ensemble"]$mean_rmse, "±", statMeans[method == "ensemble"]$sd_rmse)
+                             statMeans[method == "rf"]$mean_rmse, "±", statMeans[method == "rf"]$sd_rmse, "; xgbTree = ",
+                             statMeans[method == "xgbTree"]$mean_rmse, "±", statMeans[method == "xgbTree"]$sd_rmse, "; ensemble = ",
+                             statMeans[method == "ensemble"]$mean_rmse, "±", statMeans[method == "ensemble"]$sd_rmse)
   
   stats.label.rsq <- paste0("R-squared: gbm = ", statMeans[method == "gbm"]$mean_r_sq, "±", statMeans[method == "gbm"]$sd_rmse, "; rf = ", 
-                        statMeans[method == "rf"]$mean_r_sq, "±", statMeans[method == "rf"]$sd_r_sq, "; xgbTree = ",
-                        statMeans[method == "xgbTree"]$mean_r_sq, "±", statMeans[method == "xgbTree"]$sd_r_sq, "; xgbTree = ",
-                        statMeans[method == "ensemble"]$mean_r_sq, "±", statMeans[method == "ensemble"]$sd_r_sq)
+                            statMeans[method == "rf"]$mean_r_sq, "±", statMeans[method == "rf"]$sd_r_sq, "; xgbTree = ",
+                            statMeans[method == "xgbTree"]$mean_r_sq, "±", statMeans[method == "xgbTree"]$sd_r_sq, "; ensemble = ",
+                            statMeans[method == "ensemble"]$mean_r_sq, "±", statMeans[method == "ensemble"]$sd_r_sq)
   
   
   p.comp <- grid.arrange(p.pd.comp, p.var.comp, ncol = 2, widths = c(1.3, 1), 
@@ -774,9 +772,9 @@ for(i in 1:nrow(dt.tier)){
   
   clean.label <- case_when(
     .default = response, 
-    response == "tree_cover_mean" ~ "Current woody cover", 
-    response == "woody_cover_trend_venter2019" ~ "Woody cover change",
-    response == "woody_trend_venter2019" ~ "Woody cover change",
+    response == "tree_cover_mean" ~ "Current woody cover (%)", 
+    response == "woody_cover_trend_venter2019" ~ "Woody cover change (%/year)",
+    response == "woody_trend_venter2019" ~ "Woody cover change (%/year)",
     response == "tree_cover_sd_100" ~ "Woody cover heterogeneity", 
     response == "canopy_height_sd_100" ~ "Canopy height heterogeneity")
   
