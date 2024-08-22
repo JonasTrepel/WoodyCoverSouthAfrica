@@ -40,7 +40,7 @@ dt <- fread("data/ReserveDataSouthAfricaFinal.csv")  %>%
 
 ##### SUBSET #####
 
-guide.subset <- "tier %in% c('high_rainfall')"
+guide.subset <- "response %in% c('canopy_height_sd_100')"
 
 #guide.subset <- NULL
 nrow(dt[MAP>650,])
