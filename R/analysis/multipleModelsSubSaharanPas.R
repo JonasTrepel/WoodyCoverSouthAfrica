@@ -68,7 +68,7 @@ dt.tier.raw <- data.table(
 
 tier.resp <- CJ(response = responses, tier = tiers) %>% 
   mutate(terms = case_when(
-    response == 'woody_trend_venter2019' ~ "woody_trend_venter2019', 'MAT', 'MAP', 'n_deposition', 'fire_events_since_2001', 'prop_burned_area'"))
+    response == 'woody_trend_venter2019' ~ "woody_trend_venter2019', 'MAT', 'MAP', 'n_deposition', 'fire_events_since_2001', 'prop_burned_area', 'spatial_predictor1', 'spatial_predictor2', 'spatial_predictor3', 'spatial_predictor4', 'spatial_predictor5'"))
 dt.tier <- dt.tier.raw %>% left_join(tier.resp)  %>% 
   mutate(response_tier = paste0(response,"_",tier))
 

@@ -40,9 +40,10 @@ dt <- fread("data/ReserveDataSouthAfricaFinal.csv")  %>%
 
 ##### SUBSET #####
 
-#guide.subset <- "response %in% c('tree_cover_sd_100', 'woody_cover_trend_venter2019', 'tree_cover_sd_100', 'canopy_height_sd_100')"# & tier %in% c('grassland', 'fynbos', 'nama_karoo')"
+guide.subset <- "tier %in% c('high_rainfall')"
 
 #guide.subset <- NULL
+nrow(dt[MAP>650,])
 ##############################################################################            
 ################################## CREATE MODEL GUIDE ########################         
 ##############################################################################    
@@ -53,13 +54,13 @@ subsets <- c("!is.na(reserve_name)", "elephant_yn == 'elephants'", "fire_events_
              "establishment_year <= 2009"," area_ha >= 2400", 
              "Biome == 'Savanna'", "Biome == 'Albany Thicket'",
              "Biome == 'Grassland'", "Biome == 'Fynbos'", 
-             "Biome == 'Nama-Karoo'")
+             "Biome == 'Nama-Karoo'", "MAP>=650")
 
 tier_labels<- c("Full model", "Reserves with elephants", "Reserves with fire", "Reserves with high herbivore biomass (≥10,000 kg/km2)", "Reserves established before 2010", "Reserves larger than 24 km2", 
-                "Savanna", "Albany thicket", "Grassland", "Fynbos", "Nama Karoo")
+                "Savanna", "Albany thicket", "Grassland", "Fynbos", "Nama Karoo", "Reserves with MAP ≥ 650 mm")
 
 tiers <- c("main", "elephants", "fire", "high_biomass", "old", "large", 
-           "savanna", "albany_thicket", "grassland", "fynbos", "nama_karoo")
+           "savanna", "albany_thicket", "grassland", "fynbos", "nama_karoo", "high_rainfall")
 
 responses <- c("tree_cover_mean", "woody_cover_trend_venter2019", "tree_cover_sd_100", "canopy_height_sd_100")
 
@@ -72,18 +73,18 @@ dt.tier.raw <- data.table(
 tier.resp <- CJ(response = responses, tier = tiers) %>% 
   mutate(terms = case_when(
     response == "tree_cover_mean" ~ "'MAT', 'MAP', 'CW_mean_species_body_mass', 'herbi_biomass_kgkm2', 'fire_events_since_2001', 'prop_burned_area', 'spatial_predictor1'",
-    response == "woody_cover_trend_venter2019" ~ "'MAT', 'MAP', 'n_deposition', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'mixed_feeder_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_events_since_2001', 'prop_burned_area'",
-    response == "tree_cover_sd_100" ~ "'MAT', 'MAP', 'elevation_sd_1000', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'mixed_feeder_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_events_since_2001', 'prop_burned_area'",
-    response == "canopy_height_sd_100" ~ "'MAT', 'MAP', 'elevation_sd_1000', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'mixed_feeder_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_events_since_2001', 'prop_burned_area'"
+    response == "woody_cover_trend_venter2019" ~ "'MAT', 'MAP', 'n_deposition', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'mixed_feeder_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_events_since_2001', 'prop_burned_area', 'spatial_predictor1'",
+    response == "tree_cover_sd_100" ~ "'MAT', 'MAP', 'elevation_sd_1000', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'mixed_feeder_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_events_since_2001', 'prop_burned_area', 'spatial_predictor1'",
+    response == "canopy_height_sd_100" ~ "'MAT', 'MAP', 'elevation_sd_1000', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'mixed_feeder_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_events_since_2001', 'prop_burned_area', 'spatial_predictor1'"
   )) %>% mutate(
     response_tier = paste0(response, "_", tier)
   ) %>% 
   mutate(terms = case_when(
     .default = terms,
-    response_tier == "tree_cover_mean_elephants" ~ "MAT, MAP, CW_mean_species_body_mass, elephant_biomass_kgkm2, herbi_biomass_kgkm2, fire_events_since_2001",
-    response_tier == "woody_cover_trend_venter2019_elephants" ~ "MAT, MAP, n_deposition, CW_mean_species_body_mass, herbi_fun_div_distq1, n_herbi_sp_reserve, elephant_biomass_kgkm2, herbi_biomass_kgkm2, fire_events_since_2001",
-    response_tier == "tree_cover_sd_100_elephants" ~ "MAT, MAP, CW_mean_species_body_mass, herbi_fun_div_distq1, n_herbi_sp_reserve, elephant_biomass_kgkm2, herbi_biomass_kgkm2, fire_events_since_2001",
-    response_tier == "canopy_height_sd_100_elephants" ~ "MAT, MAP, CW_mean_species_body_mass, herbi_fun_div_distq1, n_herbi_sp_reserve, elephant_biomass_kgkm2, herbi_biomass_kgkm2, fire_events_since_2001"
+    response_tier == "tree_cover_mean_elephants" ~ "MAT, MAP, CW_mean_species_body_mass, elephant_biomass_kgkm2, herbi_biomass_kgkm2, fire_events_since_2001, spatial_predictor1",
+    response_tier == "woody_cover_trend_venter2019_elephants" ~ "MAT, MAP, n_deposition, CW_mean_species_body_mass, herbi_fun_div_distq1, n_herbi_sp_reserve, elephant_biomass_kgkm2, herbi_biomass_kgkm2, fire_events_since_2001, spatial_predictor1",
+    response_tier == "tree_cover_sd_100_elephants" ~ "MAT, MAP, CW_mean_species_body_mass, herbi_fun_div_distq1, n_herbi_sp_reserve, elephant_biomass_kgkm2, herbi_biomass_kgkm2, fire_events_since_2001, spatial_predictor1",
+    response_tier == "canopy_height_sd_100_elephants" ~ "MAT, MAP, CW_mean_species_body_mass, herbi_fun_div_distq1, n_herbi_sp_reserve, elephant_biomass_kgkm2, herbi_biomass_kgkm2, fire_events_since_2001, spatial_predictor1"
   ))
 
 dt.tier <- dt.tier.raw %>% left_join(tier.resp)

@@ -154,6 +154,15 @@ fitControl <- trainControl(## 10 fold cross validation
   nDepPreds <- data.table()
   
   
+  ## prediction with normal data 
+  p1 <- predict(greedyEnsemble)
+  mean(p1)
+  newdata2 <- dt.gbm %>% 
+    mutate(herbi_biomass_kgkm2 = 10000, 
+           herbi_fun_div_distq1 = 4.03)
+  p2 <- predict(greedyEnsemble, newdata = newdata2)
+  mean(p2)
+  
   for(i in 1:nrow(dt.new)){
     
     

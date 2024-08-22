@@ -30,36 +30,36 @@ library("caretEnsemble")
 
 
 
-
-dt <- fread("data/south_african_pas_w_covariates.csv") %>% 
-  dplyr::select(WDPA_PID, prop_burned_area, woody_trend_venter2019, MAT, MAP, fire_events_since_2001, Biome, n_deposition,
-                spatial_predictor1, spatial_predictor2, spatial_predictor3) %>% 
-  filter(complete.cases(.))
+dt <- fread("data/ReserveDataSouthAfricaFinal.csv")  %>% 
+  mutate(
+    Biome = as.factor(Biome), 
+    elephant_yn = ifelse(elephant_biomass_ha > 0, "elephants", "no_elephants")) 
 
 
 ### create model data ---------------------------------
 
 ##### SUBSET #####
 
-guide.subset <- "response %in% c('woody_trend_venter2019') & !tier %in% c('main')"
-#guide.subset <- NULL
+#guide.subset <- "response %in% c('tree_cover_sd_100', 'woody_cover_trend_venter2019', 'tree_cover_sd_100', 'canopy_height_sd_100')"# & tier %in% c('grassland', 'fynbos', 'nama_karoo')"
+
+guide.subset <- NULL
 ##############################################################################            
 ################################## CREATE MODEL GUIDE ########################         
 ##############################################################################    
 
 
-subsets <- c("!is.na(WDPA_PID)",
+subsets <- c("!is.na(reserve_name)", 
              "Biome == 'Savanna'", "Biome == 'Albany Thicket'",
-             "Biome == 'Grassland'", "Biome == 'Fynbos'", "Biome == 'Forests'"
-)
+             "Biome == 'Grassland'", "Biome == 'Fynbos'", 
+             "Biome == 'Nama-Karoo'")
 
 tier_labels<- c("Full model",
-                "Savanna", "Albany thicket", "Grassland", "Fynbos", "Forest")
+                "Savanna", "Albany thicket", "Grassland", "Fynbos", "Nama Karoo")
 
 tiers <- c("main",
-           "savanna", "albany_thicket", "grassland", "fynbos", "forest")
+           "savanna", "albany_thicket", "grassland", "fynbos", "nama_karoo")
 
-responses <- c("woody_trend_venter2019")
+responses <- c("woody_cover_trend_venter2019")
 
 dt.tier.raw <- data.table(
   subset = subsets, 
@@ -69,10 +69,12 @@ dt.tier.raw <- data.table(
 
 tier.resp <- CJ(response = responses, tier = tiers) %>% 
   mutate(terms = case_when(
-    response == 'woody_trend_venter2019' ~ "woody_trend_venter2019', 'MAT', 'MAP', 'n_deposition', 'fire_events_since_2001', 'prop_burned_area', 'spatial_predictor1', 'spatial_predictor2', 'spatial_predictor3'"))
+    response == "woody_cover_trend_venter2019" ~ "'MAT', 'MAP', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'mixed_feeder_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_events_since_2001', 'prop_burned_area'",
+  )) %>% mutate(
+    response_tier = paste0(response, "_", tier)
+  ) 
 
-dt.tier <- dt.tier.raw %>% left_join(tier.resp) %>% 
-  mutate(response_tier = paste0(response,"_",tier))
+dt.tier <- dt.tier.raw %>% left_join(tier.resp)
 
 for(i in 1:nrow(dt.tier)){
   subset <- dt.tier[i, ]$subset
@@ -91,6 +93,7 @@ if(!is.null(guide.subset)){
 
 
 dt.tier <- dt.tier[!dt.tier$n < 35]
+
 
 ##############################################################################            
 ################################## DEFINE STUFF ############################            
@@ -128,7 +131,7 @@ dt.names <- data.table(
 tuneGridGbm <- expand.grid(
   shrinkage = c( .001, .005, 0.01),
   interaction.depth = c(1,2,3),
-  n.minobsinnode = c(5, 10, 15), 
+  n.minobsinnode = c(4, 8, 12), 
   n.trees = seq(1000, 10000, 250)
 )
 
@@ -143,7 +146,7 @@ tuneGridXgbTree <- expand.grid(
   eta = c(0.01, 0.1, 0.3),
   gamma = 0,
   max_depth = c(1, 3, 5, 7),
-  min_child_weight = c(5, 10, 15), 
+  min_child_weight = c(4, 8, 12), 
   colsample_bytree = 0.9, 
   subsample = 0.8
 )
@@ -254,6 +257,8 @@ for(i in 1:nrow(dt.tier)){
     Train <- dt.gbm[Index,]
     Test <- dt.gbm[!Index,]
     
+    sapply(Train, class)
+    make.names(names(Train))
     
     listFitBt <- caretList(formula,
                            data = Train, 
@@ -467,8 +472,6 @@ for(i in 1:nrow(dt.tier)){
   best_method <- statMeans %>% slice_min(mean_rmse) %>% dplyr::select(method) %>% pull() 
   
   
-  ## stats label: 
-
   ##############################################################################            
   ############################ COMPARISON PLOT #################################            
   ############################################################################## 
@@ -490,7 +493,6 @@ for(i in 1:nrow(dt.tier)){
     .default = response, 
     response == "tree_cover_mean" ~ "Current woody cover (%)", 
     response == "woody_cover_trend_venter2019" ~ "Woody cover change (%/year)",
-    response == "woody_trend_venter2019" ~ "Woody cover change (%/year)",
     response == "tree_cover_sd_100" ~ "Woody cover heterogeneity", 
     response == "canopy_height_sd_100" ~ "Canopy height heterogeneity")
   
@@ -663,13 +665,12 @@ for(i in 1:nrow(dt.tier)){
                             statMeans[method == "xgbTree"]$mean_r_sq, "±", statMeans[method == "xgbTree"]$sd_r_sq, "; ensemble = ",
                             statMeans[method == "ensemble"]$mean_r_sq, "±", statMeans[method == "ensemble"]$sd_r_sq)
   
-  
   p.comp <- grid.arrange(p.pd.comp, p.var.comp, ncol = 2, widths = c(1.3, 1), 
                          top = textGrob(paste0("Method comparison: ", tier_label),gp=gpar(fontsize=14)), 
                          bottom = textGrob(paste0("Best method: ", best_method, "\n", stats.label.rmse, "\n", stats.label.rsq),gp=gpar(fontsize=10, fontface = "italic")))
   
-  filename.comp <- paste0("builds/plots/july/south_african_pas_multiple_methods/comparison_plot_", response_tier, ".png")
-  ggsave(plot = p.comp, filename = filename.comp, dpi = 600, height = 5.1, width = 13)
+  filename.comp <- paste0("builds/plots/july/change_no_ndep/comparison_plot_", response_tier, ".png")
+  ggsave(plot = p.comp, filename = filename.comp, dpi = 600, height = 6.75, width = 13)
   
   
   ##############################################################################            
@@ -774,7 +775,6 @@ for(i in 1:nrow(dt.tier)){
     .default = response, 
     response == "tree_cover_mean" ~ "Current woody cover (%)", 
     response == "woody_cover_trend_venter2019" ~ "Woody cover change (%/year)",
-    response == "woody_trend_venter2019" ~ "Woody cover change (%/year)",
     response == "tree_cover_sd_100" ~ "Woody cover heterogeneity", 
     response == "canopy_height_sd_100" ~ "Canopy height heterogeneity")
   
@@ -813,9 +813,12 @@ for(i in 1:nrow(dt.tier)){
                          bottom = textGrob(paste0("Best method: ", best_method),gp=gpar(fontsize=10, fontface = "italic")))
   
   
-  filename <- paste0("builds/plots/july/south_african_pas_multiple_methods/comb_plot_", response_tier, ".png")
-    ggsave(plot = p.comb, filename = filename, dpi = 600, height = 5.1, width = 13)
-
+  filename <- paste0("builds/plots/july/change_no_ndep/comb_plot_", response_tier, ".png")
+  if(response == "tree_cover_mean"){
+    ggsave(plot = p.comb, filename = filename, dpi = 600, height = 5, width = 13)
+  }else{
+    ggsave(plot = p.comb, filename = filename, dpi = 600, height = 6.75, width = 13)
+  }
 }
 
 

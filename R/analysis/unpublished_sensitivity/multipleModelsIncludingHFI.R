@@ -35,7 +35,7 @@ dt <- fread("data/ReserveDataSouthAfricaFinal.csv")  %>%
     Biome = as.factor(Biome), 
     elephant_yn = ifelse(elephant_biomass_ha > 0, "elephants", "no_elephants")) %>% left_join(hfi)
 
-
+ggplot() + geom_point(data = dt, aes(x = n_deposition, y = hfi))
 ### create model data ---------------------------------
 
 ##### SUBSET #####
