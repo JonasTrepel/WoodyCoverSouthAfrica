@@ -41,7 +41,7 @@ dt <- fread("data/south_african_pas_w_covariates.csv") %>%
 
 ##### SUBSET #####
 
-guide.subset <- "response %in% c('woody_trend_venter2019') & !tier %in% c('main')"
+guide.subset <- "response %in% c('woody_trend_venter2019')"
 #guide.subset <- NULL
 ##############################################################################            
 ################################## CREATE MODEL GUIDE ########################         
