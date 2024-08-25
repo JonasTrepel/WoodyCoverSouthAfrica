@@ -7,6 +7,9 @@ data/reserve_shapes.gpkg
 #ignore inkscape 
 builds/plots/july/inkscape/
 
+#ignore unpusblished sensitivity analysis 
+R/analysis/unpublished_sensitivity/
+
 ####### DEFAULT IGNORE #######
 
 # History files
