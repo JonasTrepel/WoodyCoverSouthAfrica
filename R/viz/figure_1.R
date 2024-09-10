@@ -64,7 +64,7 @@ dt.biome <- as.data.frame(biome.r.mask, xy = TRUE) %>% left_join(leg)
 
 ### other data ----------------------
 ## can't be uploaded. Please contact me and we'll find a solution: jonas.trepel@bio.au.dk
-dt.shape <- st_read("data/clean_data/reserve_shapes.gpkg")
+dt.shape <- st_read("data/reserve_shapes.gpkg")
 
 sf_use_s2(FALSE)
 dt.cent <- dt.shape %>%
@@ -227,7 +227,7 @@ p.dens.map
 p.dens.mat <- ggplot() +
   geom_density_line(data = dt, aes(x = MAT, fill = MAT), linewidth = 1.5, fill = "grey90") +
   scale_fill_viridis_c() +
-  labs(fill = "MAT\n(°C)", x = "Mean annual temperature (°C)", y = "") +
+  labs(fill = "MAT\n(°C)", x = "Mean Annual Temperature (°C)", y = "") +
   theme_classic() +
   theme(axis.ticks.y = element_blank(), 
         axis.text = element_text(size = 12),
@@ -236,10 +236,22 @@ p.dens.mat <- ggplot() +
         legend.position = "none")
 p.dens.mat
 
+p.dens.ndep <- ggplot() +
+  geom_density_line(data = dt, aes(x = n_deposition, fill = n_deposition), linewidth = 1.5, fill = "grey90") +
+  scale_fill_viridis_c() +
+  labs(fill = "MAT\n(°C)", x = "Atmospheric Nitrogen Deposition ([kg/km2])/year", y = "") +
+  theme_classic() +
+  theme(axis.ticks.y = element_blank(), 
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        axis.text.y = element_blank(),
+        legend.position = "none")
+p.dens.ndep
+
 p.dens.hbm <- ggplot() +
   geom_density_line(data = dt, aes(x = herbi_biomass_kgkm2, fill = MAT), linewidth = 1.5, fill = "grey90") +
   scale_fill_viridis_c() +
-  labs(fill = "\n(°C)", x = "Herbivore biomass (kg/km2)", y = "") +
+  labs(fill = "\n(°C)", x = "Herbivore Biomass (kg/km2)", y = "") +
   theme_classic() +
   theme(axis.ticks.y = element_blank(), 
         axis.text = element_text(size = 12),
@@ -252,7 +264,7 @@ p.dens.hbm
 p.dens.hsp <- ggplot() +
   geom_density_line(data = dt, aes(x = n_herbi_sp_reserve, fill = MAT), linewidth = 1.5, fill = "grey90") +
   scale_fill_viridis_c() +
-  labs(fill = "\n(°C)", x = "Herbivore species richness", y = "") +
+  labs(fill = "\n(°C)", x = "Herbivore Species Richness", y = "") +
   theme_classic() +
   theme(axis.ticks.y = element_blank(), 
         axis.text = element_text(size = 12),
@@ -262,7 +274,7 @@ p.dens.hsp <- ggplot() +
 p.dens.hsp
 
 
-p.dens <- grid.arrange(p.dens.map, p.dens.mat, p.dens.hbm, p.dens.hsp, ncol = 1)
+p.dens <- grid.arrange(p.dens.map, p.dens.ndep, p.dens.hbm, p.dens.hsp, ncol = 1)
 
 p.upper <- grid.arrange(p.dens, p.cent, widths = c(1, 2.5))
 
@@ -271,4 +283,6 @@ p.lower <- grid.arrange(p.tc, p.wct, p.tc.sd, ncol = 3)
 p.fig1 <- grid.arrange(p.upper, p.lower, heights = c(2, 1))
 
 ggsave(plot = p.fig1, "builds/plots/july/figure1.png", dpi = 600, height = 12, width = 14)
+#ggsave(plot = p.fig1, "builds/plots/july/figure1.svg", dpi = 600, height = 12, width = 14)
+
 
