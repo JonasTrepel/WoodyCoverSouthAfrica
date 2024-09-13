@@ -40,7 +40,7 @@ dt <- fread("data/ReserveDataSouthAfricaFinal.csv")  %>%
 
 ##### SUBSET #####
 
-guide.subset <- "response %in% c('canopy_height_sd_100')"
+guide.subset <- "response %in% c('woody_cover_trend_venter2019') & tier %in% c('high_biomass')"
 
 #guide.subset <- NULL
 nrow(dt[MAP>650,])
@@ -737,6 +737,8 @@ for(i in 1:nrow(dt.tier)){
     
   }
   
+  
+  
   marg.plot <- marg %>% 
     mutate(
       term = gsub("`", "", term)) %>% 
@@ -778,9 +780,39 @@ for(i in 1:nrow(dt.tier)){
     ) %>%
     ungroup() %>% left_join(dt.names)
   
-  marg.plot$clean_term <- factor(marg.plot$clean_term, levels = ordered_terms_pred)
-  
   predsBtPlot <- predsBt[predsBt$method %in% c(best_method), ] %>% left_join(dt.names)
+  
+  cleanTerm <- "Mean body mass (kg; cwm)"   
+  for(cleanTerm in unique(rects$clean_term)){
+    
+    upperLim <- rects[rects$clean_term == cleanTerm, ]$xmin2
+    lowerLim <- rects[rects$clean_term == cleanTerm, ]$xmax1
+    
+    margPlotSub <- marg.plot[marg.plot$clean_term == cleanTerm,] %>% filter(x > lowerLim & x < upperLim)
+    marg.plot <- marg.plot %>% 
+      filter(!clean_term == cleanTerm) %>% 
+      rbind(margPlotSub)
+    
+    
+    margPlotSub <- marg.plot[marg.plot$clean_term == cleanTerm,] %>% filter(x > lowerLim & x < upperLim)
+    marg.plot <- marg.plot %>% 
+      filter(!clean_term == cleanTerm) %>% 
+      rbind(margPlotSub)
+    
+    predsBtPlotSub <- predsBtPlot[predsBtPlot$clean_term == cleanTerm,] %>% filter(x > lowerLim & x < upperLim)
+    predsBtPlot <- predsBtPlot %>% 
+      filter(!clean_term == cleanTerm) %>% 
+      rbind(predsBtPlotSub)
+    
+    dtRugSub <- dt.mean.rug[dt.mean.rug$clean_term == cleanTerm,] %>% filter(x > lowerLim & x < upperLim)
+    dt.mean.rug <- dt.mean.rug %>% 
+      filter(!clean_term == cleanTerm) %>% 
+      rbind(dtRugSub)
+    
+    
+  }
+  
+  marg.plot$clean_term <- factor(marg.plot$clean_term, levels = ordered_terms_pred)
   
   clean.label <- case_when(
     .default = response, 
@@ -797,10 +829,10 @@ for(i in 1:nrow(dt.tier)){
                scales="free_x", ncol = 4) +
     scale_x_continuous(breaks = extended_breaks(n = 3)) +
     scale_color_manual(values = palette) +
-    geom_rect(data = rects, aes(xmin = xmin1, xmax = xmax1, ymin = ymin, ymax = ymax), 
-              fill = "white", alpha = 0.6, inherit.aes = FALSE) +
-    geom_rect(data = rects, aes(xmin = xmin2, xmax = xmax2, ymin = ymin, ymax = ymax), 
-              fill = "white", alpha = 0.6, inherit.aes = FALSE) +
+    # geom_rect(data = rects, aes(xmin = xmin1, xmax = xmax1, ymin = ymin, ymax = ymax), 
+    #           fill = "white", alpha = 0.6, inherit.aes = FALSE) +
+    # geom_rect(data = rects, aes(xmin = xmin2, xmax = xmax2, ymin = ymin, ymax = ymax), 
+    #           fill = "white", alpha = 0.6, inherit.aes = FALSE) +
     geom_rug(data = dt.mean.rug, aes(x = x, y = y), sides="b", length = unit(0.03, "npc"), outside = TRUE) +
     coord_cartesian(clip = "off") +
     theme_bw() +
