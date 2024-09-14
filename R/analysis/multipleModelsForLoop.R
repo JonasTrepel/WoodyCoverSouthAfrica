@@ -12,6 +12,7 @@ library(parallel)
 library(gstat)
 library(grid)
 library(gbm)
+library("caretEnsemble")
 library(caret)
 library(tictoc)
 library(MetBrewer)
@@ -30,11 +31,10 @@ dt <- fread("data/ReserveDataSouthAfricaFinal.csv")  %>%
 
 ##### SUBSET #####
 
-guide.subset <- "response %in% c('tree_cover_mean') & tier %in% c('main', 'high_biomass', 'old', 'large', 
+guide.subset <- "response %in% c('woody_cover_trend_venter2019') & tier %in% c('main', 'high_biomass', 'old', 'large', 
            'savanna', 'albany_thicket', 'grassland', 'fynbos', 'nama_karoo')"
 
 #guide.subset <- NULL
-nrow(dt[MAP>650,])
 ##############################################################################            
 ################################## CREATE MODEL GUIDE ########################         
 ##############################################################################    
@@ -279,7 +279,7 @@ for(i in 1:nrow(dt.tier)){
                     metric="RMSE",
                     trControl = trainControl(method = "repeatedcv", number = 5, repeats = 5))
       
-        prEnsemble <- caret::postResample(pred = predict(greedyEnsembleBt, newdata = Test),
+    prEnsemble <- caret::postResample(pred = predict(greedyEnsembleBt, newdata = Test),
                                           obs = Test[[response]])
     
     #Gbm
@@ -344,7 +344,7 @@ for(i in 1:nrow(dt.tier)){
     
     statsBt <- rbind(statsBt, tmpStats)
     
-    #### get termiable importances
+    #### get variable importances
     
     varImpTmp <- as.data.frame(varImp(greedyEnsembleBt)) %>% rownames_to_column(var = "term")
 
