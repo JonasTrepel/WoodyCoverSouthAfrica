@@ -2,6 +2,7 @@ plotInteractionTile <- function(mod, var1, var2, data) {
   library(scales)
   library(tidyverse)
   library(data.table)
+  library(MetBrewer)
   
   
   Mode <- function(x, na.rm = FALSE) {
@@ -49,8 +50,9 @@ plotInteractionTile <- function(mod, var1, var2, data) {
               (min(grid$Prediction, na.rm = T) + 0.8*mag)), 1)
   # Plotting
   ggplot(grid, aes_string(x = var1, y = var2, fill = "Prediction")) +
-    geom_tile() +
-    scale_fill_viridis_c(option = "E", breaks = breaks) +
+    geom_tile(alpha = 0.9) +
+   # scale_fill_viridis_c(option = "D", breaks = breaks) +
+    scale_fill_met_c(name = "Pillement", breaks = breaks, direction = -1) +
     scale_x_continuous(breaks = extended_breaks(n = 3)) +
     scale_y_continuous(breaks = extended_breaks(n = 3)) +
     theme_classic() +
