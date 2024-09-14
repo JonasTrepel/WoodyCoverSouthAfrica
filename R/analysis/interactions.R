@@ -4,7 +4,7 @@ library(caret)
 library(caretEnsemble)
 library(data.table)
 library(tidyverse)
-
+library(gridExtra)
 
 dt <- fread("data/ReserveDataSouthAfricaFinal.csv")  %>% 
   mutate(
@@ -168,6 +168,8 @@ for(i in 1:nrow(dt.tier)){
   if(dt.tier[i, ]$response == "tree_cover_mean"){
     bestCurrentWC <- bestRF
     
+    
+    dtCWC <- dt.gbm
     greedyEnsembleCWC <- greedyEnsemble
     bestGbmCWC <- bestGBM
     bestRfCWC <- bestRF
@@ -177,6 +179,7 @@ for(i in 1:nrow(dt.tier)){
   if(dt.tier[i, ]$response == "woody_cover_trend_venter2019"){
     bestWCChange <- greedyEnsemble
     
+    dtWCC <- dt.gbm
     greedyEnsembleWCC <- greedyEnsemble
     bestGbmWCC <- bestGBM
     bestRfWCC <- bestRF
@@ -186,6 +189,7 @@ for(i in 1:nrow(dt.tier)){
   if(dt.tier[i, ]$response == "tree_cover_sd_100"){
     bestWCSD <- greedyEnsemble
     
+    dtWCSD <- dt.gbm
     greedyEnsembleWCSD <- greedyEnsemble
     bestGbmWCSD  <- bestGBM
     bestRfCWCSD  <- bestRF
@@ -195,6 +199,7 @@ for(i in 1:nrow(dt.tier)){
   if(dt.tier[i, ]$response == "canopy_height_sd_100"){
     bestCHSD <- greedyEnsemble
     
+    dtWCSD
     greedyEnsembleCHSD <- greedyEnsemble
     bestGbmCHSD <- bestGBM
     bestRfCHSD <- bestRF
@@ -206,3 +211,156 @@ for(i in 1:nrow(dt.tier)){
 
 
 ##### Interaction Plots and Computing #####
+
+
+######## Load functions ###########
+source("R/functions/Mode.R")
+source("R/functions/plotInteractionTile.R")
+
+
+
+##### Current woody cover ######
+hstatsCWC <- hstats(bestCurrentWC, X = dt.sub, v = c('MAT', 'MAP', 'CW_mean_species_body_mass', 'herbi_biomass_kgkm2', 'fire_events_since_2001', 'prop_burned_area'))
+h2_pairwise(hstatsCWC)
+
+### plot interactions of 4 most important variables 
+#MAP, MAT, Herbivore Biomass, Mean Body Mass
+
+## MAP:MAT
+cwcP1 <- plotInteractionTile(mod = bestCurrentWC, var1 = "MAP", var2 = "MAT", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "Mean Annual Precipitation (mm)",  y = "Mean Annual Temperature (°C)") 
+cwcP1
+
+## MAP:HB
+cwcP2 <- plotInteractionTile(mod = bestCurrentWC, var1 = "MAP", var2 = "herbi_biomass_kgkm2", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "Mean Annual Precipitation (mm)" , y = "Herbivore Biomass (kg/km2)") 
+cwcP2
+
+## MAP:MBM
+cwcP3 <- plotInteractionTile(mod = bestCurrentWC, var1 = "MAP", var2 = "CW_mean_species_body_mass", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "Mean Annual Precipitation (mm)", y = "Mean Body Mass (kg; cwm)") 
+cwcP3
+
+## MAT:HB
+cwcP4 <- plotInteractionTile(mod = bestCurrentWC, var1 = "MAT", var2 = "herbi_biomass_kgkm2", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "Mean Annual Temperature (°C)", y = "Herbivore Biomass (kg/km2)") 
+cwcP4
+
+## MAT:MBM
+cwcP5 <- plotInteractionTile(mod = bestCurrentWC, var1 = "MAP", var2 = "CW_mean_species_body_mass", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "Mean Annual Temperature (°C)", y = "Mean Body Mass (kg; cwm)") 
+cwcP5
+
+## HB:MBM
+cwcP6 <- plotInteractionTile(mod = bestCurrentWC, var1 = "herbi_biomass_kgkm2", var2 = "CW_mean_species_body_mass", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "Herbivore Biomass (kg/km2)", y = "Mean Body Mass (kg; cwm)") 
+cwcP6
+
+### summarize 
+
+cwcIntPlot <- grid.arrange(cwcP1, cwcP2, cwcP3, cwcP4, cwcP5, cwcP6, ncol = 3)
+ggsave(plot = cwcIntPlot, "builds/plots/september/interactionPlots/currentWCInteractions.png", dpi = 600, width = 11, height = 8)
+
+##### Woody Cover Change ######
+
+hstatsWCC <- hstats(bestWCChange, X = dt.sub, v = c('MAT', 'MAP', 'n_deposition',
+                                                    'CW_mean_species_body_mass', 'herbi_fun_div_distq1',
+                                                    'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 
+                                                    'browser_biomass_kgkm2', 'mixed_feeder_biomass_kgkm2',
+                                                    'herbi_biomass_kgkm2', 'fire_events_since_2001', 'prop_burned_area'))
+h2_pairwise(hstatsWCC)
+
+### plot interactions of 4 most important variables 
+#MAP, MAT, Herbivore Biomass, Mean Body Mass
+
+## Ndepo:MAT
+wccP1 <- plotInteractionTile(mod = bestWCChange, var1 = "n_deposition", var2 = "MAP", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "N deposition ([kg/km2]/year)",  y = "Mean Annual Precipitation (mm)") 
+wccP1
+
+## Ndepo:MAP
+wccP2 <- plotInteractionTile(mod = bestWCChange, var1 = "n_deposition", var2 = "MAT", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "N deposition ([kg/km2]/year)" , y = "Mean Annual Temperature (°C)") 
+wccP2
+
+## Ndepo:HFD
+wccP3 <- plotInteractionTile(mod = bestWCChange, var1 = "n_deposition", var2 = "herbi_fun_div_distq1", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "N deposition ([kg/km2]/year)", y = "Herbivore Functional Diversity") 
+wccP3
+
+## MAP:MAT
+wccP4 <- plotInteractionTile(mod = bestWCChange, var1 = "MAT", var2 = "MAP", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "Mean Annual Temperature (°C)", y = "Mean Annual Precipitation (mm)") 
+wccP4
+
+## MAP:HFD
+wccP5 <- plotInteractionTile(mod = bestWCChange, var1 = "MAP", var2 = "herbi_fun_div_distq1", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "Mean Annual Precipitation (mm)", y = "Herbivore Functional Diversity") 
+wccP5
+
+## MAT:HFD
+wccP6 <- plotInteractionTile(mod = bestWCChange, var1 = "MAT", var2 = "herbi_fun_div_distq1", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "Mean Annual Temperature (°C)", y = "Herbivore Functional Diversity") 
+wccP6
+
+## HBM:HDF
+wccP7 <- plotInteractionTile(mod = bestWCChange, var1 = "herbi_biomass_kgkm2", var2 = "herbi_fun_div_distq1", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "Herbivore Biomass (kg/km2)", y = "Herbivore Functional Diversity") 
+wccP7
+
+### summarize 
+
+wccIntPlot <- grid.arrange(wccP1, wccP2, wccP3, wccP4, wccP5, wccP6, ncol = 3)
+ggsave(plot = wccIntPlot, "builds/plots/september/interactionPlots/wcChangeInteractions.png", dpi = 600, width = 11, height = 8)
+
+##### Woody Cover Heterogeneity ######
+
+hstatsWCSD <- hstats(bestWCSD, X = dt.sub, v = c('MAT', 'MAP', 'elevation_sd_1000',
+                                                    'CW_mean_species_body_mass', 'herbi_fun_div_distq1',
+                                                    'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 
+                                                    'browser_biomass_kgkm2', 'mixed_feeder_biomass_kgkm2',
+                                                    'herbi_biomass_kgkm2', 'fire_events_since_2001', 'prop_burned_area'))
+h2_pairwise(hstatsWCSD)
+
+### plot interactions of 4 most important variables 
+#MAP, MAT, Herbivore Biomass, Mean Body Mass
+
+## Ndepo:MAT
+wcsdP1 <- plotInteractionTile(mod = bestwcsdhange, var1 = "n_deposition", var2 = "MAP", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "N deposition ([kg/km2]/year)",  y = "Mean Annual Precipitation (mm)") 
+wcsdP1
+
+## Ndepo:MAP
+wcsdP2 <- plotInteractionTile(mod = bestwcsdhange, var1 = "n_deposition", var2 = "MAT", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "N deposition ([kg/km2]/year)" , y = "Mean Annual Temperature (°C)") 
+wcsdP2
+
+## Ndepo:HFD
+wcsdP3 <- plotInteractionTile(mod = bestwcsdhange, var1 = "n_deposition", var2 = "herbi_fun_div_distq1", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "N deposition ([kg/km2]/year)", y = "Herbivore Functional Diversity") 
+wcsdP3
+
+## MAP:MAT
+wcsdP4 <- plotInteractionTile(mod = bestwcsdhange, var1 = "MAT", var2 = "MAP", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "Mean Annual Temperature (°C)", y = "Mean Annual Precipitation (mm)") 
+wcsdP4
+
+## MAP:HFD
+wcsdP5 <- plotInteractionTile(mod = bestwcsdhange, var1 = "MAP", var2 = "herbi_fun_div_distq1", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "Mean Annual Precipitation (mm)", y = "Herbivore Functional Diversity") 
+wcsdP5
+
+## MAT:HFD
+wcsdP6 <- plotInteractionTile(mod = bestwcsdhange, var1 = "MAT", var2 = "herbi_fun_div_distq1", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "Mean Annual Temperature (°C)", y = "Herbivore Functional Diversity") 
+wcsdP6
+
+## HBM:HDF
+wcsdP7 <- plotInteractionTile(mod = bestwcsdhange, var1 = "herbi_biomass_kgkm2", var2 = "herbi_fun_div_distq1", data = dt.sub) +
+  labs(fill = "Current Woody Cover", x = "Herbivore Biomass (kg/km2)", y = "Herbivore Functional Diversity") 
+wcsdP7
+
+### summarize 
+
+wcsdIntPlot <- grid.arrange(wcsdP1, wcsdP2, wcsdP3, wcsdP4, wcsdP5, wcsdP6, ncol = 3)
+ggsave(plot = wcsdIntPlot, "builds/plots/september/interactionPlots/wcsdhangeInteractions.png", dpi = 600, width = 11, height = 8)
