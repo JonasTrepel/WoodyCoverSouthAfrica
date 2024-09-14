@@ -1,4 +1,5 @@
-
+#require(remotes)
+#install_version("caretEnsemble", version = "2.0.3", repos = "http://cran.us.r-project.org")
 
 library(tidyverse)
 library(data.table)
@@ -29,7 +30,7 @@ dt <- fread("data/ReserveDataSouthAfricaFinal.csv")  %>%
 
 ##### SUBSET #####
 
-guide.subset <- "response %in% c('canopy_height_sd_100') & tier %in% c('main', 'high_biomass', 'old', 'large', 
+guide.subset <- "response %in% c('tree_cover_mean') & tier %in% c('main', 'high_biomass', 'old', 'large', 
            'savanna', 'albany_thicket', 'grassland', 'fynbos', 'nama_karoo')"
 
 #guide.subset <- NULL
