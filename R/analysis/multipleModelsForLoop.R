@@ -40,7 +40,7 @@ dt <- fread("data/ReserveDataSouthAfricaFinal.csv")  %>%
 
 ##### SUBSET #####
 
-guide.subset <- "response %in% c('woody_cover_trend_venter2019') & tier %in% c('high_biomass')"
+guide.subset <- "response %in% c('woody_cover_trend_venter2019') & tier %in% c('main')"
 
 #guide.subset <- NULL
 nrow(dt[MAP>650,])
@@ -113,7 +113,7 @@ dt.tier <- dt.tier[!dt.tier$n < 35]
 ##############################################################################    
 
 # color palettes 
-palette <- c("MAT (°C)" = "#213B48", "MAP (mm)" = "#2B4655", "N deposition ((kg/km2)/year)" = "#334F5D", "Elevation SD (m)" = "#3B5966",
+palette <- c("MAT (°C)" = "#213B48", "MAP (mm)" = "#2B4655", "N deposition ([kg/km2]/year)" = "#334F5D", "Elevation SD (m)" = "#3B5966",
              "Mean body mass (kg; cwm)" = "#44636F",
              "Herbivore functional diversity" = "#537179",
              "Herbivore species richness" = "#637F83", "Grazer biomass (kg/km2)" = "#738E8E",
@@ -134,7 +134,7 @@ dt.names <- data.table(
                  "Mean body mass (kg; cwm)", "Herbivore functional diversity", 
                  "Herbivore species richness", "Grazer biomass (kg/km2)", 
                  "Browser biomass (kg/km2)", "Mixed feeder biomass (kg/km2)",
-                 "Herbivore biomass (kg/km2)", "Fire frequency", "Proportion burned area", "N deposition ((kg/km2)/year)", "Elephant biomass (kg/km2)"))
+                 "Herbivore biomass (kg/km2)", "Fire frequency", "Proportion burned area", "N deposition ([kg/km2]/year)", "Elephant biomass (kg/km2)"))
 
 
 
@@ -649,9 +649,9 @@ for(i in 1:nrow(dt.tier)){
     scale_x_continuous(breaks = extended_breaks(n = 3)) +
     scale_color_manual(values = palette.methods) +
     geom_rect(data = rects, aes(xmin = xmin1, xmax = xmax1, ymin = ymin, ymax = ymax), 
-              fill = "white", alpha = 0.6, inherit.aes = FALSE) +
+              fill = "white", alpha = 0.8, inherit.aes = FALSE) +
     geom_rect(data = rects, aes(xmin = xmin2, xmax = xmax2, ymin = ymin, ymax = ymax), 
-              fill = "white", alpha = 0.6, inherit.aes = FALSE) +
+              fill = "white", alpha = 0.8, inherit.aes = FALSE) +
     geom_rug(data = dt.mean.rug, aes(x = x, y = y), sides="b", length = unit(0.03, "npc"), outside = TRUE) +
     coord_cartesian(clip = "off") +
     theme_bw() +
@@ -835,7 +835,8 @@ for(i in 1:nrow(dt.tier)){
     #           fill = "white", alpha = 0.6, inherit.aes = FALSE) +
     geom_rug(data = dt.mean.rug, aes(x = x, y = y), sides="b", length = unit(0.03, "npc"), outside = TRUE) +
     coord_cartesian(clip = "off") +
-    theme_bw() +
+    ylim(min(marg.plot$y, na.rm =T), max(marg.plot$y, na.rm = T)) +
+    theme_classic() +
     labs(y = paste0(clean.label), x = "") +
     theme(legend.position = "none",
           panel.grid = element_line(color = "white"), 
@@ -843,7 +844,9 @@ for(i in 1:nrow(dt.tier)){
           axis.text.x = element_text(size = 10), 
           axis.title = element_text(size = 12), 
           axis.ticks = element_blank(), 
-          panel.spacing = unit(0.5, "lines"))
+          panel.spacing = unit(0.6, "lines"), 
+          strip.background = element_rect(color = "white", fill= "grey95") 
+          )
   p.pd.final
   
   statMeansBest <- statMeans[statMeans$method %in% c(best_method), ]

@@ -95,7 +95,7 @@ dt.tier <- dt.tier[!dt.tier$n < 35]
 ##############################################################################    
 
 # color palettes 
-palette <- c("MAT (°C)" = "#213B48", "MAP (mm)" = "#2B4655", "N deposition ((kg/km2)/year)" = "#334F5D", "Elevation SD (m)" = "#3B5966",
+palette <- c("MAT (°C)" = "#213B48", "MAP (mm)" = "#2B4655", "N deposition ([kg/km2]/year)" = "#334F5D", "Elevation SD (m)" = "#3B5966",
              "Mean body mass (kg; cwm)" = "#44636F",
              "Herbivore functional diversity" = "#537179",
              "Herbivore species richness" = "#637F83", "Grazer biomass (kg/km2)" = "#738E8E",
@@ -116,7 +116,7 @@ dt.names <- data.table(
                  "Mean body mass (kg; cwm)", "Herbivore functional diversity", 
                  "Herbivore species richness", "Grazer biomass (kg/km2)", 
                  "Browser biomass (kg/km2)", "Mixed feeder biomass (kg/km2)",
-                 "Herbivore biomass (kg/km2)", "Fire frequency", "Proportion burned area", "N deposition ((kg/km2)/year)", "Elephant biomass (kg/km2)"))
+                 "Herbivore biomass (kg/km2)", "Fire frequency", "Proportion burned area", "N deposition ([kg/km2]/year)", "Elephant biomass (kg/km2)"))
 
 
 
@@ -632,9 +632,9 @@ for(i in 1:nrow(dt.tier)){
     scale_x_continuous(breaks = extended_breaks(n = 3)) +
     scale_color_manual(values = palette.methods) +
     geom_rect(data = rects, aes(xmin = xmin1, xmax = xmax1, ymin = ymin, ymax = ymax), 
-              fill = "white", alpha = 0.6, inherit.aes = FALSE) +
+              fill = "white", alpha = 0.8, inherit.aes = FALSE) +
     geom_rect(data = rects, aes(xmin = xmin2, xmax = xmax2, ymin = ymin, ymax = ymax), 
-              fill = "white", alpha = 0.6, inherit.aes = FALSE) +
+              fill = "white", alpha = 0.8, inherit.aes = FALSE) +
     geom_rug(data = dt.mean.rug, aes(x = x, y = y), sides="b", length = unit(0.03, "npc"), outside = TRUE) +
     coord_cartesian(clip = "off") +
     theme_bw() +
@@ -739,10 +739,7 @@ for(i in 1:nrow(dt.tier)){
   
   dt.points <- dt.points[!grepl("spatial_predictor", dt.points$term),]
   
-  
-  
   dt.mean.rug <- dt.points %>% dplyr::select(term, x, y) %>% left_join(dt.names)
-  
   
   rects <- dt.mean.rug %>%
     group_by(term) %>%
@@ -762,9 +759,39 @@ for(i in 1:nrow(dt.tier)){
     ) %>%
     ungroup() %>% left_join(dt.names)
   
-  marg.plot$clean_term <- factor(marg.plot$clean_term, levels = ordered_terms_pred)
-  
   predsBtPlot <- predsBt[predsBt$method %in% c(best_method), ] %>% left_join(dt.names)
+  
+  cleanTerm <- "Mean body mass (kg; cwm)"   
+  for(cleanTerm in unique(rects$clean_term)){
+    
+    upperLim <- rects[rects$clean_term == cleanTerm, ]$xmin2
+    lowerLim <- rects[rects$clean_term == cleanTerm, ]$xmax1
+    
+    margPlotSub <- marg.plot[marg.plot$clean_term == cleanTerm,] %>% filter(x > lowerLim & x < upperLim)
+    marg.plot <- marg.plot %>% 
+      filter(!clean_term == cleanTerm) %>% 
+      rbind(margPlotSub)
+    
+    
+    margPlotSub <- marg.plot[marg.plot$clean_term == cleanTerm,] %>% filter(x > lowerLim & x < upperLim)
+    marg.plot <- marg.plot %>% 
+      filter(!clean_term == cleanTerm) %>% 
+      rbind(margPlotSub)
+    
+    predsBtPlotSub <- predsBtPlot[predsBtPlot$clean_term == cleanTerm,] %>% filter(x > lowerLim & x < upperLim)
+    predsBtPlot <- predsBtPlot %>% 
+      filter(!clean_term == cleanTerm) %>% 
+      rbind(predsBtPlotSub)
+    
+    dtRugSub <- dt.mean.rug[dt.mean.rug$clean_term == cleanTerm,] %>% filter(x > lowerLim & x < upperLim)
+    dt.mean.rug <- dt.mean.rug %>% 
+      filter(!clean_term == cleanTerm) %>% 
+      rbind(dtRugSub)
+    
+    
+  }
+  
+  marg.plot$clean_term <- factor(marg.plot$clean_term, levels = ordered_terms_pred)
   
   clean.label <- case_when(
     .default = response, 
@@ -782,13 +809,14 @@ for(i in 1:nrow(dt.tier)){
                scales="free_x", ncol = 4) +
     scale_x_continuous(breaks = extended_breaks(n = 3)) +
     scale_color_manual(values = palette) +
-    geom_rect(data = rects, aes(xmin = xmin1, xmax = xmax1, ymin = ymin, ymax = ymax), 
-              fill = "white", alpha = 0.6, inherit.aes = FALSE) +
-    geom_rect(data = rects, aes(xmin = xmin2, xmax = xmax2, ymin = ymin, ymax = ymax), 
-              fill = "white", alpha = 0.6, inherit.aes = FALSE) +
+    # geom_rect(data = rects, aes(xmin = xmin1, xmax = xmax1, ymin = ymin, ymax = ymax), 
+    #           fill = "white", alpha = 0.6, inherit.aes = FALSE) +
+    # geom_rect(data = rects, aes(xmin = xmin2, xmax = xmax2, ymin = ymin, ymax = ymax), 
+    #           fill = "white", alpha = 0.6, inherit.aes = FALSE) +
     geom_rug(data = dt.mean.rug, aes(x = x, y = y), sides="b", length = unit(0.03, "npc"), outside = TRUE) +
     coord_cartesian(clip = "off") +
-    theme_bw() +
+    ylim(min(marg.plot$y, na.rm =T), max(marg.plot$y, na.rm = T)) +
+    theme_classic() +
     labs(y = paste0(clean.label), x = "") +
     theme(legend.position = "none",
           panel.grid = element_line(color = "white"), 
@@ -796,7 +824,9 @@ for(i in 1:nrow(dt.tier)){
           axis.text.x = element_text(size = 10), 
           axis.title = element_text(size = 12), 
           axis.ticks = element_blank(), 
-          panel.spacing = unit(0.5, "lines"))
+          panel.spacing = unit(0.6, "lines"), 
+          strip.background = element_rect(color = "white", fill= "grey95") 
+    )
   p.pd.final
   
   statMeansBest <- statMeans[statMeans$method %in% c(best_method), ]
