@@ -1,9 +1,3 @@
-### GBM woody cover SD
-
-source("R/functions/get.heterogeneity.R")
-source("R/functions/pdplot.R")
-source("R/functions/pdPlotEnsemble.R")
-
 
 
 library(tidyverse)
