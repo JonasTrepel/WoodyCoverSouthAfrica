@@ -1,10 +1,5 @@
-### GBM woody cover SD
-
-source("R/functions/get.heterogeneity.R")
-source("R/functions/pdplot.R")
-source("R/functions/pdPlotEnsemble.R")
-
-
+#require(remotes)
+#install_version("caretEnsemble", version = "2.0.3", repos = "http://cran.us.r-project.org")
 
 library(tidyverse)
 library(data.table)
@@ -35,7 +30,8 @@ dt <- fread("data/ReserveDataSouthAfricaFinal.csv")  %>%
 
 ##### SUBSET #####
 
-guide.subset <- "response %in% c('woody_cover_trend_venter2019') & tier %in% c('main')"
+guide.subset <- "response %in% c('tree_cover_mean') & tier %in% c('main', 'high_biomass', 'old', 'large', 
+           'savanna', 'albany_thicket', 'grassland', 'fynbos', 'nama_karoo')"
 
 #guide.subset <- NULL
 nrow(dt[MAP>650,])
