@@ -6,18 +6,13 @@ source("R/functions/pdPlotEnsemble.R")
 
 
 
-library(MuMIn)
-library(glmmTMB)
-library(terra)
 library(tidyverse)
 library(data.table)
 library(sf)
 library(tidylog)
 library(GGally)
 library(scales)
-library(segmented)
 library(gridExtra)
-library("qgam")
 library(parallel)
 library(gstat)
 library(grid)
@@ -248,10 +243,10 @@ for(i in 1:nrow(dt.tier)){
   
   ### xGBTREE
   
-  tmp.rf <- listFit$xgbTree$results %>% slice_min(RMSE) %>%
+  tmp.xgb <- listFit$xgbTree$results %>% slice_min(RMSE) %>%
     mutate(tier = tier, n = nrow(dt.gbm), method = "xgbTree")
   
-  tuneGridXgbTreeOpt <- tmp.rf %>% dplyr::select(eta, max_depth, gamma, colsample_bytree, min_child_weight, subsample, nrounds)
+  tuneGridXgbTreeOpt <- tmp.xgb %>% dplyr::select(eta, max_depth, gamma, colsample_bytree, min_child_weight, subsample, nrounds)
   
   
   ##############################################################################            
@@ -680,7 +675,7 @@ for(i in 1:nrow(dt.tier)){
                          top = textGrob(paste0("Method comparison: ", tier_label),gp=gpar(fontsize=14)), 
                          bottom = textGrob(paste0("Best method: ", best_method, "\n", stats.label.rmse, "\n", stats.label.rsq),gp=gpar(fontsize=10, fontface = "italic")))
   
-  filename.comp <- paste0("builds/plots/july/gbm_res_method_comparison/comparison_plot_", response_tier, ".png")
+  filename.comp <- paste0("builds/plots/september/methodComparisonML/comparison_plot_", response_tier, ".png")
   ggsave(plot = p.comp, filename = filename.comp, dpi = 600, height = 6.75, width = 13)
   
   
@@ -859,7 +854,7 @@ for(i in 1:nrow(dt.tier)){
                          bottom = textGrob(paste0("Best method: ", best_method),gp=gpar(fontsize=10, fontface = "italic")))
   
   
-  filename <- paste0("builds/plots/july/gbm_res_best_method/comb_plot_", response_tier, ".png")
+  filename <- paste0("builds/plots/september/bestModelML/comb_plot_", response_tier, ".png")
   if(response == "tree_cover_mean"){
     ggsave(plot = p.comb, filename = filename, dpi = 600, height = 5, width = 13)
   }else{

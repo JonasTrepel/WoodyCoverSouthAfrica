@@ -664,7 +664,7 @@ for(i in 1:nrow(dt.tier)){
                          top = textGrob(paste0("Method comparison: ", tier_label),gp=gpar(fontsize=14)), 
                          bottom = textGrob(paste0("Best method: ", best_method, "\n", stats.label.rmse, "\n", stats.label.rsq),gp=gpar(fontsize=10, fontface = "italic")))
   
-  filename.comp <- paste0("builds/plots/july/sub_saharan_pas_multiple_methods/comparison_plot_", response_tier, ".png")
+  filename.comp <- paste0("builds/plots/september/subSaharanPas/comparison_plot_", response_tier, ".png")
   ggsave(plot = p.comp, filename = filename.comp, dpi = 600, height = 5.1, width = 13)
   
   
@@ -839,7 +839,7 @@ for(i in 1:nrow(dt.tier)){
                          bottom = textGrob(paste0("Best method: ", best_method),gp=gpar(fontsize=10, fontface = "italic")))
   
   
-  filename <- paste0("builds/plots/july/sub_saharan_pas_multiple_methods/comb_plot_", response_tier, ".png")
+  filename <- paste0("builds/plots/september/subSaharanPas/comb_plot_", response_tier, ".png")
 
     ggsave(plot = p.comb, filename = filename, dpi = 600, height = 5.1, width = 13)
 
