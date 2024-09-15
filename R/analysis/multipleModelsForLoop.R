@@ -31,8 +31,7 @@ dt <- fread("data/ReserveDataSouthAfricaFinal.csv")  %>%
 
 ##### SUBSET #####
 
-guide.subset <- "response %in% c('woody_cover_trend_venter2019') & tier %in% c('main', 'high_biomass', 'old', 'large', 
-           'savanna', 'albany_thicket', 'grassland', 'fynbos', 'nama_karoo')"
+guide.subset <- "response %in% c('canopy_height_sd_100') & tier %in% c('main')"
 
 #guide.subset <- NULL
 ##############################################################################            

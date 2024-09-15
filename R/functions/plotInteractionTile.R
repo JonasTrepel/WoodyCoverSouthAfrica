@@ -59,5 +59,5 @@ plotInteractionTile <- function(mod, var1, var2, data) {
     theme(panel.grid = element_blank(), 
           axis.text = element_text(size = 11), 
           axis.title = element_text(size = 12),
-          legend.position = "bottom")
+          legend.position = "right")
 }
