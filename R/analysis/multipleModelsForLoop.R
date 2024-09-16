@@ -46,7 +46,7 @@ subsets <- c("!is.na(reserve_name)", "elephant_yn == 'elephants'", "fire_events_
              "Biome == 'Grassland'", "Biome == 'Fynbos'", 
              "Biome == 'Nama-Karoo'", "MAP>=650")
 
-tier_labels<- c("Full model", "Reserves with elephants", "Reserves with fire", "Reserves with high herbivore biomass (≥10,000 kg/km2)", "Reserves established before 2010", "Reserves larger than 24 km2", 
+tier_labels<- c("Full model", "Reserves with elephants", "Reserves with fire", "Reserves with high herbivore biomass (≥10,000 kg/km²)", "Reserves established before 2010", "Reserves larger than 24 km2", 
                 "Savanna", "Albany thicket", "Grassland", "Fynbos", "Nama Karoo", "Reserves with MAP ≥ 650 mm")
 
 tiers <- c("main", "elephants", "fire", "high_biomass", "old", "large", 
@@ -103,12 +103,12 @@ dt.tier <- dt.tier[!dt.tier$n < 35]
 ##############################################################################    
 
 # color palettes 
-palette <- c("MAT (°C)" = "#213B48", "MAP (mm)" = "#2B4655", "N deposition ([kg/km2]/year)" = "#334F5D", "Elevation SD (m)" = "#3B5966",
+palette <- c("MAT (°C)" = "#213B48", "MAP (mm)" = "#2B4655", "N deposition ([kg/km²]/year)" = "#334F5D", "Elevation SD (m)" = "#3B5966",
              "Mean body mass (kg; cwm)" = "#44636F",
              "Herbivore functional diversity" = "#537179",
-             "Herbivore species richness" = "#637F83", "Grazer biomass (kg/km2)" = "#738E8E",
-             "Browser biomass (kg/km2)" = "#6F8679", "Mixed feeder biomass (kg/km2)" = "#6C7F66",
-             "Herbivore biomass (kg/km2)" = "#697852", "Elephant biomass (kg/km2)" = "#7E7C55",
+             "Herbivore species richness" = "#637F83", "Grazer biomass (kg/km²)" = "#738E8E",
+             "Browser biomass (kg/km²)" = "#6F8679", "Mixed feeder biomass (kg/km²)" = "#6C7F66",
+             "Herbivore biomass (kg/km²)" = "#697852", "Elephant biomass (kg/km²)" = "#7E7C55",
              "Fire frequency" = "#938058",
              "Proportion burned area" = "#A9845B")
 
@@ -122,11 +122,11 @@ dt.names <- data.table(
            "herbi_biomass_kgkm2", "fire_events_since_2001", "prop_burned_area", "n_deposition", "elephant_biomass_kgkm2"),
   clean_term = c("Woody cover heterogeneity", "MAT (°C)", "MAP (mm)", "Elevation SD (m)",
                  "Mean body mass (kg; cwm)", "Herbivore functional diversity", 
-                 "Herbivore species richness", "Grazer biomass (kg/km2)", 
-                 "Browser biomass (kg/km2)", "Mixed feeder biomass (kg/km2)",
-                 "Herbivore biomass (kg/km2)", "Fire frequency", "Proportion burned area", "N deposition ([kg/km2]/year)", "Elephant biomass (kg/km2)"))
+                 "Herbivore species richness", "Grazer biomass (kg/km²)", 
+                 "Browser biomass (kg/km²)", "Mixed feeder biomass (kg/km²)",
+                 "Herbivore biomass (kg/km²)", "Fire frequency", "Proportion burned area", "N deposition ([kg/km²]/year)", "Elephant biomass (kg/km²)"))
 
-
+²
 
 ### create Tune Grids 
 
