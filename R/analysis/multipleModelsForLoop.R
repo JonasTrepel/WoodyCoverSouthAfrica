@@ -126,7 +126,7 @@ dt.names <- data.table(
                  "Browser biomass (kg/km²)", "Mixed feeder biomass (kg/km²)",
                  "Herbivore biomass (kg/km²)", "Fire frequency", "Proportion burned area", "N deposition ([kg/km²]/year)", "Elephant biomass (kg/km²)"))
 
-²
+
 
 ### create Tune Grids 
 

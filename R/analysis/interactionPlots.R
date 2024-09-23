@@ -5,6 +5,7 @@ library(caretEnsemble)
 library(data.table)
 library(tidyverse)
 library(gridExtra)
+library(scico)
 
 dt <- fread("data/ReserveDataSouthAfricaFinal.csv")  %>% 
   mutate(
@@ -65,11 +66,11 @@ dt.names <- data.table(
            "CW_mean_species_body_mass", "herbi_fun_div_distq1", "n_herbi_sp_reserve", 
            "grazer_biomass_kgkm2", "browser_biomass_kgkm2", "mixed_feeder_biomass_kgkm2", 
            "herbi_biomass_kgkm2", "fire_events_since_2001", "prop_burned_area", "n_deposition", "elephant_biomass_kgkm2"),
-  clean_term = c("Woody\nCover\nHetero-\ngeneity", "MAT (°C)", "MAP (mm)", "Elevation SD (m)",
+  clean_term = c("Woody cover heterogeneity", "MAT (°C)", "MAP (mm)", "Elevation SD (m)",
                  "Mean body mass (kg; cwm)", "Herbivore functional diversity", 
-                 "Herbivore species richness", "Grazer biomass (kg/km2)", 
-                 "Browser biomass (kg/km2)", "Mixed feeder biomass (kg/km2)",
-                 "Herbivore biomass (kg/km2)", "Fire frequency", "Proportion burned area", "N deposition ([kg/km2]/year)", "Elephant biomass (kg/km2)"))
+                 "Herbivore species richness", "Grazer biomass (kg/km²)", 
+                 "Browser biomass (kg/km²)", "Mixed feeder biomass (kg/km²)",
+                 "Herbivore biomass (kg/km²)", "Fire frequency", "Proportion burned area", "N deposition ([kg/km²]/year)", "Elephant biomass (kg/km²)"))
 
 
 
@@ -199,7 +200,7 @@ for(i in 1:nrow(dt.tier)){
   if(dt.tier[i, ]$response == "canopy_height_sd_100"){
     bestCHSD <- greedyEnsemble
     
-    dtWCSD
+    dtCHSD <- dt.gbm
     greedyEnsembleCHSD <- greedyEnsemble
     bestGbmCHSD <- bestGBM
     bestRfCHSD <- bestRF
@@ -228,31 +229,37 @@ h2_pairwise(hstatsCWC)
 
 ## MAP:MAT
 cwcP1 <- plotInteractionTile(mod = bestCurrentWC, var1 = "MAP", var2 = "MAT", data = dt.sub) +
+  scale_fill_met_c(name = "Pillement", breaks = breaks, direction = -1) +
   labs(fill = "Current\nWoody\nCover (%)", x = "Mean Annual Precipitation (mm)",  y = "Mean Annual Temperature (°C)") 
 cwcP1
 
 ## MAP:HB
 cwcP2 <- plotInteractionTile(mod = bestCurrentWC, var1 = "MAP", var2 = "herbi_biomass_kgkm2", data = dt.sub) +
+  scale_fill_met_c(name = "Pillement", breaks = breaks, direction = -1) +
   labs(fill = "Current\nWoody\nCover (%)", x = "Mean Annual Precipitation (mm)" , y = "Herbivore Biomass (kg/km2)") 
 cwcP2
 
 ## MAP:MBM
 cwcP3 <- plotInteractionTile(mod = bestCurrentWC, var1 = "MAP", var2 = "CW_mean_species_body_mass", data = dt.sub) +
+  scale_fill_met_c(name = "Pillement", breaks = breaks, direction = -1) +
   labs(fill = "Current\nWoody\nCover (%)", x = "Mean Annual Precipitation (mm)", y = "Mean Body Mass (kg; cwm)") 
 cwcP3
 
 ## MAT:HB
 cwcP4 <- plotInteractionTile(mod = bestCurrentWC, var1 = "MAT", var2 = "herbi_biomass_kgkm2", data = dt.sub) +
+  scale_fill_met_c(name = "Pillement", breaks = breaks, direction = -1) +
   labs(fill = "Current\nWoody\nCover (%)", x = "Mean Annual Temperature (°C)", y = "Herbivore Biomass (kg/km2)") 
 cwcP4
 
 ## MAT:MBM
 cwcP5 <- plotInteractionTile(mod = bestCurrentWC, var1 = "MAP", var2 = "CW_mean_species_body_mass", data = dt.sub) +
+  scale_fill_met_c(name = "Pillement", breaks = breaks, direction = -1) +
   labs(fill = "Current\nWoody\nCover (%)", x = "Mean Annual Temperature (°C)", y = "Mean Body Mass (kg; cwm)") 
 cwcP5
 
 ## HB:MBM
 cwcP6 <- plotInteractionTile(mod = bestCurrentWC, var1 = "herbi_biomass_kgkm2", var2 = "CW_mean_species_body_mass", data = dt.sub) +
+  scale_fill_met_c(name = "Pillement", breaks = breaks, direction = -1) +
   labs(fill = "Current\nWoody\nCover (%)", x = "Herbivore Biomass (kg/km2)", y = "Mean Body Mass (kg; cwm)") 
 cwcP6
 
@@ -272,46 +279,53 @@ h2_pairwise(hstatsWCC)
 
 ### plot interactions of 4 most important variables 
 #MAP, MAT, Herbivore Biomass, Mean Body Mass
+palette <-  c(met.brewer(name = "Isfahan1", n = 9))
 
 ## Ndepo:MAT
 wccP1 <- plotInteractionTile(mod = bestWCChange, var1 = "n_deposition", var2 = "MAP", data = dt.sub) +
+  scale_fill_scico(palette = "bamako", direction = 1) +
   labs(fill = "Woody\nCover\nChange\n(%/year)", x = "N deposition ([kg/km2]/year)",  y = "Mean Annual Precipitation (mm)") 
 wccP1
 
 ## Ndepo:MAP
 wccP2 <- plotInteractionTile(mod = bestWCChange, var1 = "n_deposition", var2 = "MAT", data = dt.sub) +
+  scale_fill_scico(palette = "bamako", direction = 1) +
   labs(fill = "Woody\nCover\nChange\n(%/year)", x = "N deposition ([kg/km2]/year)" , y = "Mean Annual Temperature (°C)") 
 wccP2
 
-## Ndepo:HFD
 wccP3 <- plotInteractionTile(mod = bestWCChange, var1 = "n_deposition", var2 = "herbi_fun_div_distq1", data = dt.sub) +
+  scale_fill_scico(palette = "bamako", direction = 1) +
   labs(fill = "Woody\nCover\nChange\n(%/year)", x = "N deposition ([kg/km2]/year)", y = "Herbivore Functional Diversity") 
 wccP3
 
 ## MAP:MAT
 wccP4 <- plotInteractionTile(mod = bestWCChange, var1 = "MAT", var2 = "MAP", data = dt.sub) +
+  scale_fill_scico(palette = "bamako", direction = 1) +
   labs(fill = "Woody\nCover\nChange\n(%/year)", x = "Mean Annual Temperature (°C)", y = "Mean Annual Precipitation (mm)") 
 wccP4
 
 ## MAP:HFD
 wccP5 <- plotInteractionTile(mod = bestWCChange, var1 = "MAP", var2 = "herbi_fun_div_distq1", data = dt.sub) +
+  scale_fill_scico(palette = "bamako", direction = 1) +
   labs(fill = "Woody\nCover\nChange\n(%/year)", x = "Mean Annual Precipitation (mm)", y = "Herbivore Functional Diversity") 
 wccP5
 
 ## MAT:HFD
 wccP6 <- plotInteractionTile(mod = bestWCChange, var1 = "MAT", var2 = "herbi_fun_div_distq1", data = dt.sub) +
+  scale_fill_scico(palette = "bamako", direction = 1) +
   labs(fill = "Woody\nCover\nChange\n(%/year)", x = "Mean Annual Temperature (°C)", y = "Herbivore Functional Diversity") 
 wccP6
 
 ## HBM:HDF
 wccP7 <- plotInteractionTile(mod = bestWCChange, var1 = "herbi_biomass_kgkm2", var2 = "herbi_fun_div_distq1", data = dt.sub) +
+  scale_fill_scico(palette = "bamako", direction = 1) +
   labs(fill = "Woody\nCover\nChange\n(%/year)", x = "Herbivore Biomass (kg/km2)", y = "Herbivore Functional Diversity") 
 wccP7
 
 ### summarize 
 
 wccIntPlot <- grid.arrange(wccP1, wccP2, wccP3, wccP4, wccP5, wccP6, ncol = 3)
-ggsave(plot = wccIntPlot, "builds/plots/september/interactionPlots/wcChangeInteractions.png", dpi = 600, width = 12, height = 5.5)
+ggsave(plot = wccIntPlot, "builds/plots/september/interactionPlots/wcChangeInteractions.png", dpi = 600, width = 10, height = 7.5)
 
 ##### Woody\nCover\nHetero-\ngeneity ######
 
@@ -324,46 +338,54 @@ h2_pairwise(hstatsWCSD)
 
 ### plot interactions of 4 most important variables 
 #MAP, MAT, Herbivore Biomass, Mean Body Mass
-
+scico(10, palette = 'batlowW')
+paletteWCSD <- c("#001959","#103F60", "#1A5861", "#396D59", "#647E42", "#999032", "#D0A359", "#EEAF91")
 ## MAT:MAP
 wcsdP1 <- plotInteractionTile(mod = bestWCSD, var1 = "MAT", var2 = "MAP", data = dt.sub) +
+  scale_fill_gradientn(colors = paletteWCSD) +
   labs(fill = "Woody\nCover\nHetero-\ngeneity", x = "Mean Annual Temperature (°C)",  y = "Mean Annual Precipitation (mm)") 
 wcsdP1
 
 ## MAT:Elev
 wcsdP2 <- plotInteractionTile(mod = bestWCSD, var1 = "MAT", var2 = "elevation_sd_1000", data = dt.sub) +
+  scale_fill_gradientn(colors = paletteWCSD) +
   labs(fill = "Woody\nCover\nHetero-\ngeneity", x = "Mean Annual Temperature (°C)" , y = "Elevation SD") 
 wcsdP2
 
 ## MAT:cwmbm
 wcsdP3 <- plotInteractionTile(mod = bestWCSD, var1 = "MAT", var2 = "CW_mean_species_body_mass", data = dt.sub) +
+  scale_fill_gradientn(colors = paletteWCSD) +
   labs(fill = "Woody\nCover\nHetero-\ngeneity", x = "Mean Annual Temperature (°C)", y = "Mean Body Mass (kg; cwm)") 
 wcsdP3
 
 ## MAP:elev
 wcsdP4 <- plotInteractionTile(mod = bestWCSD, var1 = "MAP", var2 = "elevation_sd_1000", data = dt.sub) +
+  scale_fill_gradientn(colors = paletteWCSD) +
   labs(fill = "Woody\nCover\nHetero-\ngeneity", x = "Mean Annual Precipitation (mm)", y = "Elevation SD") 
 wcsdP4
 
 ## MAP:cwmbm
 wcsdP5 <- plotInteractionTile(mod = bestWCSD, var1 = "MAP", var2 = "CW_mean_species_body_mass", data = dt.sub) +
+  scale_fill_gradientn(colors = paletteWCSD) +
   labs(fill = "Woody\nCover\nHetero-\ngeneity", x = "Mean Annual Precipitation (mm)", y = "Mean Body Mass (kg; cwm)") 
 wcsdP5
 
 ## elev:cwmbm
 wcsdP6 <- plotInteractionTile(mod = bestWCSD, var1 = "elevation_sd_1000", var2 = "CW_mean_species_body_mass", data = dt.sub) +
+  scale_fill_gradientn(colors = paletteWCSD) +
   labs(fill = "Woody\nCover\nHetero-\ngeneity", x = "Elevation SD", y = "Mean Body Mass (kg; cwm)") 
 wcsdP6
 
 ## HBM:HDF
 wcsdP7 <- plotInteractionTile(mod = bestWCSD, var1 = "herbi_biomass_kgkm2", var2 = "herbi_fun_div_distq1", data = dt.sub) +
+  scale_fill_gradientn(colors = paletteWCSD) +
   labs(fill = "Woody\nCover\nHetero-\ngeneity", x = "Herbivore Biomass (kg/km2)", y = "Herbivore Functional Diversity") 
 wcsdP7
 
 ### summarize 
 
 wcsdIntPlot <- grid.arrange(wcsdP1, wcsdP2, wcsdP3, wcsdP4, wcsdP5, wcsdP6, ncol = 3)
-ggsave(plot = wcsdIntPlot, "builds/plots/september/interactionPlots/WCSDInteractions.png", dpi = 600, width = 12, height = 5.5)
+ggsave(plot = wcsdIntPlot, "builds/plots/september/interactionPlots/WCSDInteractions.png", dpi = 600, width = 10, height = 7.5)
 
 ##### Canopy\nHeight\nHetero-\ngeneity ######
 
@@ -377,38 +399,47 @@ h2_pairwise(hstatsCHSD)
 ### plot interactions of 4 most important variables 
 #MAP, MAT, Elev SD, Herbivore fun div 
 
+scico(10, palette = 'navia')
+paletteCHSD <- c("#00054A", "#112C71", "#285190", "#43709D", "#5E8597", "#78958C", "#99AC87", "#C9D29E", "#F2F2D1")
 ## MAT:MAP
 chsdP1 <- plotInteractionTile(mod = bestCHSD, var1 = "MAT", var2 = "MAP", data = dt.sub) +
+  scale_fill_gradientn(colors = paletteCHSD) +
   labs(fill = "Canopy\nHeight\nHetero-\ngeneity", x = "Mean Annual Temperature (°C)",  y = "Mean Annual Precipitation (mm)") 
 chsdP1
 
 ## MAT:Elev
 chsdP2 <- plotInteractionTile(mod = bestCHSD, var1 = "MAT", var2 = "elevation_sd_1000", data = dt.sub) +
+  scale_fill_gradientn(colors = paletteCHSD) +
   labs(fill = "Canopy\nHeight\nHetero-\ngeneity", x = "Mean Annual Temperature (°C)" , y = "Elevation SD") 
 chsdP2
 
 ## MAT:hfd
 chsdP3 <- plotInteractionTile(mod = bestCHSD, var1 = "MAT", var2 = "herbi_fun_div_distq1", data = dt.sub) +
+  scale_fill_gradientn(colors = paletteCHSD) +
   labs(fill = "Canopy\nHeight\nHetero-\ngeneity", x = "Mean Annual Temperature (°C)", y = "Herbivore Functional Diversity") 
 chsdP3
 
 ## MAP:elev
 chsdP4 <- plotInteractionTile(mod = bestCHSD, var1 = "MAP", var2 = "elevation_sd_1000", data = dt.sub) +
+  scale_fill_gradientn(colors = paletteCHSD) +
   labs(fill = "Canopy\nHeight\nHetero-\ngeneity", x = "Mean Annual Precipitation (mm)", y = "Elevation SD") 
 chsdP4
 
 ## MAP:hfd
 chsdP5 <- plotInteractionTile(mod = bestCHSD, var1 = "MAP", var2 = "herbi_fun_div_distq1", data = dt.sub) +
+  scale_fill_gradientn(colors = paletteCHSD) +
   labs(fill = "Canopy\nHeight\nHetero-\ngeneity", x = "Mean Annual Precipitation (mm)", y = "Herbivore Functional Diversity") 
 chsdP5
 
 ## elev:hfd
 chsdP6 <- plotInteractionTile(mod = bestCHSD, var1 = "elevation_sd_1000", var2 = "herbi_fun_div_distq1", data = dt.sub) +
+  scale_fill_gradientn(colors = paletteCHSD) +
   labs(fill = "Canopy\nHeight\nHetero-\ngeneity", x = "Elevation SD", y = "Herbivore Functional Diversity") 
 chsdP6
 
 ## HBM:HDF
 chsdP7 <- plotInteractionTile(mod = bestCHSD, var1 = "herbi_biomass_kgkm2", var2 = "herbi_fun_div_distq1", data = dt.sub) +
+  scale_fill_gradientn(colors = paletteCHSD) +
   labs(fill = "Canopy\nHeight\nHetero-\ngeneity", x = "Herbivore Biomass (kg/km2)", y = "Herbivore Functional Diversity") 
 chsdP7
 

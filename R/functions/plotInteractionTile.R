@@ -52,12 +52,12 @@ plotInteractionTile <- function(mod, var1, var2, data) {
   ggplot(grid, aes_string(x = var1, y = var2, fill = "Prediction")) +
     geom_tile(alpha = 0.9) +
    # scale_fill_viridis_c(option = "D", breaks = breaks) +
-    scale_fill_met_c(name = "Pillement", breaks = breaks, direction = -1) +
+   # scale_fill_met_c(name = "Pillement", breaks = breaks, direction = -1) +
     scale_x_continuous(breaks = extended_breaks(n = 3)) +
     scale_y_continuous(breaks = extended_breaks(n = 3)) +
     theme_classic() +
     theme(panel.grid = element_blank(), 
           axis.text = element_text(size = 11), 
           axis.title = element_text(size = 12),
-          legend.position = "right")
+          legend.position = "bottom")
 }
