@@ -100,6 +100,8 @@ palette <- c("MAT (°C)" = "#213B48", "MAP (mm)" = "#2B4655", "N deposition ([kg
              "Proportion burned area" = "#A9845B")
 
 c(met.brewer(name = "Egypt"))
+palette.groups <- c("Herbivory" = "#5C5698", "Global Change" = "#88A0DC", "Environmental" = "#905877", "Fire" =  "#DB7B71")
+
 palette.methods <- c("gbm" = "#dd5129", "rf" = "#0f7ba2", "xgbTree" = "#43b284", "ensemble" = "#fab255")
 
 dt.names <- data.table(
@@ -111,8 +113,18 @@ dt.names <- data.table(
                  "Mean body mass (kg; cwm)", "Herbivore functional diversity", 
                  "Herbivore species richness", "Grazer biomass (kg/km²)", 
                  "Browser biomass (kg/km²)", "Mixed feeder biomass (kg/km²)",
-                 "Herbivore biomass (kg/km²)", "Fire frequency", "Proportion burned area", "N deposition ([kg/km²]/year)", "Elephant biomass (kg/km²)"))
-
+                 "Herbivore biomass (kg/km²)", "Fire frequency", "Proportion burned area", 
+                 "N deposition ([kg/km²]/year)", "Elephant biomass (kg/km²)")) %>% 
+  mutate(
+    responseGroup = case_when(
+      term %in% c("MAT", "MAP", "elevation_sd_1000") ~ "Environmental", 
+      term %in% c("CW_mean_species_body_mass", "herbi_fun_div_distq1", "n_herbi_sp_reserve", 
+                  "grazer_biomass_kgkm2", "browser_biomass_kgkm2", "mixed_feeder_biomass_kgkm2", 
+                  "herbi_biomass_kgkm2", "elephant_biomass_kgkm2") ~ "Herbivory", 
+      term %in% c("fire_events_since_2001", "prop_burned_area") ~ "Fire", 
+      term %in% c("n_deposition") ~ "Global Change", 
+    )
+  )
 
 
 ### create Tune Grids 
@@ -672,17 +684,17 @@ for(i in 1:nrow(dt.tier)){
   varImpMeansPlot <- varImpMeans[varImpMeans$method %in% c(best_method), ]
   
   p.var <- ggplot(data = varImpMeansPlot) +
-    geom_col(aes(y = clean_term, x = mean_rel_imp, fill = clean_term),
+    geom_col(aes(y = clean_term, x = mean_rel_imp, fill = responseGroup),
              position = position_dodge(width = 0.8), alpha = 0.9) +
     geom_errorbar(aes(y = clean_term, 
                       xmin = mean_rel_imp - sd_rel_imp, 
                       xmax = mean_rel_imp + sd_rel_imp,
                       group = method),
                   position = position_dodge(width = 0.8), width = 0.25) +
-    scale_fill_manual(values = palette) +
-    labs(y = "", x = "Mean Relative Importance") +
+    scale_fill_manual(values = palette.groups) +
+    labs(y = "", x = "Mean Relative Importance", fill = "") +
     theme_classic() +
-    theme(legend.position = "none",
+    theme(legend.position = c(.75, .15),
           axis.text = element_text(size = 12))
   
   p.var
@@ -770,12 +782,6 @@ for(i in 1:nrow(dt.tier)){
       filter(!clean_term == cleanTerm) %>% 
       rbind(margPlotSub)
     
-    
-    margPlotSub <- marg.plot[marg.plot$clean_term == cleanTerm,] %>% filter(x > lowerLim & x < upperLim)
-    marg.plot <- marg.plot %>% 
-      filter(!clean_term == cleanTerm) %>% 
-      rbind(margPlotSub)
-    
     predsBtPlotSub <- predsBtPlot[predsBtPlot$clean_term == cleanTerm,] %>% filter(x > lowerLim & x < upperLim)
     predsBtPlot <- predsBtPlot %>% 
       filter(!clean_term == cleanTerm) %>% 
@@ -800,13 +806,13 @@ for(i in 1:nrow(dt.tier)){
     response == "canopy_height_sd_100" ~ "Canopy height heterogeneity")
   
   p.pd.final <- ggplot()+
-    geom_line(data = marg.plot, aes(x=x, y=y, color = clean_term), linewidth = 1.1) +
-    geom_line(data = predsBtPlot, aes(x=x, y=y, group = iteration, color = clean_term), alpha = 0.15, linewidth = 0.5, color = "grey") +
-    geom_line(data = marg.plot, aes(x=x, y=y, color = clean_term), linewidth = 1.1) +
+    geom_line(data = marg.plot, aes(x=x, y=y, color = responseGroup), linewidth = 1.1) +
+    geom_line(data = predsBtPlot, aes(x=x, y=y, group = iteration, color = responseGroup), alpha = 0.15, linewidth = 0.5, color = "grey") +
+    geom_line(data = marg.plot, aes(x=x, y=y, color = responseGroup), linewidth = 1.1) +
     facet_wrap(~factor(clean_term),
                scales="free_x", ncol = 4) +
     scale_x_continuous(breaks = extended_breaks(n = 3)) +
-    scale_color_manual(values = palette) +
+    scale_color_manual(values = palette.groups) +
     # geom_rect(data = rects, aes(xmin = xmin1, xmax = xmax1, ymin = ymin, ymax = ymax), 
     #           fill = "white", alpha = 0.6, inherit.aes = FALSE) +
     # geom_rect(data = rects, aes(xmin = xmin2, xmax = xmax2, ymin = ymin, ymax = ymax), 

@@ -283,42 +283,42 @@ palette <-  c(met.brewer(name = "Isfahan1", n = 9))
 
 ## Ndepo:MAT
 wccP1 <- plotInteractionTile(mod = bestWCChange, var1 = "n_deposition", var2 = "MAP", data = dt.sub) +
-  scale_fill_scico(palette = "bamako", direction = 1) +
+  scale_fill_scico(palette = "bamako", direction = -1, limits = c(-0.2, .7)) +
   labs(fill = "Woody\nCover\nChange\n(%/year)", x = "N deposition ([kg/km2]/year)",  y = "Mean Annual Precipitation (mm)") 
 wccP1
 
 ## Ndepo:MAP
 wccP2 <- plotInteractionTile(mod = bestWCChange, var1 = "n_deposition", var2 = "MAT", data = dt.sub) +
-  scale_fill_scico(palette = "bamako", direction = 1) +
+  scale_fill_scico(palette = "bamako", direction = -1) +
   labs(fill = "Woody\nCover\nChange\n(%/year)", x = "N deposition ([kg/km2]/year)" , y = "Mean Annual Temperature (°C)") 
 wccP2
 
 wccP3 <- plotInteractionTile(mod = bestWCChange, var1 = "n_deposition", var2 = "herbi_fun_div_distq1", data = dt.sub) +
-  scale_fill_scico(palette = "bamako", direction = 1) +
+  scale_fill_scico(palette = "bamako", direction = -1) +
   labs(fill = "Woody\nCover\nChange\n(%/year)", x = "N deposition ([kg/km2]/year)", y = "Herbivore Functional Diversity") 
 wccP3
 
 ## MAP:MAT
 wccP4 <- plotInteractionTile(mod = bestWCChange, var1 = "MAT", var2 = "MAP", data = dt.sub) +
-  scale_fill_scico(palette = "bamako", direction = 1) +
+  scale_fill_scico(palette = "bamako", direction = -1) +
   labs(fill = "Woody\nCover\nChange\n(%/year)", x = "Mean Annual Temperature (°C)", y = "Mean Annual Precipitation (mm)") 
 wccP4
 
 ## MAP:HFD
 wccP5 <- plotInteractionTile(mod = bestWCChange, var1 = "MAP", var2 = "herbi_fun_div_distq1", data = dt.sub) +
-  scale_fill_scico(palette = "bamako", direction = 1) +
+  scale_fill_scico(palette = "bamako", direction = -1) +
   labs(fill = "Woody\nCover\nChange\n(%/year)", x = "Mean Annual Precipitation (mm)", y = "Herbivore Functional Diversity") 
 wccP5
 
 ## MAT:HFD
 wccP6 <- plotInteractionTile(mod = bestWCChange, var1 = "MAT", var2 = "herbi_fun_div_distq1", data = dt.sub) +
-  scale_fill_scico(palette = "bamako", direction = 1) +
+  scale_fill_scico(palette = "bamako", direction = -1) +
   labs(fill = "Woody\nCover\nChange\n(%/year)", x = "Mean Annual Temperature (°C)", y = "Herbivore Functional Diversity") 
 wccP6
 
 ## HBM:HDF
 wccP7 <- plotInteractionTile(mod = bestWCChange, var1 = "herbi_biomass_kgkm2", var2 = "herbi_fun_div_distq1", data = dt.sub) +
-  scale_fill_scico(palette = "bamako", direction = 1) +
+  scale_fill_scico(palette = "bamako", direction = -1) +
   labs(fill = "Woody\nCover\nChange\n(%/year)", x = "Herbivore Biomass (kg/km2)", y = "Herbivore Functional Diversity") 
 wccP7
 
@@ -400,7 +400,7 @@ h2_pairwise(hstatsCHSD)
 #MAP, MAT, Elev SD, Herbivore fun div 
 
 scico(10, palette = 'navia')
-paletteCHSD <- c("#00054A", "#112C71", "#285190", "#43709D", "#5E8597", "#78958C", "#99AC87", "#C9D29E", "#F2F2D1")
+paletteCHSD <- c("#00054A", "#112C71", "#285190", "#43709D", "#5E8597", "#78958C", "#99AC87", "#C9D29E")
 ## MAT:MAP
 chsdP1 <- plotInteractionTile(mod = bestCHSD, var1 = "MAT", var2 = "MAP", data = dt.sub) +
   scale_fill_gradientn(colors = paletteCHSD) +
@@ -446,7 +446,7 @@ chsdP7
 ### summarize 
 
 chsdIntPlot <- grid.arrange(chsdP1, chsdP2, chsdP3, chsdP4, chsdP5, chsdP6, ncol = 3)
-ggsave(plot = chsdIntPlot, "builds/plots/september/interactionPlots/CHSDInteractions.png", dpi = 600, width = 12, height = 5.5)
+ggsave(plot = chsdIntPlot, "builds/plots/september/interactionPlots/CHSDInteractions.png", dpi = 600, width = 10, height = 7.5)
 
 
 ## body mass / diversity interactions 
