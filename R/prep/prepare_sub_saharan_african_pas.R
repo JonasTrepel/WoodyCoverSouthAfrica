@@ -109,11 +109,12 @@ setnames(ndep.extr, c("mean"),
 
 
 ## Proportion burned area ---------------
-dsf <- rast("../../../../../resources/spatial/Fire/DaysSinceLastFire2020Africa.tif")
+fir <- rast("../../../../../resources/spatial/Fire/FireEventsBetween2001And2021Africa.tif")
 #plot(dsf)
 
-dsf.burned <- dsf
-values(dsf.burned) <- ifelse(values(dsf) < 3650 & values(dsf) > 1, 1, 0)
+dsf.burned <- fir
+#values(dsf.burned) <- ifelse(values(dsf) < 3650 & values(dsf) > 1, 1, 0)
+values(dsf.burned) <- ifelse(is.na(values(dsf.burned)), 0, 1)
 
 plot(dsf.burned)
 
