@@ -302,7 +302,10 @@ pa.cov.shp$spatial_predictor5 <- mems2[,5]
 
 s_preds <- pa.cov.shp %>% as.data.table() %>% mutate(geometry = NULL, source = NULL)
 
-pa.cov <- pa.cov.0.2 %>% left_join(s_preds) %>% filter(complete.cases(.))
+pa.cov <- pa.cov.0.2 %>% 
+  left_join(s_preds) %>%
+  mutate(fire_events_since_2001 = ifelse(is.na(fire_events_since_2001), 0, fire_events_since_2001)) %>% 
+  filter(complete.cases(.))
 
 
 

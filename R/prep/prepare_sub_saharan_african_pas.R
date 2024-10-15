@@ -217,7 +217,12 @@ pa.cov.shp$spatial_predictor5 <- mems2[,5]
 
 s_preds <- pa.cov.shp %>% as.data.table() %>% mutate(geometry = NULL, source = NULL, geom = NULL)
 
-pa.cov <- pa.cov.0.1 %>% left_join(s_preds) %>% filter(complete.cases(.)) 
+pa.cov <- pa.cov.0.1 %>% 
+  left_join(s_preds) %>%
+  mutate(fire_events_since_2001 = ifelse(is.na(fire_events_since_2001), 0, fire_events_since_2001)) %>% 
+  filter(complete.cases(.))
+
+
 
 fwrite(pa.cov, "data/sub_saharan_african_pas_w_covariates.csv")
 pa.cov.shp <- pa.cov %>% left_join(strict.pas[, c("NAME", "WDPA_PID", "GIS_AREA")]) %>% st_as_sf()
