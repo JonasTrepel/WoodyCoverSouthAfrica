@@ -170,7 +170,7 @@ fir <- rast("../../../../../resources/spatial/Fire/FireEventsBetween2001And2021A
 range(values(fir), na.rm = T)
 
 
-values(fir) <- ifelse(is.na(values(fir)), 0, values(fir))
+#values(fir) <- ifelse(is.na(values(fir)), 0, values(fir))
 
 
 fir.extr <- get.heterogeneity(vector = pa, grid = NULL, id.col = "WDPA_PID", raster = fir)
@@ -216,6 +216,7 @@ pa.cov.0.1 <- pa %>%
   left_join(fir.extr) %>% 
   left_join(ndep.extr) %>% 
   left_join(dsf.burned.extr) %>% 
+  mutate(fire_events_since_2001 = ifelse(is.na(fire_events_since_2001), 0, fire_events_since_2001)) %>% 
   unique() %>% 
   filter(complete.cases(.))
 
