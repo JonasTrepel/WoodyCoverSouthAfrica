@@ -114,7 +114,7 @@ p.cent <- ggplot() +
   geom_tile(data = dt.biome[!is.na(dt.biome$BIOME_18),], aes(x = x, y = y, color = BIOME_18, fill = BIOME_18), alpha = 1) + 
   geom_sf(data = sa, fill = "white", linewidth = 0.1, alpha = 0.15) +
   geom_sf(data = grid.cent[!grid.cent$n_reserves == 0,], aes(size = n_reserves), alpha = 1) +
-  labs(size = "Number of\nreserves") +
+  labs(size = "Number of/nreserves") +
   labs(color = "Biome", fill = "Biome") +
  # ylim(35, 22) +
 #  xlim(17, 33) +
@@ -186,7 +186,20 @@ p.tc.sd
 
 
 ############################# Woody cover trend #######################################
+## mask data: 
 
+lc <- rast("O:/Nat_Ecoinformatics/C_Write/_User/JonasTrepel_au713983/OwnProjects/GlobalChangeEcosystemFunctioningGitR/data/spatialData/otherCovariates/GlobalLandCoverCopernicus2019.tif")
+plot(lc)
+
+undesiredClasses <- c(50, 111, 112, 113, 114, 115, 116, 121, 122, 123, 124, 125, 126) #urban and forest
+
+# Create a mask: 1 where forest/urban, NA elsewhere
+forestUrbanMask <- classify(lc, rcl = matrix(c(undesiredClasses, rep(NA, length(undesiredClasses))), ncol=2))
+
+# Apply the mask to another raster (e.g., "target_raster")
+wctMasked <- mask(wct, forestUrbanMask)
+
+raster2_masked <- mask(raster2, mask_condition)
 
 wct <- rast("../../../../../resources/spatial/ZanderVenterData/woody_cover_trend_venter2019_250m.tif")
 
@@ -215,7 +228,7 @@ dt$cat <- ifelse(dt$source %in% c("SANParks"), "no", "yes")
 p.dens.map <- ggplot() +
   geom_density_line(data = dt, aes(x = MAP, fill = MAP), linewidth = 1.5, fill = "grey90") +
   scale_fill_viridis_c() +
-  labs(fill = "MAP\n(mm)", x = "Mean annual precipitation (mm)", y = "") +
+  labs(fill = "MAP/n(mm)", x = "Mean annual precipitation (mm)", y = "") +
   theme_classic() +
   theme(axis.ticks.y = element_blank(), 
         axis.text = element_text(size = 12),
@@ -227,7 +240,7 @@ p.dens.map
 p.dens.mat <- ggplot() +
   geom_density_line(data = dt, aes(x = MAT, fill = MAT), linewidth = 1.5, fill = "grey90") +
   scale_fill_viridis_c() +
-  labs(fill = "MAT\n(°C)", x = "Mean Annual Temperature (°C)", y = "") +
+  labs(fill = "MAT/n(°C)", x = "Mean Annual Temperature (°C)", y = "") +
   theme_classic() +
   theme(axis.ticks.y = element_blank(), 
         axis.text = element_text(size = 12),
@@ -239,7 +252,7 @@ p.dens.mat
 p.dens.ndep <- ggplot() +
   geom_density_line(data = dt, aes(x = n_deposition, fill = n_deposition), linewidth = 1.5, fill = "grey90") +
   scale_fill_viridis_c() +
-  labs(fill = "MAT\n(°C)", x = "Atmospheric Nitrogen Deposition ([kg/km2])/year", y = "") +
+  labs(fill = "MAT/n(°C)", x = "Atmospheric Nitrogen Deposition ([kg/km2])/year", y = "") +
   theme_classic() +
   theme(axis.ticks.y = element_blank(), 
         axis.text = element_text(size = 12),
@@ -251,7 +264,7 @@ p.dens.ndep
 p.dens.hbm <- ggplot() +
   geom_density_line(data = dt, aes(x = herbi_biomass_kgkm2, fill = MAT), linewidth = 1.5, fill = "grey90") +
   scale_fill_viridis_c() +
-  labs(fill = "\n(°C)", x = "Herbivore Biomass (kg/km2)", y = "") +
+  labs(fill = "/n(°C)", x = "Herbivore Biomass (kg/km2)", y = "") +
   theme_classic() +
   theme(axis.ticks.y = element_blank(), 
         axis.text = element_text(size = 12),
@@ -264,7 +277,7 @@ p.dens.hbm
 p.dens.hsp <- ggplot() +
   geom_density_line(data = dt, aes(x = n_herbi_sp_reserve, fill = MAT), linewidth = 1.5, fill = "grey90") +
   scale_fill_viridis_c() +
-  labs(fill = "\n(°C)", x = "Herbivore Species Richness", y = "") +
+  labs(fill = "/n(°C)", x = "Herbivore Species Richness", y = "") +
   theme_classic() +
   theme(axis.ticks.y = element_blank(), 
         axis.text = element_text(size = 12),
