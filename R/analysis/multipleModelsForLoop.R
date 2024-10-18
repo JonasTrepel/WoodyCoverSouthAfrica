@@ -31,7 +31,7 @@ dt <- fread("data/ReserveDataSouthAfricaFinal.csv")  %>%
 
 ##### SUBSET #####
 
-guide.subset <- "response %in% c('canopy_height_sd_100') & tier %in% c('main')"
+guide.subset <- "response %in% c('tree_cover_mean', 'woody_cover_trend_venter2019', 'tree_cover_sd_100', 'canopy_height_sd_100') & tier %in% c('main', 'high_biomass')"
 
 #guide.subset <- NULL
 ##############################################################################            
@@ -182,9 +182,11 @@ fitControl <- trainControl(## 10 fold cross validation
 
 
 
+varImpStorage <- data.table()
+predsStorage <- data.table()
+margStorage <- data.table()
+dtRugStorage <- data.table()
 
-
-statsStorage <- data.table()
 ##############################################################################            
 ################################## LOOOOOOOOOOOOP ############################            
 ##############################################################################    
@@ -871,12 +873,64 @@ for(i in 1:nrow(dt.tier)){
   }else{
     ggsave(plot = p.comb, filename = filename, dpi = 600, height = 6.75, width = 13)
   }
+  
+  #### write out the reguired data:
+  
+  #variable importance ----
+  varImpMeansPlot <- varImpMeansPlot %>% 
+    mutate(tier = tier,
+           tier_label = tier_label, 
+           response = response, 
+           response_tier = response_tier)
+  
+  varImpStorage <- rbind(varImpStorage, varImpMeansPlot)
+  
+  fwrite(varImpStorage, "builds/model_results/VarImp.csv")
+  
+  #predictions 
+  predsBtPlot <- predsBtPlot %>% 
+    mutate(tier = tier,
+           tier_label = tier_label, 
+           response = response, 
+           response_tier = response_tier)
+  
+  predsStorage <- rbind(predsStorage, predsBtPlot)
+  
+  fwrite(predsStorage, "builds/model_results/Preds.csv")
+  
+  #marg plot 
+  
+  marg.plot <- marg.plot %>% 
+    mutate(tier = tier,
+           tier_label = tier_label, 
+           response = response, 
+           response_tier = response_tier)
+  
+  margStorage <- rbind(margStorage, marg.plot)
+  
+  fwrite(margStorage, "builds/model_results/MargPlot.csv")
+  
+  dt.mean.rug <- dt.mean.rug %>% 
+    mutate(tier = tier,
+           tier_label = tier_label, 
+           response = response, 
+           response_tier = response_tier)
+  
+  dtRugStorage <- rbind(dtRugStorage, dt.mean.rug)
+  
+  fwrite(dtRugStorage, "builds/model_results/dtMeanRug.csv")
+  
+  
+  
 }
 
 
 toc()
 print("done")
 
+resList <- list(varImpStorage = varImpStorage, 
+                predsStorage = predsStorage, 
+                margStorage = margStorage, 
+                dtRugStorage = dtRugStorage)
 
-
-
+saveRDS(resList, "builds/model_results/plotList.Rds")

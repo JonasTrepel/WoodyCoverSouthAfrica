@@ -188,28 +188,37 @@ p.tc.sd
 ############################# Woody cover trend #######################################
 ## mask data: 
 
-lc <- rast("O:/Nat_Ecoinformatics/C_Write/_User/JonasTrepel_au713983/OwnProjects/GlobalChangeEcosystemFunctioningGitR/data/spatialData/otherCovariates/GlobalLandCoverCopernicus2019.tif")
-plot(lc)
-
-undesiredClasses <- c(50, 111, 112, 113, 114, 115, 116, 121, 122, 123, 124, 125, 126) #urban and forest
-
-# Create a mask: 1 where forest/urban, NA elsewhere
-forestUrbanMask <- classify(lc, rcl = matrix(c(undesiredClasses, rep(NA, length(undesiredClasses))), ncol=2))
-
-# Apply the mask to another raster (e.g., "target_raster")
-wctMasked <- mask(wct, forestUrbanMask)
-
-raster2_masked <- mask(raster2, mask_condition)
-
 wct <- rast("../../../../../resources/spatial/ZanderVenterData/woody_cover_trend_venter2019_250m.tif")
 
-wct1k <- exactextractr::exact_resample(x = wct, y = r.temp1k, fun = "mean")
+lc <- rast("../../../../../resources/spatial/LandCover/GlobalLandCoverCopernicus2019.tif")
+saLc <- mask(lc, sa)
+plot(saLc)
+lcMask <- saLc
+undesiredClasses <- c(50, 111, 112, 113, 114, 115, 116, 121, 122, 123, 124, 125, 126) #urban and forest
+lcMask <- classify(saLc, rcl = cbind(undesiredClasses, 1), others = 0)
+plot(lcMask)
+
+lcMask <- crop(lcMask, wct) 
+wctPreMask <- exactextractr::exact_resample(x = wct, y = lcMask, fun = "mean")
+
+wctMasked <- mask(wctPreMask, lcMask)
+
+plot(wctMasked)
+plot(lcMask)
+
+wct1k <- exactextractr::exact_resample(x = wctMasked, y = r.temp1k, fun = "mean")
+lcMask1k <- exactextractr::exact_resample(x = lcMask, y = r.temp1k, fun = "max")
+
 sa.wct <- mask(wct1k, sa)
 
 dt.wct <- as.data.frame(sa.wct, xy = TRUE) %>% as.data.table()
+dt.mask <- as.data.frame(lcMask1k, xy = TRUE) %>% as.data.table() %>% 
+  filter(lyr.1 == 1)
+
 
 p.wct <- ggplot() +
   geom_tile(data = dt.wct[lyr.1 > -2 & lyr.1 < 2,], aes(x = x, y = y, color = lyr.1, fill = lyr.1)) +
+  geom_tile(data = dt.mask, aes(x = x, y = y), color = "grey") +
   scale_color_met_c(name = "Isfahan1", direction = -1) +
   scale_fill_met_c(name = "Isfahan1", direction = -1) +
   labs(color = "Woody cover change (%/year)", fill = "Woody cover change (%/year)") +
@@ -252,7 +261,7 @@ p.dens.mat
 p.dens.ndep <- ggplot() +
   geom_density_line(data = dt, aes(x = n_deposition, fill = n_deposition), linewidth = 1.5, fill = "grey90") +
   scale_fill_viridis_c() +
-  labs(fill = "MAT/n(°C)", x = "Atmospheric Nitrogen Deposition ([kg/km2])/year", y = "") +
+  labs(fill = "MAT/n(°C)", x = bquote("Atmospheric Nitrogen Deposition ([kg/"~km^2*"])/year"), y = "") +
   theme_classic() +
   theme(axis.ticks.y = element_blank(), 
         axis.text = element_text(size = 12),
@@ -264,7 +273,7 @@ p.dens.ndep
 p.dens.hbm <- ggplot() +
   geom_density_line(data = dt, aes(x = herbi_biomass_kgkm2, fill = MAT), linewidth = 1.5, fill = "grey90") +
   scale_fill_viridis_c() +
-  labs(fill = "/n(°C)", x = "Herbivore Biomass (kg/km2)", y = "") +
+  labs(fill = "/n(°C)", x = bquote("Herbivore Biomass (kg/"~km^2*")"), y = "") +
   theme_classic() +
   theme(axis.ticks.y = element_blank(), 
         axis.text = element_text(size = 12),
@@ -295,7 +304,7 @@ p.lower <- grid.arrange(p.tc, p.wct, p.tc.sd, ncol = 3)
 
 p.fig1 <- grid.arrange(p.upper, p.lower, heights = c(2, 1))
 
-ggsave(plot = p.fig1, "builds/plots/july/figure1.png", dpi = 600, height = 12, width = 14)
+ggsave(plot = p.fig1, "builds/plots/september/figure1.png", dpi = 600, height = 12, width = 14)
 #ggsave(plot = p.fig1, "builds/plots/july/figure1.svg", dpi = 600, height = 12, width = 14)
 
 

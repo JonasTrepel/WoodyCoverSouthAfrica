@@ -4,6 +4,14 @@ library(data.table)
 library(gridExtra)
 
 dt <- fread("data/ReserveDataSouthAfricaFinal.csv")
+
+table(dt[herbi_biomass_kgkm2 > 10000, ]$Biome)
+nrow(dt[herbi_biomass_kgkm2 > 10000, ])
+64/94
+
+nrow(dt[herbi_biomass_kgkm2 > 10000 & Biome == "Savanna", ])/nrow(dt[Biome == "Savanna", ])
+
+
 #### 
 
 dt[woody_cover_trend_venter2019 == 0, ]
@@ -134,7 +142,7 @@ head(corr[, 1:6])
 # argument lab = TRUE
 library(ggcorrplot)
 cp <- ggcorrplot(corr, hc.order = TRUE, type = "lower", colors = c("#6D9EC1", "white", "#E46726"), lab = TRUE)
-ggsave(plot = cp, "builds/plots/july/variable_corrplot.png", dpi = 600, width = 11, height = 11)
+ggsave(plot = cp, "builds/plots/september/variable_corrplot.png", dpi = 600, width = 11, height = 11)
            
 
 ### correlation between woody cover and canopy height SD #####
@@ -164,3 +172,14 @@ n.dep.biome <- ggplot() +
 n.dep.biome
 ggsave(plot = n.dep.biome, "builds/plots/july/n_dep_per_biome.png", dpi = 600, height = 5, width = 10)
 
+#### Elephants vs no elephants 
+dtEle <- dt %>% 
+  mutate(Elephants = ifelse(elephant_biomass_kgkm2 > 0, "Elephants", "No Elephants"))
+names(dt$cat)
+
+ggplot() +
+  geom_boxplot(data = dtEle, aes(x = Elephants, y= herbi_biomass_kgkm2)) +
+  geom_jitter(data = dtEle, aes(x = Elephants, y= herbi_biomass_kgkm2)) +
+  labs(y = "Herbivore Biomass (kg/km2)", x = "") +
+  theme_classic()
+  
