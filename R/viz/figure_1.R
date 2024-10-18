@@ -194,7 +194,7 @@ lc <- rast("../../../../../resources/spatial/LandCover/GlobalLandCoverCopernicus
 saLc <- mask(lc, sa)
 plot(saLc)
 lcMask <- saLc
-undesiredClasses <- c(50, 111, 112, 113, 114, 115, 116, 121, 122, 123, 124, 125, 126) #urban and forest
+undesiredClasses <- c(40, 50) #urban and forest
 lcMask <- classify(saLc, rcl = cbind(undesiredClasses, 1), others = 0)
 plot(lcMask)
 
@@ -207,13 +207,13 @@ plot(wctMasked)
 plot(lcMask)
 
 wct1k <- exactextractr::exact_resample(x = wctMasked, y = r.temp1k, fun = "mean")
-lcMask1k <- exactextractr::exact_resample(x = lcMask, y = r.temp1k, fun = "max")
+#lcMask1k <- exactextractr::exact_resample(x = lcMask, y = r.temp1k, fun = "max")
 
 sa.wct <- mask(wct1k, sa)
 
 dt.wct <- as.data.frame(sa.wct, xy = TRUE) %>% as.data.table()
-dt.mask <- as.data.frame(lcMask1k, xy = TRUE) %>% as.data.table() %>% 
-  filter(lyr.1 == 1)
+dt.mask <- as.data.frame(lcMask, xy = TRUE) %>% as.data.table() %>% 
+  filter(`2019_discrete_classification` == 1)
 
 
 p.wct <- ggplot() +

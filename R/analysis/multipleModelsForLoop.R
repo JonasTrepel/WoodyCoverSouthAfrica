@@ -476,7 +476,7 @@ for(i in 1:nrow(dt.tier)){
       response_tier = response_tier
     )
   
-  statsStorage <- rbind(statsStorage, statMeans)
+ # statsStorage <- rbind(statsStorage, statMeans)
   
   
   predMeans <- predsBt %>% 
