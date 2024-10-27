@@ -90,7 +90,7 @@ pdpCWC <- ggplot()+
   geom_line(data = dtBTPredsCWC[tier == "main"], aes(x=x, y=y, group = iteration, color = responseGroup), alpha = 0.15, linewidth = 0.5, color = "grey") +
   geom_line(data = dtMargCWC[tier == "main"], aes(x=x, y=y, color = responseGroup), linewidth = 1.1) +
   facet_wrap(~factor(clean_term),
-             scales="free_x", ncol = 4) +
+             scales="free_x", ncol = 3) +
   scale_x_continuous(breaks = extended_breaks(n = 3)) +
   scale_color_manual(values = palette.groups) +
   geom_rug(data = dtRugCWC, aes(x = x, y = y), sides="b", length = unit(0.03, "npc"), outside = TRUE) +
