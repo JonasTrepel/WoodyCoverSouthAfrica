@@ -6,9 +6,9 @@ Data description:
 
 "sub_saharan_african_pas_w_covariates. csv" contains data for filtered PAs across Sub-Saharan Africa (see methods in the paper for details)
 
-"ReserveDataSouthAfricaFinal.csv" is the main dataset. Contains the following variables: 
+"ReserveDataSouthAfricaFinal.csv" is the main dataset. I'm not the owner of most of the data, please find who is below the column descriptions:
 
-eserve_name: Name of the  reserve.
+reserve_name: Name of the  reserve.
 area_ha: Area of the reserve in hectares.
 max_species_body_mass: Maximum body mass among species in the reserve (in kg).
 mean_species_body_mass: Mean body mass among species in the reserve (in kg).
@@ -71,5 +71,14 @@ browser_biomass_kgkm2: Browsing herbivore biomass per square kilometer (in kg/km
 elephant_biomass_kgkm2: Elephant biomass per square kilometer (in kg/km²).
 
 
+Data ownership in the ReserveDataSouthAfricaFinal.csv file:
+
+  when source is "HC", please contact Hayley Clements for raw data 
+
+  when source is "SWEP", please contact  Matthew Child and the Sustainable Wildlife Economies Project (SWEP)
+
+  when source is "EWT", please contact Andrew Taylor and the Endangered Wildlife Trust (EWT)
+
+  when source is "SANParks", please contact Sam Ferreira and the South African National Parks (SANParks).
 
 
