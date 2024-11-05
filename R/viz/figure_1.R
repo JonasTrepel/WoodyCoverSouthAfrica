@@ -15,9 +15,6 @@ library(scales)
 
 dt <- fread("data/ReserveDataSouthAfricaFinal.csv")
 
-
-
-
 ########### RESERVE DISTRIBUTION ################################
 
 ## Biome -----------
@@ -114,7 +111,7 @@ p.cent <- ggplot() +
   geom_tile(data = dt.biome[!is.na(dt.biome$BIOME_18),], aes(x = x, y = y, color = BIOME_18, fill = BIOME_18), alpha = 1) + 
   geom_sf(data = sa, fill = "white", linewidth = 0.1, alpha = 0.15) +
   geom_sf(data = grid.cent[!grid.cent$n_reserves == 0,], aes(size = n_reserves), alpha = 1) +
-  labs(size = "Number of/nreserves") +
+  labs(size = "Number of\nreserves") +
   labs(color = "Biome", fill = "Biome") +
  # ylim(35, 22) +
 #  xlim(17, 33) +

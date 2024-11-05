@@ -5,7 +5,10 @@ library(gridExtra)
 
 dt <- fread("data/ReserveDataSouthAfricaFinal.csv")
 
-table(dt[herbi_biomass_kgkm2 > 10000, ]$Biome)
+quantile(dt[herbi_biomass_kgkm2 > 10000, ]$herbi_biomass_ha)
+
+
+
 nrow(dt[herbi_biomass_kgkm2 > 10000, ])
 64/94
 
