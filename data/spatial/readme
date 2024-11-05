@@ -1,15 +1,15 @@
-# Protected Areas Shapefiles
+# Protected Areas Shapefiles #
 
 This repository contains shapefiles representing protected areas (PAs) in Sub-Saharan Africa, including a specific subset for South Africa. Some files also contain additional covariates.
 
-## Folder Contents
+## Folder Contents ##
 
-- **african_pas**  
+ "african_pas" 
   Contains the shapefiles representing the shapes and boundaries of protected areas (PAs) across Sub-Saharan Africa.
 
-- **sa_pa_shapes**  
+ "sa_pa_shapes" 
   Contains the shapefiles representing the shapes and boundaries of all protected areas (PAs) within South Africa.
 
-- **\*with_covariates**  
-  Indicates that covariates (additional contextual or environmental variables) have been added to the shapefiles. 
+ "...with_covariates" 
+  Indicates that covariates have been added to the shapefiles. 
 
