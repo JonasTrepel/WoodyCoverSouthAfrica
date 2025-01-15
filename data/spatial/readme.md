@@ -1,6 +1,6 @@
 # Protected Areas Shapefiles #
 
-This repository contains shapefiles representing protected areas (PAs) in Sub-Saharan Africa, including a specific subset for South Africa. Some files also contain additional covariates.
+This repository contains shapefiles representing protected areas (PAs) in Sub-Saharan Africa, including a specific subset for South Africa. Some files also contain additional covariates. Shapefiles have been downloaded from the World Database on Protected Areas (WDPA; https://www.protectedplanet.net/en/thematic-areas/wdpa?tab=WDPA)
 
 ## Folder Contents ##
 
