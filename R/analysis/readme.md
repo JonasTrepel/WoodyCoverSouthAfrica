@@ -1,8 +1,10 @@
+**Analysis scripts**
+
 "interaction_plots.R": code to run the best models with the full data and create the interaction plots 
 
 "multipleModelsForLoop.R": code to run all models on our main dataset. Can take a couple of days. 
 
-"pseudoParallelML/": This is an emberassing, but the multipleModelsForLoop code breaks when using a for each loop instead (for whatever reason). So this folder contains 4 scripts to run the models for current woody cover (CWC), woody cover change (WCC), woody cover heterogeneity (WCSD) and canopy height heterogeneity (CHSD) in different R sessions "parallel"....
+"main_models/": This folder contains 4 scripts to run the models for current woody cover (CWC.R), woody cover change (WCC.R), woody cover heterogeneity (WCSD.R) and canopy height heterogeneity (CHSD.R).
 
 "multipleModelsSouthAfricanPas.R": Code to run the models for the South African PAs
 
