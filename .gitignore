@@ -10,6 +10,8 @@ builds/plots/july/inkscape/
 #ignore unpusblished sensitivity analysis 
 R/analysis/unpublished_sensitivity/
 
+data/clean_data/
+
 ####### DEFAULT IGNORE #######
 
 # History files
