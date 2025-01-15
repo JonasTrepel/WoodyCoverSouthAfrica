@@ -12,6 +12,7 @@ library(MetBrewer)
 library(gridExtra)
 library(viridis)
 library(scales)
+library(rnaturalearth)
 
 dt <- fread("data/ReserveDataSouthAfricaFinal.csv")
 
@@ -293,15 +294,97 @@ p.dens.hsp <- ggplot() +
 p.dens.hsp
 
 
+
+### get maps of MAP, MAT and N deposition in there --------------------------------
+
+sa.sh <- rnaturalearth::ne_countries(country = "south africa", type = "map_units")
+
+
+## MAT---------------
+
+mat <- rast("../../../../../resources/spatial/Chelsa_Climate/CHELSA_bio1_1981-2010_V.2.1.tif") 
+plot(mat)
+
+mat_cr <- crop(mat, sa.sh[, "geometry"])
+plot(mat_cr)
+mat_clipped <- mask(mat_cr, sa.sh[, "geometry"])
+plot(mat_clipped)
+
+dt_mat <- as.data.frame(mat_clipped, xy = T)
+
+p.mat <- ggplot() +
+  geom_tile(data = dt_mat, aes(x = x, y = y, color = `CHELSA_bio1_1981-2010_V.2.1`, fill = `CHELSA_bio1_1981-2010_V.2.1`)) +
+  scale_color_viridis_c(option = "B") +
+  scale_fill_viridis_c(option = "B") +
+  labs(color = "MAT (°C)", fill = "MAT (°C)") +
+  theme_void() +
+  theme(legend.position = "bottom", 
+        legend.text = element_text(size = 12), 
+        legend.title = element_text(size = 14))
+p.mat
+
+## MAP---------------
+map <- rast("../../../../../resources/spatial/Chelsa_Climate/CHELSA_bio12_1981-2010_V.2.1.tif") 
+plot(map)
+
+
+map_cr <- crop(map, sa.sh[, "geometry"])
+plot(map_cr)
+map_clipped <- mask(map_cr, sa.sh[, "geometry"])
+plot(map_clipped)
+
+dt_map <- as.data.frame(map_clipped, xy = T)
+
+p.map <- ggplot() +
+  geom_tile(data = dt_map, aes(x = x, y = y, color = `CHELSA_bio12_1981-2010_V.2.1`, fill = `CHELSA_bio12_1981-2010_V.2.1`)) +
+  scale_color_viridis_c(option = "B") +
+  scale_fill_viridis_c(option = "B") +
+  labs(color = "MAP (mm)", fill = "MAP (mm)") +
+  theme_void() +
+  theme(legend.position = "bottom", 
+        legend.text = element_text(size = 12), 
+        legend.title = element_text(size = 14))
+p.map
+
+# N depo 
+ndep <- rast("../../../../../resources/spatial/N_deposition_Rubin_etal/total_N_dep.tif")
+plot(ndep)
+
+ndep_cr <- crop(ndep, sa.sh[, "geometry"])
+plot(ndep_cr)
+
+ndep_clipped <- mask(ndep_cr, sa.sh[, "geometry"])
+plot(ndep_clipped)
+
+dt_ndep <- as.data.frame(ndep_clipped, xy = T)
+
+map_inverse <- mask(map_cr, sa.sh[, "geometry"], inverse = TRUE)
+
+dt_inv <- as.data.frame(map_inverse, xy = T)
+
+p.ndepo <- ggplot() +
+  geom_tile(data = dt_ndep, aes(x = x, y = y, fill = SelfBand, color = SelfBand)) +
+  geom_tile(data = dt_inv, aes(x = x, y = y), color = "white", fill = "white") +
+  scale_fill_viridis_c(option = "B") +
+  scale_color_viridis_c(option = "B") +
+  labs(fill = bquote("N deposition (kg"~km^-2*~y^-1~")"), color = bquote("N deposition (kg"~km^-2*~y^-1~")")) +
+  theme_void() +
+  theme(legend.position = "bottom", 
+        legend.text = element_text(size = 12), 
+        legend.title = element_text(size = 14))
+p.ndepo
+
+#### combine 
+
+
 p.dens <- grid.arrange(p.dens.map, p.dens.ndep, p.dens.hbm, p.dens.hsp, ncol = 1)
 
 p.upper <- grid.arrange(p.dens, p.cent, widths = c(1, 2.5))
 
-p.lower <- grid.arrange(p.tc, p.wct, p.tc.sd, ncol = 3)
+p.lower <- grid.arrange(p.tc, p.wct, p.tc.sd,
+                        p.ndepo, p.mat, p.map,
+                        ncol = 3)
 
-p.fig1 <- grid.arrange(p.upper, p.lower, heights = c(2, 1))
+p.fig1 <- grid.arrange(p.upper, p.lower, heights = c(2, 2.5))
 
-ggsave(plot = p.fig1, "builds/plots/september/figure1.png", dpi = 600, height = 12, width = 14)
-#ggsave(plot = p.fig1, "builds/plots/july/figure1.svg", dpi = 600, height = 12, width = 14)
-
-
+ggsave(plot = p.fig1, "builds/plots/september/figure1.png", dpi = 600, height = 16, width = 14)
