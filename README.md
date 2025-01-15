@@ -1,5 +1,5 @@
 # Woody Cover Dynamics in South Africa
-This repository contains data and scripts used for the manuscript **"Atmospheric nitrogen deposition and large herbivores shape woody cover change"**, (in review). 
+This repository contains data and scripts used for the manuscript **"Atmospheric nitrogen deposition and large herbivores shape woody cover change"** (in review). 
 
 ## Directory Structure
 
