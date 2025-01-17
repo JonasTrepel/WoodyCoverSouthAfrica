@@ -59,7 +59,7 @@ p.ridge <- ggplot() +
   theme(legend.position = "none")
 p.ridge
 
-ggsave(plot = p.ridge, "builds/plots/july/woody_cover_trend_ridges.png", dpi = 600)
+ggsave(plot = p.ridge, "builds/plots/september/woody_cover_trend_ridges.png", dpi = 600)
 
 
 
@@ -106,7 +106,7 @@ bp3
 
 
 bp <- grid.arrange(bp1, bp2, bp3, ncol = 3)
-ggsave(plot = bp, "builds/plots/july/environmental_biome.png", dpi = 600, height = 4, width = 12)
+ggsave(plot = bp, "builds/plots/september/environmental_biome.png", dpi = 600, height = 4, width = 12)
 
 
 ### variable correlation --------------------------------------
@@ -159,7 +159,7 @@ rel.tc.ch <- ggplot() +
   labs(x = "Tree cover SD", y = "Canopy height SD")
 
 rel.tc.ch
-ggsave(plot = rel.tc.ch, "builds/plots/july/sd_ch_wc_rel.png", dpi = 600, height = 7, width = 7)
+ggsave(plot = rel.tc.ch, "builds/plots/september/sd_ch_wc_rel.png", dpi = 600, height = 7, width = 7)
 
 #### Biome - N deposition ---------------------
 
@@ -173,7 +173,7 @@ n.dep.biome <- ggplot() +
   labs(y = "N deposition") +
   theme(axis.text.x = element_text(angle = 20, hjust = 1))
 n.dep.biome
-ggsave(plot = n.dep.biome, "builds/plots/july/n_dep_per_biome.png", dpi = 600, height = 5, width = 10)
+ggsave(plot = n.dep.biome, "builds/plots/september/n_dep_per_biome.png", dpi = 600, height = 5, width = 10)
 
 #### Elephants vs no elephants 
 dtEle <- dt %>% 
