@@ -1,5 +1,6 @@
 
 ######## CUSTOM IGNORE ######
+data/spatial/
 
 #ignore reserve shapes
 data/reserve_shapes.gpkg
