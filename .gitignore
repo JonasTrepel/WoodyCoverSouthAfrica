@@ -1,9 +1,11 @@
 
 ######## CUSTOM IGNORE ######
-data/spatial/
+data/spatial/time_series
+data/spatial/covariates
+data/spatial/deprecated
 
 #ignore reserve shapes
-data/reserve_shapes.gpkg
+data/spatial/pa_shapes/reserve_shapes.gpkg
 
 #ignore inkscape 
 builds/plots/july/inkscape/
@@ -11,7 +13,7 @@ builds/plots/july/inkscape/
 #ignore unpusblished sensitivity analysis 
 R/analysis/unpublished_sensitivity/
 
-data/clean_data/
+data/data_fragments/sensitive_data_fragments/
 
 ####### DEFAULT IGNORE #######
 
