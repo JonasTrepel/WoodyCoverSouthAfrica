@@ -38,7 +38,9 @@ mapview(strict_pas_raw)
 
 #get the ones that were included in the south african scale but are for some reason missing here: 
 ## output from script: "prepare_sa_pas"
-sa_pa_ids <- fread("data/south_african_pas_w_covariates.csv") %>% dplyr::select(WDPA_PID) %>% pull()
+sa_pa_ids <- st_read("data/spatial/pa_shapes/south_african_pas.gpkg") %>% 
+  as.data.table() %>% mutate(geom = NULL) %>% 
+  dplyr::select(WDPA_PID) %>% pull()
 
 alin <- strict_pas_raw %>% dplyr::select(WDPA_PID) %>% as.data.table() %>% mutate(geom = NULL) %>% pull()
 
@@ -93,10 +95,8 @@ strict_pas$spatial_predictor4 <- mems2[,4]
 strict_pas$spatial_predictor5 <- mems2[,5]
 
 
-s_preds <- pa %>% as.data.table() %>% mutate(geometry = NULL, source = NULL)
-names(pa)
 pa_fin <- strict_pas %>% 
-  dplyr::select(WDPAID, WDPA_PID, PA_DEF, NAME, DESIG_ENG, IUCN_CAT, GIS_AREA, 
+  dplyr::select(WDPA_PID, NAME, DESIG_ENG, GIS_AREA, 
                 spatial_predictor1, spatial_predictor2, spatial_predictor3, spatial_predictor4, spatial_predictor5)
 
 write_sf(pa_fin, "data/spatial/pa_shapes/sub_saharan_african_pas.gpkg", append = FALSE)

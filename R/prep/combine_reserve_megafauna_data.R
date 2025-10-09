@@ -441,4 +441,3 @@ if(exclude.hard.to.count.sp == TRUE){
 fwrite(dt.cov4, "data/clean_data/dt_with_covs_july2024_hard_sp_excluded.csv")}else{
   fwrite(dt.cov4, "data/data_fragments/reserve_megafauna_data.csv")
 }
-
