@@ -60,7 +60,7 @@ for(year in years){
   
   Sys.sleep(30)
   monitor_gee_task(pattern = "annual_prec", path = "rgee_backup_prec",
-                   last_sleep_time = 10)
+                   last_sleep_time = 10, mail = "jonas.trepel@gmail.com")
   
   (drive_files <- drive_ls(path = "rgee_backup_prec",
                            pattern = "annual_prec") %>%

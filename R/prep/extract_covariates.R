@@ -10,25 +10,29 @@ library(terra)
 library(exactextractr)
 ### define if we want to run it for control or PA 
 
-# param <- "reserves"
+#param <- "reserves"
 #param = "sa_pas"
-# param = "sub_saharan_pas"
+param = "sub_saharan_pas"
 
 if(param == "reserves"){
-  vect <- read_sf("data/spatial/pa_shapes/reserve_shapes.gpkg") %>% 
-    mutate(unique_id = grid_id)
+  vect_raw <- read_sf("data/spatial/pa_shapes/reserve_shapes.gpkg")
   
 } else if(param == "sa_pas"){
-  vect <- read_sf("data/spatial/pa_shapes/south_african_pas.gpkg") %>% 
-    mutate(unique_id = grid_id)
+  vect_raw <- read_sf("data/spatial/pa_shapes/south_african_pas.gpkg") %>% 
+    mutate(unique_id = WDPA_PID)
   
 } else if(param == "sub_saharan_pas"){
-  vect <- read_sf("data/spatial/pa_shapes/sub_saharan_african_pas.gpkg") %>% 
-    mutate(unique_id = grid_id)
+  vect_raw <- read_sf("data/spatial/pa_shapes/sub_saharan_african_pas.gpkg") %>% 
+    mutate(unique_id = WDPA_PID)
   
 } 
 
-
+sf_use_s2(FALSE)
+coords <- vect %>% st_transform(4326) %>% 
+  st_centroid() %>% #
+  st_coordinates()
+vect$lon <- coords[,1]
+vect$lat <- coords[,2]
 
 ## get time series file paths sorted ---------------------
 
@@ -41,7 +45,7 @@ prec_files <- data.table(file_path = list.files("data/spatial/time_series/",
                                                            full.names = FALSE)
 ) %>% 
  # filter(grepl("100m", file_name)) %>% 
-  mutate(col_name =  file_name)
+  mutate(col_name =  gsub(".tif", "", file_name))
 
 #MAT
 mat_files <- data.table(file_path = list.files("data/spatial/time_series/",
@@ -52,7 +56,7 @@ mat_files <- data.table(file_path = list.files("data/spatial/time_series/",
                                                full.names = FALSE)
 ) %>% 
   # filter(grepl("100m", file_name)) %>% 
-  mutate(col_name =  file_name)
+  mutate(col_name =  gsub(".tif", "", file_name))
 
 
 #Burned area
@@ -60,44 +64,44 @@ burned_area_files <- data.table(file_path = list.files("data/spatial/time_series
                                               pattern = "burned_area", 
                                               full.names = TRUE), 
                         file_name = list.files("data/spatial/time_series/",
-                                              pattern = " burned_area", 
+                                              pattern = "burned_area", 
                                               full.names = FALSE)
 ) %>% 
   # filter(grepl("100m", file_name)) %>% 
-  mutate(col_name =  file_name)
+  mutate(col_name =  gsub(".tif", "", file_name))
 
 #Woody cover ha
 wc_files <- data.table(file_path = list.files("data/spatial/time_series/",
                                               pattern = "woody_cover_ha", 
                                               full.names = TRUE), 
                         file_name = list.files("data/spatial/time_series/",
-                                              pattern = " woody_cover_ha", 
+                                              pattern = "woody_cover_ha", 
                                               full.names = FALSE)
 ) %>% 
   # filter(grepl("100m", file_name)) %>% 
-  mutate(col_name =  file_name)
+  mutate(col_name =  gsub(".tif", "", file_name))
 
 #Woody cover SD ha
 wc_sd_ha_files <- data.table(file_path = list.files("data/spatial/time_series/",
                                              pattern = "woody_cover_sd_ha", 
                                              full.names = TRUE), 
                        file_name = list.files("data/spatial/time_series/",
-                                             pattern = " woody_cover_sd_ha", 
+                                             pattern = "woody_cover_sd_ha", 
                                              full.names = FALSE)
 ) %>% 
   # filter(grepl("100m", file_name)) %>% 
-  mutate(col_name =  file_name)
+  mutate(col_name =  gsub(".tif", "", file_name))
 
 #Woody cover SD km
-wc_sd_ha_files <- data.table(file_path = list.files("data/spatial/time_series/",
+wc_sd_km_files <- data.table(file_path = list.files("data/spatial/time_series/",
                                                    pattern = "woody_cover_sd_km", 
                                                    full.names = TRUE), 
                              file_name = list.files("data/spatial/time_series/",
-                                                   pattern = " woody_cover_sd_km", 
+                                                   pattern = "woody_cover_sd_km", 
                                                    full.names = FALSE)
 ) %>% 
   # filter(grepl("100m", file_name)) %>% 
-  mutate(col_name =  file_name)
+  mutate(col_name =  gsub(".tif", "", file_name))
 
 
 time_series_covs <- rbind(prec_files, 
@@ -117,6 +121,7 @@ col_name <- c(
   "chelsa_mat", ## MAT
   "n_deposition", ## Nitrogen depo
   "fire_frequency", #average number of fires per year
+  "venter_woody_cover_trend"
 )
 
 cov_paths <- c(
@@ -127,14 +132,15 @@ cov_paths <- c(
   "data/spatial/covariates/CHELSA_bio1_1981-2010_V.2.1.tif", ## MAT
   
   "data/spatial/covariates/total_N_dep.tif", ## Nitrogen depo
-  "data/spatial/covariates/n_fires_500m_2001_2024" #Fires 
+  "data/spatial/covariates/n_fires_500m_2001_2024.tif", #Fires 
+  "data/spatial/covariates/venter_woody_cover_trend.tif"
 
 )
 
 other_covs <- data.table(
   col_name = col_name, 
   file_path = cov_paths, 
-  file_name = file_name,
+  file_name = col_name
 ) %>% filter(!is.na(cov_paths))
 
 covs <- rbind(time_series_covs, other_covs)
@@ -155,7 +161,7 @@ dt_covs_list <- future_map(1:nrow(covs),
                                
                                cov_r <- rast(covs[i, ]$file_path)
                                
-                               vect_trans <- st_transform(vect_chunk, crs = st_crs(cov_r))
+                               vect_trans <- st_transform(vect, crs = st_crs(cov_r))
                                
                                extr <- exactextractr::exact_extract(cov_r, 
                                                                     append_cols = c("unique_id"),
@@ -180,9 +186,8 @@ dt_covs_list <- future_map(1:nrow(covs),
 toc()
 plan(sequential)
 Sys.time()
-dt_covs <- rbindlist(dt_covs_list)
-
-
+dt_covs <- dt_covs_list %>%
+  reduce(~ left_join(.x, .y, by = "unique_id"))
 
 #combine
 vect_covs <- vect %>% 
