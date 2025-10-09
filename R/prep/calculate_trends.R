@@ -5,9 +5,9 @@ library(future)
 library(furrr)
 library(tictoc)
 
-#param <- "reserves"
+param <- "reserves"
 #param = "sa_pas"
-param = "sub_saharan_pas"
+#param = "sub_saharan_pas"
 
 if(param == "reserves"){
  
@@ -126,6 +126,7 @@ hist(dt_res$woody_cover_sd_ha_coef)
 if(param == "reserves"){
   dt_res$lon <- NULL
   dt_res$lat <- NULL
+  dt_res$reserve_name <- NULL
   
   dt_mega <- fread("data/data_fragments/reserve_megafauna_data.csv")
   
