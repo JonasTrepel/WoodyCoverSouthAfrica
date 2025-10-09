@@ -53,4 +53,4 @@ pas.cont <- st_join(pas, world)
 
 pas <- pas[!duplicated(data.frame(pas)),]
 
-st_write(pas, "data/clean_data/african_pas.gpkg")
+st_write(pas, "data/clean_data/spatial/pa_shapes/african_pas.gpkg")
