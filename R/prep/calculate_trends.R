@@ -138,5 +138,5 @@ if(param == "reserves"){
   fwrite(dt_res, "data/clean_data/final_south_african_pa_data.csv")
   
 } else if(param == "sub_saharan_pas"){
-  fwrite(dt_res, "data/clean_data/final_sub_saharan_african_african_pa_data.csv")
+  fwrite(dt_res, "data/clean_data/final_sub_saharan_african_pa_data.csv")
 } 

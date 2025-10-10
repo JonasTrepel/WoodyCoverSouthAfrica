@@ -799,11 +799,10 @@ future_walk(1:nrow(dt_tier),
               
               preds_bt_plot <- preds_bt[preds_bt$method %in% c(best_method), ] %>% left_join(dt_names)
               
-              c_t <- "Mean body mass (kg; cwm)"   
-              for(clean_term in unique(rects$clean_term)){
+              for(c_t in unique(rects$clean_term)){
                 
-                upper_lim <- rects[rects$clean_term == clean_term, ]$xmin2
-                lower_lim <- rects[rects$clean_term == clean_term, ]$xmax1
+                upper_lim <- rects[rects$clean_term == c_t, ]$xmin2
+                lower_lim <- rects[rects$clean_term == c_t, ]$xmax1
                 
                 
                 marg_plot_sub <- marg_plot[marg_plot$clean_term == c_t,] %>% filter(x > lower_lim & x < upper_lim)

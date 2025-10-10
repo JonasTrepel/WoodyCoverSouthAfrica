@@ -140,4 +140,49 @@ dt_tc_res <- dt_tc %>%
 
 r_woody_cover_coef <- rast(dt_tc_res, type = "xyz")
 crs(r_woody_cover_coef) <- crs(rast(tc_files[1]))
+plot(r_woody_cover_coef)
 writeRaster(r_woody_cover_coef, "data/spatial/covariates/sa_woody_cover_coef_km.tif")
+
+# Woody cover SD
+
+### Woody cover --------
+
+tc_sd_files <- list.files("data/spatial/time_series", pattern = "sa_woody_cover_sd_agg_ha_km_", full.names = T)
+
+for(i in 1:length(tc_sd_files)){
+  
+  r <- rast(tc_sd_files[i])
+  
+  dt_tmp <- as.data.frame(r, xy = T)
+  dt_tmp <- setnames(dt_tmp, old = names(dt_tmp), new = c("x", "y", paste0("woody_cover_", i)))
+  
+  if(i == 1){
+    dt_tc_sd <- dt_tmp
+  } else {
+    dt_tc_sd <- left_join(dt_tc_sd, dt_tmp)
+  }
+  print(i)
+}
+
+
+dt_tc_sd_sd_sub <- dt_tc_sd %>% 
+  filter(complete.cases(.)) %>% as.data.frame()
+
+Y_tc <- as.matrix(dt_tc_sd_sd_sub %>% dplyr::select(contains("woody_cover")))
+coords_tc <- as.matrix(dt_tc_sd_sd_sub[, c("x", "y")])
+
+ar_results_tc <- fitAR_map(Y = Y_tc, coords = coords_tc)
+
+dt_tc_sd_sd_sub$woody_cover_coef <- coefficients(ar_results_tc)[, "t"] 
+dt_tc_sd_sd_sub$woody_cover_p_val <- ar_results_tc$pvals[, 2]
+
+
+dt_tc_sd_sd_res <- dt_tc_sd %>% 
+  left_join(dt_tc_sd_sd_sub) %>% 
+  dplyr::select(x, y, woody_cover_coef)
+
+r_woody_cover_coef <- rast(dt_tc_sd_sd_res, type = "xyz")
+crs(r_woody_cover_coef) <- crs(rast(tc_sd_files[1]))
+plot(r_woody_cover_coef)
+writeRaster(r_woody_cover_coef, "data/spatial/covariates/sa_woody_cover_sd_coef_km.tif")
+
