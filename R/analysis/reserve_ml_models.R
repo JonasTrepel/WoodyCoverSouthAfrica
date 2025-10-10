@@ -19,6 +19,8 @@ library(MetBrewer)
 library(furrr)
 library(future)
 
+n_workers = 4 #how many cores do you want to use for models?
+
 dt <- fread("data/clean_data/final_reserve_data.csv") %>% 
   filter(complete.cases(across(
     c(woody_cover_change, venter_woody_cover_trend, woody_cover_sd_ha_coef, woody_cover_sd_km_coef, 
@@ -26,16 +28,16 @@ dt <- fread("data/clean_data/final_reserve_data.csv") %>%
       CW_mean_species_body_mass, herbi_fun_div_distq1, n_herbi_sp_reserve,
       grazer_biomass_ha, browser_biomass_ha, 
       herbi_biomass_ha, fire_frequency, burned_area_coef)
-  )))
+  ))) #%>% sample_n(100)
 
 
 ### create model data ---------------------------------
 
 ##### SUBSET #####
 
-#guide.subset <- "response %in% c('woody_cover_change') & tier %in% c('main')"
+guide_subset <- "tier %in% c('main', 'high_biomass')"
 
-guide.subset <- NULL
+#guide_subset <- NULL
 ##############################################################################            
 ################################## CREATE MODEL GUIDE ########################         
 ##############################################################################    
@@ -86,8 +88,8 @@ for(i in 1:nrow(dt_tier)){
 unique(dt_tier$n)
 
 
-if(!is.null(guide.subset)){
-  dt_tier <- dt_tier %>% filter(eval(parse(text = guide.subset)))
+if(!is.null(guide_subset)){
+  dt_tier <- dt_tier %>% filter(eval(parse(text = guide_subset)))
 }
 
 
@@ -159,10 +161,10 @@ tune_grid_xgbtree <- expand.grid(
 
 ### Fit Control 
 
-fit_control <- trainControl(## 10 fold cross validation
+fit_control <- trainControl(## 5 fold cross validation
   method = "repeatedcv",
   number = 5, #number of splits 
-  repeats = 5, #repeat 10 times
+  repeats = 5, #repeat 5 times
   savePredictions = "final", #keep final model predictions, would otherwise be dumped
   returnResamp = "final")
 
@@ -173,7 +175,7 @@ stats_storage <- data.table()
 ################################## LOOOOOOOOOOOOP ############################            
 ##############################################################################    
 options(future.globals.maxSize = 10 * 1024^3)  # 10 GB
-plan(multisession, workers = 10)
+plan(multisession, workers = n_workers)
 
 tic()
 
@@ -508,6 +510,21 @@ future_walk(1:nrow(dt_tier),
   
   best_method <- stat_means %>% slice_min(mean_rmse) %>% dplyr::select(method) %>% pull() 
   
+  ### Save best model ###
+  
+  if(best_method == "gbm"){
+    best_model <- list_fit$gbm
+  } else if(best_method == "rf"){
+    best_model <- list_fit$rf
+  } else if(best_method == "xgbTree"){
+    best_model <- list_fit$xgbTree
+  } else if(best_method == "ensemble"){
+    best_model <- greedy_ensemble
+  }  
+  
+  model_path <- paste0("builds/models/reserve_models/", response_tier, ".Rds")
+  
+  saveRDS(best_model, model_path)
   
   ##############################################################################            
   ############################ COMPARISON PLOT #################################            
@@ -805,11 +822,10 @@ future_walk(1:nrow(dt_tier),
   
   preds_bt_plot <- preds_bt[preds_bt$method %in% c(best_method), ] %>% left_join(dt_names)
   
-  c_t <- "Mean body mass (kg; cwm)"   
-  for(clean_term in unique(rects$clean_term)){
+  for(c_t in unique(rects$clean_term)){
     
-    upper_lim <- rects[rects$clean_term == clean_term, ]$xmin2
-    lower_lim <- rects[rects$clean_term == clean_term, ]$xmax1
+    upper_lim <- rects[rects$clean_term == c_t, ]$xmin2
+    lower_lim <- rects[rects$clean_term == c_t, ]$xmax1
     
     
     marg_plot_sub <- marg_plot[marg_plot$clean_term == c_t,] %>% filter(x > lower_lim & x < upper_lim)

@@ -13,14 +13,15 @@ library(gridExtra)
 library(viridis)
 library(scales)
 library(rnaturalearth)
+library(terra)
 
-dt <- fread("data/ReserveDataSouthAfricaFinal.csv")
+dt <- fread("data/clean_data/final_reserve_data.csv")
 
 ########### RESERVE DISTRIBUTION ################################
 
 ## Biome -----------
 
-veg <- sf::read_sf("../../../../../resources/spatial/Vegetation_Map_SA_2018/NVM2018_AEA_V22_7_16082019_final.shp")
+veg <- sf::read_sf("data/spatial/covariates/Vegetation_Map_SA_2018/NVM2018_AEA_V22_7_16082019_final.shp")
 
 veg <- st_transform(veg, crs = 4326)
 veg <- st_sf(veg) %>% 
@@ -33,13 +34,13 @@ table(veg$BIOMEID_18)
 veg_bbox <- st_bbox(veg)
 
 # Create a raster with the matching extent and resolution
-r.temp1k <- rast(
+r_temp1k <- rast(
   extent = veg_bbox, res = 0.01
 )
 
 # Rasterize the "veg" polygons into the matching raster
 table(veg$BIOME_18)
-biome.r <- rasterize(veg, r.temp1k, field = "BIOMEID_18")
+biome.r <- rasterize(veg, r_temp1k, field = "BIOMEID_18")
 plot(biome.r)
 
 africa <- rnaturalearth::ne_countries(scale = 50, continent = c("Africa"),
@@ -138,7 +139,7 @@ viridis(12)
 
 tc <- rast("../../../../../resources/spatial/meta_canopy_height/sa_tree_cover_100mmean.tif")
 
-tc.1k <- resample(tc, r.temp1k)
+tc.1k <- resample(tc, r_temp1k)
 
 sa.tc <- mask(tc.1k, sa)
 
@@ -204,8 +205,8 @@ wctMasked <- mask(wctPreMask, lcMask)
 plot(wctMasked)
 plot(lcMask)
 
-wct1k <- exactextractr::exact_resample(x = wctMasked, y = r.temp1k, fun = "mean")
-#lcMask1k <- exactextractr::exact_resample(x = lcMask, y = r.temp1k, fun = "max")
+wct1k <- exactextractr::exact_resample(x = wctMasked, y = r_temp1k, fun = "mean")
+#lcMask1k <- exactextractr::exact_resample(x = lcMask, y = r_temp1k, fun = "max")
 
 sa.wct <- mask(wct1k, sa)
 

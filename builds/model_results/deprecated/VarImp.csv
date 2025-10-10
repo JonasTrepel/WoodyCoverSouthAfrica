@@ -1,0 +1,97 @@
+method,term,mean_rel_imp,sd_rel_imp,clean_term,responseGroup,tier,tier_label,response,response_tier
+ensemble,CW_mean_species_body_mass,2.49706829013834,0.65413528232955,Mean body mass (kg; cwm),Herbivory,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,MAP,42.5775433128102,3.14602825128534,MAP (mm),Environmental,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,MAT,22.7177843647788,2.19052314843278,MAT (°C),Environmental,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,browser_biomass_kgkm2,2.71950432661034,0.963502144455927,Browser biomass (kg/km²),Herbivory,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,elevation_sd_1000,12.1145958896797,1.58181418990736,Elevation SD (m),Environmental,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,fire_events_since_2001,1.47373491825785,0.793891389268586,Fire frequency,Fire,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,grazer_biomass_kgkm2,1.336403832575,0.676477696022894,Grazer biomass (kg/km²),Herbivory,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,herbi_biomass_kgkm2,0.663519419553872,0.388872792932622,Herbivore biomass (kg/km²),Herbivory,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,herbi_fun_div_distq1,2.30081881829154,0.730422495912529,Herbivore functional diversity,Herbivory,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,mixed_feeder_biomass_kgkm2,0.762441423404711,0.463180833687133,Mixed feeder biomass (kg/km²),Herbivory,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,n_herbi_sp_reserve,0.589225773087616,0.380487269065998,Herbivore species richness,Herbivory,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,prop_burned_area,1.71348889513289,0.749956215492625,Proportion burned area,Fire,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,CW_mean_species_body_mass,2.49706829013834,0.65413528232955,Mean body mass (kg; cwm),Herbivory,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,MAP,42.5775433128102,3.14602825128534,MAP (mm),Environmental,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,MAT,22.7177843647788,2.19052314843278,MAT (°C),Environmental,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,browser_biomass_kgkm2,2.71950432661034,0.963502144455927,Browser biomass (kg/km²),Herbivory,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,elevation_sd_1000,12.1145958896797,1.58181418990736,Elevation SD (m),Environmental,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,fire_events_since_2001,1.47373491825785,0.793891389268586,Fire frequency,Fire,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,grazer_biomass_kgkm2,1.336403832575,0.676477696022894,Grazer biomass (kg/km²),Herbivory,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,herbi_biomass_kgkm2,0.663519419553872,0.388872792932622,Herbivore biomass (kg/km²),Herbivory,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,herbi_fun_div_distq1,2.30081881829154,0.730422495912529,Herbivore functional diversity,Herbivory,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,mixed_feeder_biomass_kgkm2,0.762441423404711,0.463180833687133,Mixed feeder biomass (kg/km²),Herbivory,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,n_herbi_sp_reserve,0.589225773087616,0.380487269065998,Herbivore species richness,Herbivory,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,prop_burned_area,1.71348889513289,0.749956215492625,Proportion burned area,Fire,main,Full model,canopy_height_sd_100,canopy_height_sd_100_main
+ensemble,CW_mean_species_body_mass,6.29901961267907,0.973311122872735,Mean body mass (kg; cwm),Herbivory,main,Full model,tree_cover_mean,tree_cover_mean_main
+ensemble,MAP,31.194878646513,2.31711971953751,MAP (mm),Environmental,main,Full model,tree_cover_mean,tree_cover_mean_main
+ensemble,MAT,31.6846178664779,2.31327556289868,MAT (°C),Environmental,main,Full model,tree_cover_mean,tree_cover_mean_main
+ensemble,fire_events_since_2001,0.142865372954766,0.358012421929144,Fire frequency,Fire,main,Full model,tree_cover_mean,tree_cover_mean_main
+ensemble,herbi_biomass_kgkm2,10.4032155391016,1.4798691983595,Herbivore biomass (kg/km²),Herbivory,main,Full model,tree_cover_mean,tree_cover_mean_main
+ensemble,prop_burned_area,2.84335304109379,1.34924245260571,Proportion burned area,Fire,main,Full model,tree_cover_mean,tree_cover_mean_main
+ensemble,CW_mean_species_body_mass,4.79252545447913,0.95000280514699,Mean body mass (kg; cwm),Herbivory,main,Full model,tree_cover_sd_100,tree_cover_sd_100_main
+ensemble,MAP,27.0752281511585,3.18811884511174,MAP (mm),Environmental,main,Full model,tree_cover_sd_100,tree_cover_sd_100_main
+ensemble,MAT,24.5260260469338,2.84160627834717,MAT (°C),Environmental,main,Full model,tree_cover_sd_100,tree_cover_sd_100_main
+ensemble,browser_biomass_kgkm2,4.14248387033388,1.26064199541379,Browser biomass (kg/km²),Herbivory,main,Full model,tree_cover_sd_100,tree_cover_sd_100_main
+ensemble,elevation_sd_1000,12.7836409268186,1.40838645601707,Elevation SD (m),Environmental,main,Full model,tree_cover_sd_100,tree_cover_sd_100_main
+ensemble,fire_events_since_2001,0.146630264466452,0.209393622351493,Fire frequency,Fire,main,Full model,tree_cover_sd_100,tree_cover_sd_100_main
+ensemble,grazer_biomass_kgkm2,2.49931506924692,0.958416364152199,Grazer biomass (kg/km²),Herbivory,main,Full model,tree_cover_sd_100,tree_cover_sd_100_main
+ensemble,herbi_biomass_kgkm2,1.84689328986063,0.757374991703152,Herbivore biomass (kg/km²),Herbivory,main,Full model,tree_cover_sd_100,tree_cover_sd_100_main
+ensemble,herbi_fun_div_distq1,2.29631464287149,0.655335826578375,Herbivore functional diversity,Herbivory,main,Full model,tree_cover_sd_100,tree_cover_sd_100_main
+ensemble,mixed_feeder_biomass_kgkm2,1.57745426010701,0.612681949193633,Mixed feeder biomass (kg/km²),Herbivory,main,Full model,tree_cover_sd_100,tree_cover_sd_100_main
+ensemble,n_herbi_sp_reserve,0.757295150754284,0.459580031537246,Herbivore species richness,Herbivory,main,Full model,tree_cover_sd_100,tree_cover_sd_100_main
+ensemble,prop_burned_area,1.50059395549706,0.583865169561524,Proportion burned area,Fire,main,Full model,tree_cover_sd_100,tree_cover_sd_100_main
+rf,CW_mean_species_body_mass,2.21487570529613,0.486097463288694,Mean body mass (kg; cwm),Herbivory,main,Full model,woody_cover_trend_venter2019,woody_cover_trend_venter2019_main
+rf,MAP,14.1023774906154,1.14347590353474,MAP (mm),Environmental,main,Full model,woody_cover_trend_venter2019,woody_cover_trend_venter2019_main
+rf,MAT,10.4485876581126,1.25593925745189,MAT (°C),Environmental,main,Full model,woody_cover_trend_venter2019,woody_cover_trend_venter2019_main
+rf,browser_biomass_kgkm2,0.931097912480324,0.32342099206012,Browser biomass (kg/km²),Herbivory,main,Full model,woody_cover_trend_venter2019,woody_cover_trend_venter2019_main
+rf,fire_events_since_2001,0.715821878127275,0.522865662490245,Fire frequency,Fire,main,Full model,woody_cover_trend_venter2019,woody_cover_trend_venter2019_main
+rf,grazer_biomass_kgkm2,1.10350776369576,0.372187291023432,Grazer biomass (kg/km²),Herbivory,main,Full model,woody_cover_trend_venter2019,woody_cover_trend_venter2019_main
+rf,herbi_biomass_kgkm2,2.11050413267308,0.614386249224602,Herbivore biomass (kg/km²),Herbivory,main,Full model,woody_cover_trend_venter2019,woody_cover_trend_venter2019_main
+rf,herbi_fun_div_distq1,2.44019350932544,0.581754890424555,Herbivore functional diversity,Herbivory,main,Full model,woody_cover_trend_venter2019,woody_cover_trend_venter2019_main
+rf,mixed_feeder_biomass_kgkm2,1.46592250117614,0.401923458046158,Mixed feeder biomass (kg/km²),Herbivory,main,Full model,woody_cover_trend_venter2019,woody_cover_trend_venter2019_main
+rf,n_deposition,26.7097711954581,4.26009662547315,N deposition ([kg/km²]/year),Global Change,main,Full model,woody_cover_trend_venter2019,woody_cover_trend_venter2019_main
+rf,n_herbi_sp_reserve,0.0302599299142716,0.0999820293815814,Herbivore species richness,Herbivory,main,Full model,woody_cover_trend_venter2019,woody_cover_trend_venter2019_main
+rf,prop_burned_area,1.36955409067592,0.544902259034734,Proportion burned area,Fire,main,Full model,woody_cover_trend_venter2019,woody_cover_trend_venter2019_main
+rf,CW_mean_species_body_mass,9.62814447808482,2.34828016271703,Mean body mass (kg; cwm),Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",canopy_height_sd_100,canopy_height_sd_100_high_biomass
+rf,MAP,32.5480083044714,5.12439527202345,MAP (mm),Environmental,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",canopy_height_sd_100,canopy_height_sd_100_high_biomass
+rf,MAT,12.2702904158077,2.99446639195989,MAT (°C),Environmental,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",canopy_height_sd_100,canopy_height_sd_100_high_biomass
+rf,browser_biomass_kgkm2,5.05459380700616,1.13886866622808,Browser biomass (kg/km²),Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",canopy_height_sd_100,canopy_height_sd_100_high_biomass
+rf,elevation_sd_1000,5.62340305486572,1.65913959654913,Elevation SD (m),Environmental,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",canopy_height_sd_100,canopy_height_sd_100_high_biomass
+rf,fire_events_since_2001,0.0705678126272623,0.20848204836901,Fire frequency,Fire,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",canopy_height_sd_100,canopy_height_sd_100_high_biomass
+rf,grazer_biomass_kgkm2,3.04871650578129,0.963480821190604,Grazer biomass (kg/km²),Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",canopy_height_sd_100,canopy_height_sd_100_high_biomass
+rf,herbi_biomass_kgkm2,2.08895898142137,0.725066700829076,Herbivore biomass (kg/km²),Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",canopy_height_sd_100,canopy_height_sd_100_high_biomass
+rf,herbi_fun_div_distq1,11.8105254187751,3.53810485145088,Herbivore functional diversity,Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",canopy_height_sd_100,canopy_height_sd_100_high_biomass
+rf,mixed_feeder_biomass_kgkm2,3.62143551965636,1.11775149091681,Mixed feeder biomass (kg/km²),Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",canopy_height_sd_100,canopy_height_sd_100_high_biomass
+rf,n_herbi_sp_reserve,7.66684999619875,1.85925923826899,Herbivore species richness,Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",canopy_height_sd_100,canopy_height_sd_100_high_biomass
+rf,prop_burned_area,0.665158862803852,0.584399603642999,Proportion burned area,Fire,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",canopy_height_sd_100,canopy_height_sd_100_high_biomass
+rf,CW_mean_species_body_mass,14.2879003841323,2.69747281047878,Mean body mass (kg; cwm),Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_mean,tree_cover_mean_high_biomass
+rf,MAP,23.9844421261501,4.4841104212539,MAP (mm),Environmental,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_mean,tree_cover_mean_high_biomass
+rf,MAT,37.0180467281207,5.55439751515996,MAT (°C),Environmental,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_mean,tree_cover_mean_high_biomass
+rf,fire_events_since_2001,0.0763029466020108,0.427782441785055,Fire frequency,Fire,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_mean,tree_cover_mean_high_biomass
+rf,herbi_biomass_kgkm2,8.34899929303654,2.01079612919455,Herbivore biomass (kg/km²),Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_mean,tree_cover_mean_high_biomass
+rf,prop_burned_area,5.42854803073819,2.45380149814002,Proportion burned area,Fire,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_mean,tree_cover_mean_high_biomass
+rf,CW_mean_species_body_mass,16.1192830661167,4.34689479295746,Mean body mass (kg; cwm),Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_sd_100,tree_cover_sd_100_high_biomass
+rf,MAP,16.8542868282875,4.31414083957098,MAP (mm),Environmental,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_sd_100,tree_cover_sd_100_high_biomass
+rf,MAT,15.7344746772457,4.56205185889022,MAT (°C),Environmental,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_sd_100,tree_cover_sd_100_high_biomass
+rf,browser_biomass_kgkm2,8.04515160954698,2.75754009599239,Browser biomass (kg/km²),Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_sd_100,tree_cover_sd_100_high_biomass
+rf,elevation_sd_1000,6.54573156529007,1.75157955625569,Elevation SD (m),Environmental,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_sd_100,tree_cover_sd_100_high_biomass
+rf,fire_events_since_2001,0.547380063249637,0.706595971269412,Fire frequency,Fire,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_sd_100,tree_cover_sd_100_high_biomass
+rf,grazer_biomass_kgkm2,7.19706449416432,2.579712056233,Grazer biomass (kg/km²),Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_sd_100,tree_cover_sd_100_high_biomass
+rf,herbi_biomass_kgkm2,1.61728309562277,0.956013385053449,Herbivore biomass (kg/km²),Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_sd_100,tree_cover_sd_100_high_biomass
+rf,herbi_fun_div_distq1,10.4645609430915,3.33806043741364,Herbivore functional diversity,Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_sd_100,tree_cover_sd_100_high_biomass
+rf,mixed_feeder_biomass_kgkm2,5.28992492583492,1.600029746545,Mixed feeder biomass (kg/km²),Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_sd_100,tree_cover_sd_100_high_biomass
+rf,n_herbi_sp_reserve,0.823733893988439,0.762717566291037,Herbivore species richness,Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_sd_100,tree_cover_sd_100_high_biomass
+rf,prop_burned_area,0.578766891764695,0.641804098233922,Proportion burned area,Fire,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",tree_cover_sd_100,tree_cover_sd_100_high_biomass
+rf,CW_mean_species_body_mass,2.59662030911656,0.98802483618564,Mean body mass (kg; cwm),Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",woody_cover_trend_venter2019,woody_cover_trend_venter2019_high_biomass
+rf,MAP,6.65745338273163,1.75977595790233,MAP (mm),Environmental,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",woody_cover_trend_venter2019,woody_cover_trend_venter2019_high_biomass
+rf,MAT,3.30146068916795,0.796401202057448,MAT (°C),Environmental,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",woody_cover_trend_venter2019,woody_cover_trend_venter2019_high_biomass
+rf,browser_biomass_kgkm2,3.78849632218045,1.01255997935671,Browser biomass (kg/km²),Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",woody_cover_trend_venter2019,woody_cover_trend_venter2019_high_biomass
+rf,fire_events_since_2001,1.41369854707604,0.892021146116367,Fire frequency,Fire,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",woody_cover_trend_venter2019,woody_cover_trend_venter2019_high_biomass
+rf,grazer_biomass_kgkm2,1.02471617971259,0.575943015671718,Grazer biomass (kg/km²),Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",woody_cover_trend_venter2019,woody_cover_trend_venter2019_high_biomass
+rf,herbi_biomass_kgkm2,1.64835867195925,0.623974866304036,Herbivore biomass (kg/km²),Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",woody_cover_trend_venter2019,woody_cover_trend_venter2019_high_biomass
+rf,herbi_fun_div_distq1,6.71370424593177,2.48011516216201,Herbivore functional diversity,Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",woody_cover_trend_venter2019,woody_cover_trend_venter2019_high_biomass
+rf,mixed_feeder_biomass_kgkm2,2.15286331789486,0.738309328479653,Mixed feeder biomass (kg/km²),Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",woody_cover_trend_venter2019,woody_cover_trend_venter2019_high_biomass
+rf,n_deposition,45.2421860404421,4.12841362707601,N deposition ([kg/km²]/year),Global Change,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",woody_cover_trend_venter2019,woody_cover_trend_venter2019_high_biomass
+rf,n_herbi_sp_reserve,1.97829316939421,1.1886360122007,Herbivore species richness,Herbivory,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",woody_cover_trend_venter2019,woody_cover_trend_venter2019_high_biomass
+rf,prop_burned_area,0.0058917930805187,0.0297657929576663,Proportion burned area,Fire,high_biomass,"Reserves with high herbivore biomass (≥10,000 kg/km²)",woody_cover_trend_venter2019,woody_cover_trend_venter2019_high_biomass
