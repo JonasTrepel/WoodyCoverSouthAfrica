@@ -883,6 +883,6 @@ future_walk(1:nrow(dt_tier),
 
 }
 )
-
+plan(sequential)
 toc()
-print("done ", Sys.time())
+print(paste0("done ", Sys.time()))
