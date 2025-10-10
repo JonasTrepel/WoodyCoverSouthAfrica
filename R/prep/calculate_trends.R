@@ -5,9 +5,9 @@ library(future)
 library(furrr)
 library(tictoc)
 
-param <- "reserves"
+#param <- "reserves"
 #param = "sa_pas"
-#param = "sub_saharan_pas"
+param = "sub_saharan_pas"
 
 if(param == "reserves"){
  
@@ -134,6 +134,7 @@ if(param == "reserves"){
            left_join(dt_mega), "data/clean_data/final_reserve_data.csv")
   
 } else if(param == "sa_pas"){
+  
   fwrite(dt_res, "data/clean_data/final_south_african_pa_data.csv")
   
 } else if(param == "sub_saharan_pas"){
