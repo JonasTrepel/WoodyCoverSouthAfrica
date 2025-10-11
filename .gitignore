@@ -3,6 +3,7 @@
 data/spatial/time_series
 data/spatial/covariates
 data/spatial/deprecated
+Rplots.pdf
 
 #ignore reserve shapes
 data/spatial/pa_shapes/reserve_shapes.gpkg
