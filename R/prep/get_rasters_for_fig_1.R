@@ -152,7 +152,7 @@ for(i in 1:length(tc_sd_files)){
   r <- rast(tc_sd_files[i])
   
   dt_tmp <- as.data.frame(r, xy = T)
-  dt_tmp <- setnames(dt_tmp, old = names(dt_tmp), new = c("x", "y", paste0("woody_cover_", i)))
+  dt_tmp <- setnames(dt_tmp, old = names(dt_tmp), new = c("x", "y", paste0("woody_cover_sd_", i)))
   
   if(i == 1){
     dt_tc_sd <- dt_tmp
@@ -166,13 +166,13 @@ for(i in 1:length(tc_sd_files)){
 dt_tc_sd_sd_sub <- dt_tc_sd %>% 
   filter(complete.cases(.)) %>% as.data.frame()
 
-Y_tc <- as.matrix(dt_tc_sd_sd_sub %>% dplyr::select(contains("woody_cover")))
-coords_tc <- as.matrix(dt_tc_sd_sd_sub[, c("x", "y")])
+Y_tc_sd <- as.matrix(dt_tc_sd_sd_sub %>% dplyr::select(contains("woody_cover_sd")))
+coords_tc_sd <- as.matrix(dt_tc_sd_sd_sub[, c("x", "y")])
 
-ar_results_tc <- fitAR_map(Y = Y_tc, coords = coords_tc)
+ar_results_tc_sd <- fitAR_map(Y = Y_tc_sd, coords = coords_tc_sd)
 
-dt_tc_sd_sd_sub$woody_cover_coef <- coefficients(ar_results_tc)[, "t"] 
-dt_tc_sd_sd_sub$woody_cover_p_val <- ar_results_tc$pvals[, 2]
+dt_tc_sd_sd_sub$woody_cover_coef <- coefficients(ar_results_tc_sd)[, "t"] 
+dt_tc_sd_sd_sub$woody_cover_p_val <- ar_results_tc_sd$pvals[, 2]
 
 
 dt_tc_sd_sd_res <- dt_tc_sd %>% 
