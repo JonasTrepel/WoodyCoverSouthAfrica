@@ -94,7 +94,7 @@ venter_r_km <- aggregate(
   fact = 10,
   fun = "mean",
   cores = 1,
-  filename = paste0("data/spatial/covariates/sa_venter_woody_cover_trend_900m.tif"),
+  filename = paste0("data/spatial/figure_1_tifs/sa_venter_woody_cover_trend_900m.tif"),
   overwrite = TRUE
 )
 
@@ -141,11 +141,9 @@ dt_tc_res <- dt_tc %>%
 r_woody_cover_coef <- rast(dt_tc_res, type = "xyz")
 crs(r_woody_cover_coef) <- crs(rast(tc_files[1]))
 plot(r_woody_cover_coef)
-writeRaster(r_woody_cover_coef, "data/spatial/covariates/sa_woody_cover_coef_km.tif")
+writeRaster(r_woody_cover_coef, "data/spatial/figure_1_tifs/sa_woody_cover_coef_km.tif")
 
-# Woody cover SD
-
-### Woody cover --------
+# Woody cover SD -------------
 
 tc_sd_files <- list.files("data/spatial/time_series", pattern = "sa_woody_cover_sd_agg_ha_km_", full.names = T)
 
@@ -184,5 +182,5 @@ dt_tc_sd_sd_res <- dt_tc_sd %>%
 r_woody_cover_coef <- rast(dt_tc_sd_sd_res, type = "xyz")
 crs(r_woody_cover_coef) <- crs(rast(tc_sd_files[1]))
 plot(r_woody_cover_coef)
-writeRaster(r_woody_cover_coef, "data/spatial/covariates/sa_woody_cover_sd_coef_km.tif")
+writeRaster(r_woody_cover_coef, "data/spatial/figure_1_tifs/sa_woody_cover_sd_coef_km.tif")
 
