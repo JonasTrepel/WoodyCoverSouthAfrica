@@ -4,7 +4,8 @@ library(data.table)
 library(tidyverse)
 library(scales)
 library(gridExtra)
-
+library("ggpattern")
+library(patchwork) 
 
 
 res_list <- readRDS("builds/model_results/plot_list.Rds")
@@ -13,7 +14,12 @@ names(res_list)
 dt_rug_raw <- res_list$dt_mean_rug
 dt_marg_raw <- res_list$dt_marg_plot
 dt_preds_bt_raw <- res_list$dt_preds_bt 
-dt_var_imp <- res_list$dt_var_imp_means
+dt_var_imp <- res_list$dt_var_imp_means %>%
+  filter(tier %in% c("main", "high_biomass")) %>% 
+  mutate(clean_tier = case_when(
+    tier == "main" ~"Full Model", 
+    tier == "high_biomass" ~ "High Biomass"
+  ))
 
 ### get max values 
 
@@ -49,22 +55,31 @@ ord_wcc <- dt_var_imp[tier == "main" & response == "woody_cover_change", ] %>%
   arrange((mean_rel_imp)) %>%
   pull(clean_term)
 
-dt_var_wcc <- dt_var_imp[tier == "main" & response == "woody_cover_change", ]
+dt_var_wcc <- dt_var_imp[response == "woody_cover_change", ]
 dt_var_wcc$clean_term <- factor(dt_var_wcc$clean_term, levels = ord_wcc)
 
 
 p_var_wcc <- ggplot(data = dt_var_wcc) +
-  geom_col(aes(y = clean_term, x = mean_rel_imp, fill = response_group),
-           position = position_dodge(width = 0.8), alpha = 0.9) +
+  geom_col_pattern(aes(y = clean_term, x = mean_rel_imp, fill = response_group, color = response_group, 
+                       group = clean_tier, pattern = clean_tier),
+           position = position_dodge(width = .9), alpha = 0.9, 
+           width = 0.8,
+           pattern_fill = 'grey', pattern_color = 'transparent') +
   geom_errorbar(aes(y = clean_term, 
                     xmin = mean_rel_imp - sd_rel_imp, 
                     xmax = mean_rel_imp + sd_rel_imp,
-                    group = method),
-                position = position_dodge(width = 0.8), width = 0.25) +
+                    group = tier),
+                position = position_dodge(width = 1), width = 0.25) +
   scale_fill_manual(values = palette_groups) +
-  labs(y = "", x = "Mean Relative Importance", fill = "") +
+  scale_color_manual(values = palette_groups) +
+  scale_pattern_manual(values = c("stripe", "none")) + 
+  guides(
+    fill = guide_legend(override.aes = list(pattern = "none")),
+    pattern = guide_legend(override.aes = list(fill = "grey50", color = "grey25"))
+  ) +
+  labs(y = "", x = "Variable Importance", pattern = "Tier", fill = "Response Group", color = "Response Group") +
   theme_classic() +
-  theme(legend.position = c(.75, .15),
+  theme(legend.position = c(.75, .25),
         axis.text = element_text(size = 12))
 p_var_wcc
 
@@ -110,7 +125,7 @@ pdp_wcc <- ggplot()+
   )
 pdp_wcc
 
-p_comb_wcc <- grid.arrange(pdp_wcc, p_var_wcc, ncol = 2, widths = c(1.5, 1))
+p_comb_wcc <- (pdp_wcc| p_var_wcc) + plot_layout(widths = c(2.5, 1))
 ggsave(plot = p_comb_wcc, filename = "builds/plots/revision/two_tiers_wcc.png", dpi = 600, height = 6.75, width = 13)
 
 
@@ -122,22 +137,31 @@ ord_vwct <- dt_var_imp[tier == "main" & response == "venter_woody_cover_trend", 
   arrange((mean_rel_imp)) %>%
   pull(clean_term)
 
-dt_var_vwct <- dt_var_imp[tier == "main" & response == "venter_woody_cover_trend", ]
+dt_var_vwct <- dt_var_imp[response == "venter_woody_cover_trend", ]
 dt_var_vwct$clean_term <- factor(dt_var_vwct$clean_term, levels = ord_vwct)
 
 
 p_var_vwct <- ggplot(data = dt_var_vwct) +
-  geom_col(aes(y = clean_term, x = mean_rel_imp, fill = response_group),
-           position = position_dodge(width = 0.8), alpha = 0.9) +
+  geom_col_pattern(aes(y = clean_term, x = mean_rel_imp, fill = response_group, color = response_group, 
+                       group = clean_tier, pattern = clean_tier),
+                   position = position_dodge(width = .9), alpha = 0.9, 
+                   width = 0.8,
+                   pattern_fill = 'grey', pattern_color = 'transparent') +
   geom_errorbar(aes(y = clean_term, 
                     xmin = mean_rel_imp - sd_rel_imp, 
                     xmax = mean_rel_imp + sd_rel_imp,
-                    group = method),
-                position = position_dodge(width = 0.8), width = 0.25) +
+                    group = tier),
+                position = position_dodge(width = 1), width = 0.25) +
   scale_fill_manual(values = palette_groups) +
-  labs(y = "", x = "Mean Relative Importance", fill = "") +
+  scale_color_manual(values = palette_groups) +
+  scale_pattern_manual(values = c("stripe", "none")) + 
+  guides(
+    fill = guide_legend(override.aes = list(pattern = "none")),
+   # pattern = guide_legend(override.aes = list(fill = "grey75", color = "grey25"))
+  ) +
+  labs(y = "", x = "Variable Importance", pattern = "Tier", fill = "Response Group", color = "Response Group") +
   theme_classic() +
-  theme(legend.position = c(.75, .15),
+  theme(legend.position = c(.75, .25),
         axis.text = element_text(size = 12))
 p_var_vwct
 
@@ -183,7 +207,7 @@ pdp_vwct <- ggplot()+
   )
 pdp_vwct
 
-p_comb_vwct <- grid.arrange(pdp_vwct, p_var_vwct, ncol = 2, widths = c(1.5, 1))
+p_comb_vwct <- (pdp_vwct | p_var_vwct) + plot_layout(widths = c(2.5, 1))
 ggsave(plot = p_comb_vwct, filename = "builds/plots/revision/two_tiers_vwct.png", dpi = 600, height = 6.75, width = 13)
 
 ########### Woody Cover SD ha ###############
@@ -194,22 +218,31 @@ ord_wcsdha <- dt_var_imp[tier == "main" & response == "woody_cover_sd_ha_coef", 
   arrange((mean_rel_imp)) %>%
   pull(clean_term)
 
-dt_var_wcsdha <- dt_var_imp[tier == "main" & response == "woody_cover_sd_ha_coef", ]
+dt_var_wcsdha <- dt_var_imp[response == "woody_cover_sd_ha_coef", ]
 dt_var_wcsdha$clean_term <- factor(dt_var_wcsdha$clean_term, levels = ord_wcsdha)
 
 
 p_var_wcsdha <- ggplot(data = dt_var_wcsdha) +
-  geom_col(aes(y = clean_term, x = mean_rel_imp, fill = response_group),
-           position = position_dodge(width = 0.8), alpha = 0.9) +
+  geom_col_pattern(aes(y = clean_term, x = mean_rel_imp, fill = response_group, color = response_group, 
+                       group = clean_tier, pattern = clean_tier),
+                   position = position_dodge(width = .9), alpha = 0.9, 
+                   width = 0.8,
+                   pattern_fill = 'grey', pattern_color = 'transparent') +
   geom_errorbar(aes(y = clean_term, 
                     xmin = mean_rel_imp - sd_rel_imp, 
                     xmax = mean_rel_imp + sd_rel_imp,
-                    group = method),
-                position = position_dodge(width = 0.8), width = 0.25) +
+                    group = tier),
+                position = position_dodge(width = 1), width = 0.25) +
   scale_fill_manual(values = palette_groups) +
-  labs(y = "", x = "Mean Relative Importance", fill = "") +
+  scale_color_manual(values = palette_groups) +
+  scale_pattern_manual(values = c("stripe", "none")) + 
+  guides(
+    fill = guide_legend(override.aes = list(pattern = "none")),
+    pattern = guide_legend(override.aes = list(fill = "grey50", color = "grey25"))
+  ) +
+  labs(y = "", x = "Variable Importance", pattern = "Tier", fill = "Response Group", color = "Response Group") +
   theme_classic() +
-  theme(legend.position = c(.75, .15),
+  theme(legend.position = c(.75, .25),
         axis.text = element_text(size = 12))
 p_var_wcsdha
 
@@ -255,7 +288,7 @@ pdp_wcsdha <- ggplot()+
   )
 pdp_wcsdha
 
-p_comb_wcsdha <- grid.arrange(pdp_wcsdha, p_var_wcsdha, ncol = 2, widths = c(1.5, 1))
+p_comb_wcsdha <- (pdp_wcsdha | p_var_wcsdha) + plot_layout(widths = c(2.5, 1))
 ggsave(plot = p_comb_wcsdha, filename = "builds/plots/revision/two_tiers_wcsdha.png", dpi = 600, height = 6.75, width = 13)
 
 
@@ -268,22 +301,31 @@ ord_wcsdkm <- dt_var_imp[tier == "main" & response == "woody_cover_sd_km_coef", 
   arrange((mean_rel_imp)) %>%
   pull(clean_term)
 
-dt_var_wcsdkm <- dt_var_imp[tier == "main" & response == "woody_cover_sd_km_coef", ]
+dt_var_wcsdkm <- dt_var_imp[response == "woody_cover_sd_km_coef", ]
 dt_var_wcsdkm$clean_term <- factor(dt_var_wcsdkm$clean_term, levels = ord_wcsdkm)
 
 
 p_var_wcsdkm <- ggplot(data = dt_var_wcsdkm) +
-  geom_col(aes(y = clean_term, x = mean_rel_imp, fill = response_group),
-           position = position_dodge(width = 0.8), alpha = 0.9) +
+  geom_col_pattern(aes(y = clean_term, x = mean_rel_imp, fill = response_group, color = response_group, 
+                       group = clean_tier, pattern = clean_tier),
+                   position = position_dodge(width = .9), alpha = 0.9, 
+                   width = 0.8,
+                   pattern_fill = 'grey', pattern_color = 'transparent') +
   geom_errorbar(aes(y = clean_term, 
                     xmin = mean_rel_imp - sd_rel_imp, 
                     xmax = mean_rel_imp + sd_rel_imp,
-                    group = method),
-                position = position_dodge(width = 0.8), width = 0.25) +
+                    group = tier),
+                position = position_dodge(width = 1), width = 0.25) +
   scale_fill_manual(values = palette_groups) +
-  labs(y = "", x = "Mean Relative Importance", fill = "") +
+  scale_color_manual(values = palette_groups) +
+  scale_pattern_manual(values = c("stripe", "none")) + 
+  guides(
+    fill = guide_legend(override.aes = list(pattern = "none")),
+    pattern = guide_legend(override.aes = list(fill = "grey50", color = "grey25"))
+  ) +
+  labs(y = "", x = "Variable Importance", pattern = "Tier", fill = "Response Group", color = "Response Group") +
   theme_classic() +
-  theme(legend.position = c(.75, .15),
+  theme(legend.position = c(.75, .25),
         axis.text = element_text(size = 12))
 p_var_wcsdkm
 
@@ -329,6 +371,6 @@ pdp_wcsdkm <- ggplot()+
   )
 pdp_wcsdkm
 
-p_comb_wcsdkm <- grid.arrange(pdp_wcsdkm, p_var_wcsdkm, ncol = 2, widths = c(1.5, 1))
+p_comb_wcsdkm <- (pdp_wcsdkm | p_var_wcsdkm) + plot_layout(widths = c(2.5, 1))
 ggsave(plot = p_comb_wcsdkm, filename = "builds/plots/revision/two_tiers_wcsdkm.png", dpi = 600, height = 6.75, width = 13)
 
