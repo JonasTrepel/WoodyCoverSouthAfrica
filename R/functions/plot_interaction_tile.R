@@ -50,8 +50,10 @@ plot_interaction_tile <- function(m, var1, var2, data,
     }
   }  
   
+  grid_numeric <- grid %>% select(where(is.numeric))
+  grid_matrix <- as.matrix(grid_numeric[, model$xNames])
   # Predict outcomes on the grid
-  predictions <- predict(model, newdata = grid)
+  predictions <- predict(model, newdata = grid_matrix)
   grid$prediction <- predictions
   
   mag <- max(grid$prediction, na.rm = T) - min(grid$prediction, na.rm = T)

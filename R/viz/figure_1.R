@@ -14,6 +14,8 @@ library(viridis)
 library(scales)
 library(rnaturalearth)
 library(terra)
+library(ggspatial)
+library(scico)
 
 dt <- fread("data/clean_data/final_reserve_data.csv")
 
@@ -40,8 +42,8 @@ r_temp1k <- rast(
 
 # Rasterize the "veg" polygons into the matching raster
 table(veg$BIOME_18)
-biome.r <- rasterize(veg, r_temp1k, field = "BIOMEID_18")
-plot(biome.r)
+biome_r <- rasterize(veg, r_temp1k, field = "BIOMEID_18")
+plot(biome_r)
 
 africa <- rnaturalearth::ne_countries(scale = 50, continent = c("Africa"),
                                       returnclass = "sf") 
@@ -49,7 +51,7 @@ africa <- rnaturalearth::ne_countries(scale = 50, continent = c("Africa"),
 sa <- africa %>% filter(name == "South Africa") %>% st_transform(crs = 4326)
 
 
-biome.r.mask <- mask(biome.r, sa)
+biome_r.mask <- mask(biome_r, sa)
 
 
 leg <- unique(veg %>% dplyr::select(c("BIOME_18", "BIOMEID_18")))
@@ -59,14 +61,14 @@ leg <- unique(leg)
 leg <- leg[!BIOMEID_18 == 0]
 leg
 
-dt.biome <- as.data.frame(biome.r.mask, xy = TRUE) %>% left_join(leg)
+dt_biome <- as.data.frame(biome_r.mask, xy = TRUE) %>% left_join(leg)
 
 ### other data ----------------------
-## can't be uploaded. Please contact me and we'll find a solution: jonas.trepel@bio.au.dk
-dt.shape <- st_read("data/reserve_shapes.gpkg")
+## We're not allowed to upload this file. Please contact me and we'll find a solution: jonas.trepel@gmail.com
+dt_shape <- st_read("data/spatial/pa_shapes/reserve_shapes.gpkg")
 
 sf_use_s2(FALSE)
-dt.cent <- dt.shape %>%
+dt.cent <- dt_shape %>%
   left_join(dt) %>% st_centroid()
 mapview(dt.cent)
 sf_use_s2(TRUE)
@@ -77,7 +79,7 @@ africa <- rnaturalearth::ne_countries(scale = 50, continent = c("Africa"),
 sa <- africa %>% filter(name == "South Africa") %>% st_transform(crs = 4326)
 
 
-grid <- st_make_grid(dt.shape, cellsize = c(1, 1), what = "polygons", square = F) %>% 
+grid <- st_make_grid(dt_shape, cellsize = c(1, 1), what = "polygons", square = F) %>% 
   st_as_sf() %>% 
   st_transform(crs = 4326) %>% 
   st_intersection(sa) %>% 
@@ -95,13 +97,13 @@ mapview::mapview(grid, zcol = "n_reserves")
 
 
 
-grid.cent <- st_centroid(grid)
-unique(dt.biome$BIOME_18)
+grid_cent <- st_centroid(grid)
+unique(dt_biome$BIOME_18)
 scales::show_col(viridis(12))
 library(rcartocolor)
 
-nColor <- 12
-scales::show_col(carto_pal(nColor, "Safe"))
+n_color <- 12
+scales::show_col(carto_pal(n_color, "Safe"))
 
 pal = c("Albany Thicket" = "#6699CC", "Azonal Vegetation" = "#888888", "Savanna" = "#999933", 
         "Forests" = "#332288", "Grassland" = "#117733", 
@@ -109,10 +111,10 @@ pal = c("Albany Thicket" = "#6699CC", "Azonal Vegetation" = "#888888", "Savanna"
         "Desert" = "#DDCC77", "Succulent Karoo" = "#882255", 
         "Fynbos" = "#661100")
 
-p.cent <- ggplot() +
-  geom_tile(data = dt.biome[!is.na(dt.biome$BIOME_18),], aes(x = x, y = y, color = BIOME_18, fill = BIOME_18), alpha = 1) + 
+p_cent <- ggplot() +
+  geom_tile(data = dt_biome[!is.na(dt_biome$BIOME_18),], aes(x = x, y = y, color = BIOME_18, fill = BIOME_18), alpha = 1) + 
   geom_sf(data = sa, fill = "white", linewidth = 0.1, alpha = 0.15) +
-  geom_sf(data = grid.cent[!grid.cent$n_reserves == 0,], aes(size = n_reserves), alpha = 1) +
+  geom_sf(data = grid_cent[!grid_cent$n_reserves == 0,], aes(size = n_reserves), alpha = 1) +
   labs(size = "Number of\nreserves") +
   labs(color = "Biome", fill = "Biome") +
  # ylim(35, 22) +
@@ -120,6 +122,7 @@ p.cent <- ggplot() +
   scale_color_manual(values = pal) +
   scale_fill_manual(values = pal) +
   guides(color = guide_legend(override.aes = list(size = 4))) +
+  annotation_scale(location = "tr", bar_cols = c("wheat3", "white")) +
   theme_void() +
   theme(
     legend.text = element_text(size = 12),  # Adjust the size of the legend text
@@ -127,105 +130,97 @@ p.cent <- ggplot() +
     legend.key.size = unit(0.5, "cm"),
     legend.position = "right"# Adjust the size of the legend keys
   )
-p.cent
+p_cent
 
-range(dt.biome$x)
-range(dt.biome$y)
-range(dt.biome$y)
+range(dt_biome$x)
+range(dt_biome$y)
+range(dt_biome$y)
 
 library(viridis)
 viridis(12)
-############################## Woody cover ################################
+############################## Woody cover chaneg ################################
 
-tc <- rast("../../../../../resources/spatial/meta_canopy_height/sa_tree_cover_100mmean.tif")
+r_wcc <- rast("data/spatial/figure_1_tifs/sa_woody_cover_coef_km.tif")
 
-tc.1k <- resample(tc, r_temp1k)
-
-sa.tc <- mask(tc.1k, sa)
+r_wcc_sa <- mask(r_wcc, sa)
 
 
-dt.tc <- as.data.frame(sa.tc, xy = TRUE)
+dt_wcc_sa_raw <- as.data.frame(r_wcc_sa, xy = TRUE)
+(uq <- quantile(dt_wcc_sa_raw$woody_cover_coef, .99))
+(lq <- quantile(dt_wcc_sa_raw$woody_cover_coef, .01))
+dt_wcc_sa <- dt_wcc_sa_raw %>% 
+  mutate(woody_cover_coef = case_when(
+    .default = woody_cover_coef, 
+    woody_cover_coef > uq ~ uq, 
+    woody_cover_coef < lq ~ lq
+  ))
 
-p.tc <- ggplot() +
-  geom_tile(data = dt.tc, aes(x = x, y = y, color = lyr.1, fill = lyr.1)) +
-  scale_color_viridis_c() +
-  scale_fill_viridis_c() +
-  labs(color = "Woody cover (%)", fill = "Woody cover (%)") +
-  theme_void() +
-  theme(legend.position = "bottom", 
-        legend.text = element_text(size = 12), 
-        legend.title = element_text(size = 14))
-p.tc
-
-
-############################## Woody cover SD ################################
-
-tc <- rast("../../../../../resources/spatial/meta_canopy_height/sa_tree_cover_100mmean.tif")
-
-sd_agg <- function(x, ...) {
-  return(sd(x, na.rm = TRUE))
-}
-tc.1k.sd <- aggregate(tc, fact=10, fun=sd_agg)
-
-sa.tc.sc <- mask(tc.1k.sd, sa)
-
-
-dt.tc.sd <- as.data.frame(sa.tc.sc, xy = TRUE)
-
-p.tc.sd <- ggplot() +
-  geom_tile(data = dt.tc.sd, aes(x = x, y = y, color = lyr.1, fill = lyr.1)) +
-  scale_color_viridis_c() +
-  scale_fill_viridis_c() +
-  labs(color = "Woody cover heterogeneity", fill = "Woody cover heterogeneity") +
-  theme_void() +
-  theme(legend.position = "bottom", 
-        legend.text = element_text(size = 12), 
-        legend.title = element_text(size = 14))
-p.tc.sd
-
-
-############################# Woody cover trend #######################################
-## mask data: 
-
-wct <- rast("../../../../../resources/spatial/ZanderVenterData/woody_cover_trend_venter2019_250m.tif")
-
-lc <- rast("../../../../../resources/spatial/LandCover/GlobalLandCoverCopernicus2019.tif")
-saLc <- mask(lc, sa)
-plot(saLc)
-lcMask <- saLc
-undesiredClasses <- c(40, 50) #urban and forest
-lcMask <- classify(saLc, rcl = cbind(undesiredClasses, 1), others = 0)
-plot(lcMask)
-
-lcMask <- crop(lcMask, wct) 
-wctPreMask <- exactextractr::exact_resample(x = wct, y = lcMask, fun = "mean")
-
-wctMasked <- mask(wctPreMask, lcMask)
-
-plot(wctMasked)
-plot(lcMask)
-
-wct1k <- exactextractr::exact_resample(x = wctMasked, y = r_temp1k, fun = "mean")
-#lcMask1k <- exactextractr::exact_resample(x = lcMask, y = r_temp1k, fun = "max")
-
-sa.wct <- mask(wct1k, sa)
-
-dt.wct <- as.data.frame(sa.wct, xy = TRUE) %>% as.data.table()
-dt.mask <- as.data.frame(lcMask, xy = TRUE) %>% as.data.table() %>% 
-  filter(`2019_discrete_classification` == 1)
-
-
-p.wct <- ggplot() +
-  geom_tile(data = dt.wct[lyr.1 > -2 & lyr.1 < 2,], aes(x = x, y = y, color = lyr.1, fill = lyr.1)) +
-  geom_tile(data = dt.mask, aes(x = x, y = y), color = "grey") +
-  scale_color_met_c(name = "Isfahan1", direction = -1) +
-  scale_fill_met_c(name = "Isfahan1", direction = -1) +
+p_wcc <- ggplot() +
+  geom_raster(data = dt_wcc_sa, aes(x = x, y = y, color = woody_cover_coef, fill = woody_cover_coef)) +
+ # scale_color_scico(palette = "bam", midpoint = 0) +
+  scale_fill_scico(palette = "bam", midpoint = 0) +
   labs(color = "Woody cover change (%/year)", fill = "Woody cover change (%/year)") +
   theme_void() +
   theme(legend.position = "bottom", 
         legend.text = element_text(size = 12), 
         legend.title = element_text(size = 14))
-p.wct
+p_wcc
+
+############################## Venter's Woody Cover Change ################################
+
+r_vwct <- rast("data/spatial/figure_1_tifs/sa_venter_woody_cover_trend_900m.tif")
+
+r_vwct_sa <- mask(r_vwct, sa)
+
+
+dt_vwct_sa_raw <- as.data.frame(r_vwct_sa, xy = TRUE)
+(uq <- quantile(dt_vwct_sa_raw$venter_woody_cover_trend, .99, na.rm = T))
+(lq <- quantile(dt_vwct_sa_raw$venter_woody_cover_trend, .01, na.rm = T))
+dt_vwct_sa <- dt_vwct_sa_raw %>% 
+  mutate(venter_woody_cover_trend = case_when(
+    .default = venter_woody_cover_trend, 
+    venter_woody_cover_trend > uq ~ uq, 
+    venter_woody_cover_trend < lq ~ lq
+  ))
+
+p_vwct <- ggplot() +
+  geom_raster(data = dt_vwct_sa, aes(x = x, y = y, color = venter_woody_cover_trend, fill = venter_woody_cover_trend)) +
+  # scale_color_scico(palette = "bam", midpoint = 0) +
+  scale_fill_scico(palette = "bam", midpoint = 0) +
+  labs(color = "Venter's woody cover\nchange (%/year)", fill = "Venter's woody cover\nchange (%/year)") +
+  theme_void() +
+  theme(legend.position = "bottom", 
+        legend.text = element_text(size = 12), 
+        legend.title = element_text(size = 14))
+p_vwct
+
+############################## Woody Cover Heterogeneity ################################
+
+r_wcsd <- rast("data/spatial/figure_1_tifs/sa_woody_cover_sd_coef_km.tif")
+
+r_wcsd_sa <- mask(r_wcsd, sa)
+
+
+dt_wcsd_sa_raw <- as.data.frame(r_wcsd_sa, xy = TRUE)
+(uq <- quantile(dt_wcsd_sa_raw$woody_cover_coef, .99, na.rm = T))
+(lq <- quantile(dt_wcsd_sa_raw$woody_cover_coef, .01, na.rm = T))
+dt_wcsd_sa <- dt_wcsd_sa_raw %>% 
+  mutate(woody_cover_coef = case_when(
+    .default = woody_cover_coef, 
+    woody_cover_coef > uq ~ uq, 
+    woody_cover_coef < lq ~ lq
+  ))
+
+p_wcsd <- ggplot() +
+  geom_raster(data = dt_wcsd_sa, aes(x = x, y = y, color = woody_cover_coef, fill = woody_cover_coef)) +
+  # scale_color_scico(palette = "bam", midpoint = 0) +
+  scale_fill_scico(palette = "cork", midpoint = 0) +
+  labs(color = "Woody cover\nheterogeneity change", fill = "Woody cover\nheterogeneity change") +
+  theme_void() +
+  theme(legend.position = "bottom", 
+        legend.text = element_text(size = 12), 
+        legend.title = element_text(size = 14))
+p_wcsd
 
 
 ####################### Density plots ###########################################
@@ -233,32 +228,36 @@ p.wct
 dt$cat <- ifelse(dt$source %in% c("SANParks"), "no", "yes")
 
 
-p.dens.map <- ggplot() +
-  geom_density_line(data = dt, aes(x = MAP, fill = MAP), linewidth = 1.5, fill = "grey90") +
+p_dens_map <- ggplot() +
+  geom_density_line(data = dt, aes(x = prec_change, fill = prec_change),
+                    linewidth = 1, fill = "wheat2", color = "wheat2") +
   scale_fill_viridis_c() +
-  labs(fill = "MAP/n(mm)", x = "Mean annual precipitation (mm)", y = "") +
+  labs(fill = "MAP change/n(%/year)", x = "Annual precipitation change (%/year)", y = "") +
   theme_classic() +
   theme(axis.ticks.y = element_blank(), 
         axis.text = element_text(size = 12),
         axis.title = element_text(size = 14),
         axis.text.y = element_blank(),
         legend.position = "none")
-p.dens.map
+p_dens_map
 
-p.dens.mat <- ggplot() +
-  geom_density_line(data = dt, aes(x = MAT, fill = MAT), linewidth = 1.5, fill = "grey90") +
+p_dens_mat <- ggplot() +
+  geom_density_line(data = dt, aes(x = mat_change, fill = mat_change),
+                    linewidth = 1, fill = "wheat2", color = "wheat2") +
   scale_fill_viridis_c() +
-  labs(fill = "MAT/n(°C)", x = "Mean Annual Temperature (°C)", y = "") +
+  labs(fill = "MAT change/n(%/year)", x = "Mean annual temperature change (%/year)", y = "") +
   theme_classic() +
   theme(axis.ticks.y = element_blank(), 
         axis.text = element_text(size = 12),
         axis.title = element_text(size = 14),
         axis.text.y = element_blank(),
         legend.position = "none")
-p.dens.mat
+p_dens_mat
 
-p.dens.ndep <- ggplot() +
-  geom_density_line(data = dt, aes(x = n_deposition, fill = n_deposition), linewidth = 1.5, fill = "grey90") +
+
+p_dens_ndep <- ggplot() +
+  geom_density_line(data = dt, aes(x = n_deposition, fill = n_deposition), 
+                    linewidth = 1, fill = "wheat2", color = "wheat2") +
   scale_fill_viridis_c() +
   labs(fill = "MAT/n(°C)", x = bquote("Atmospheric Nitrogen Deposition ([kg/"~km^2*"])/year"), y = "") +
   theme_classic() +
@@ -267,10 +266,11 @@ p.dens.ndep <- ggplot() +
         axis.title = element_text(size = 14),
         axis.text.y = element_blank(),
         legend.position = "none")
-p.dens.ndep
+p_dens_ndep
 
-p.dens.hbm <- ggplot() +
-  geom_density_line(data = dt, aes(x = herbi_biomass_kgkm2, fill = MAT), linewidth = 1.5, fill = "grey90") +
+p_dens_hbm <- ggplot() +
+  geom_density_line(data = dt, aes(x = herbi_biomass_kgkm2, fill = MAT), 
+                    linewidth = 1, fill = "wheat2", color = "wheat2") +
   scale_fill_viridis_c() +
   labs(fill = "/n(°C)", x = bquote("Herbivore Biomass (kg/"~km^2*")"), y = "") +
   theme_classic() +
@@ -279,11 +279,12 @@ p.dens.hbm <- ggplot() +
         axis.title = element_text(size = 14),
         axis.text.y = element_blank(),
         legend.position = "none")
-p.dens.hbm
+p_dens_hbm
 
 
-p.dens.hsp <- ggplot() +
-  geom_density_line(data = dt, aes(x = n_herbi_sp_reserve, fill = MAT), linewidth = 1.5, fill = "grey90") +
+p_dens_hsp <- ggplot() +
+  geom_density_line(data = dt, aes(x = n_herbi_sp_reserve, fill = MAT),
+                    linewidth = 1, fill = "wheat2", color = "wheat2") +
   scale_fill_viridis_c() +
   labs(fill = "/n(°C)", x = "Herbivore Species Richness", y = "") +
   theme_classic() +
@@ -292,100 +293,18 @@ p.dens.hsp <- ggplot() +
         axis.title = element_text(size = 14),
         axis.text.y = element_blank(),
         legend.position = "none")
-p.dens.hsp
+p_dens_hsp
 
 
+#Combine
 
-### get maps of MAP, MAT and N deposition in there --------------------------------
+p_dens <- grid.arrange(p_dens_ndep, p_dens_mat, p_dens_map, p_dens_hbm, p_dens_hsp, ncol = 1)
 
-sa.sh <- rnaturalearth::ne_countries(country = "south africa", type = "map_units")
+p_upper <- grid.arrange(p_dens, p_cent, widths = c(1, 2.5))
 
-
-## MAT---------------
-
-mat <- rast("../../../../../resources/spatial/Chelsa_Climate/CHELSA_bio1_1981-2010_V.2.1.tif") 
-plot(mat)
-
-mat_cr <- crop(mat, sa.sh[, "geometry"])
-plot(mat_cr)
-mat_clipped <- mask(mat_cr, sa.sh[, "geometry"])
-plot(mat_clipped)
-
-dt_mat <- as.data.frame(mat_clipped, xy = T)
-
-p.mat <- ggplot() +
-  geom_tile(data = dt_mat, aes(x = x, y = y, color = `CHELSA_bio1_1981-2010_V.2.1`, fill = `CHELSA_bio1_1981-2010_V.2.1`)) +
-  scale_color_viridis_c(option = "B") +
-  scale_fill_viridis_c(option = "B") +
-  labs(color = "MAT (°C)", fill = "MAT (°C)") +
-  theme_void() +
-  theme(legend.position = "bottom", 
-        legend.text = element_text(size = 12), 
-        legend.title = element_text(size = 14))
-p.mat
-
-## MAP---------------
-map <- rast("../../../../../resources/spatial/Chelsa_Climate/CHELSA_bio12_1981-2010_V.2.1.tif") 
-plot(map)
-
-
-map_cr <- crop(map, sa.sh[, "geometry"])
-plot(map_cr)
-map_clipped <- mask(map_cr, sa.sh[, "geometry"])
-plot(map_clipped)
-
-dt_map <- as.data.frame(map_clipped, xy = T)
-
-p.map <- ggplot() +
-  geom_tile(data = dt_map, aes(x = x, y = y, color = `CHELSA_bio12_1981-2010_V.2.1`, fill = `CHELSA_bio12_1981-2010_V.2.1`)) +
-  scale_color_viridis_c(option = "B") +
-  scale_fill_viridis_c(option = "B") +
-  labs(color = "MAP (mm)", fill = "MAP (mm)") +
-  theme_void() +
-  theme(legend.position = "bottom", 
-        legend.text = element_text(size = 12), 
-        legend.title = element_text(size = 14))
-p.map
-
-# N depo 
-ndep <- rast("../../../../../resources/spatial/N_deposition_Rubin_etal/total_N_dep.tif")
-plot(ndep)
-
-ndep_cr <- crop(ndep, sa.sh[, "geometry"])
-plot(ndep_cr)
-
-ndep_clipped <- mask(ndep_cr, sa.sh[, "geometry"])
-plot(ndep_clipped)
-
-dt_ndep <- as.data.frame(ndep_clipped, xy = T)
-
-map_inverse <- mask(map_cr, sa.sh[, "geometry"], inverse = TRUE)
-
-dt_inv <- as.data.frame(map_inverse, xy = T)
-
-p.ndepo <- ggplot() +
-  geom_tile(data = dt_ndep, aes(x = x, y = y, fill = SelfBand, color = SelfBand)) +
-  geom_tile(data = dt_inv, aes(x = x, y = y), color = "white", fill = "white") +
-  scale_fill_viridis_c(option = "B") +
-  scale_color_viridis_c(option = "B") +
-  labs(fill = bquote("N deposition (kg"~km^-2*~y^-1~")"), color = bquote("N deposition (kg"~km^-2*~y^-1~")")) +
-  theme_void() +
-  theme(legend.position = "bottom", 
-        legend.text = element_text(size = 12), 
-        legend.title = element_text(size = 14))
-p.ndepo
-
-#### combine 
-
-
-p.dens <- grid.arrange(p.dens.map, p.dens.ndep, p.dens.hbm, p.dens.hsp, ncol = 1)
-
-p.upper <- grid.arrange(p.dens, p.cent, widths = c(1, 2.5))
-
-p.lower <- grid.arrange(p.tc, p.wct, p.tc.sd,
-                        p.ndepo, p.mat, p.map,
+p_lower <- grid.arrange(p_wcc, p_vwct, p_wcsd,
                         ncol = 3)
 
-p.fig1 <- grid.arrange(p.upper, p.lower, heights = c(2, 2.5))
+p_fig1 <- grid.arrange(p_upper, p_lower, heights = c(2, 1.25))
 
-ggsave(plot = p.fig1, "builds/plots/september/figure1.png", dpi = 600, height = 16, width = 14)
+ggsave(plot = p_fig1, "builds/plots/revision/figure_1.png", dpi = 600, height = 12, width = 14)

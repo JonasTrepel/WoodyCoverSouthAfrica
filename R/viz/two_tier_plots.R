@@ -18,8 +18,9 @@ dt_var_imp <- res_list$dt_var_imp_means %>%
   filter(tier %in% c("main", "high_biomass")) %>% 
   mutate(clean_tier = case_when(
     tier == "main" ~"Full Model", 
-    tier == "high_biomass" ~ "High Biomass"
-  ))
+    tier == "high_biomass" ~ "High Biomass Subset"), 
+    clean_tier = factor(clean_tier, levels = c("High Biomass Subset", "Full Model"))
+    )
 
 ### get max values 
 
@@ -275,7 +276,7 @@ pdp_wcsdha <- ggplot()+
   coord_cartesian(clip = "off") +
   ylim(min(dt_marg_wcsdha[tier == "main"]$y, na.rm =T), max(dt_marg_wcsdha[tier == "main"]$y, na.rm = T)) +
   theme_classic() +
-  labs(y = "Woody cover SD change", x = "") +
+  labs(y = "Woody cover heterogeneity change", x = "") +
   theme(legend.position = "none",
         strip.text.x = element_text(face = "bold", size = 8), 
         panel.grid = element_line(color = "white"), 
@@ -358,7 +359,7 @@ pdp_wcsdkm <- ggplot()+
   coord_cartesian(clip = "off") +
   ylim(min(dt_marg_wcsdkm[tier == "main"]$y, na.rm =T), max(dt_marg_wcsdkm[tier == "main"]$y, na.rm = T)) +
   theme_classic() +
-  labs(y = "Woody cover SD change", x = "") +
+  labs(y = "Woody cover heterogeneity change", x = "") +
   theme(legend.position = "none",
         strip.text.x = element_text(face = "bold", size = 8), 
         panel.grid = element_line(color = "white"), 
