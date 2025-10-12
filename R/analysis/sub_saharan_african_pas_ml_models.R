@@ -22,7 +22,7 @@ library(future)
 dt <- fread("data/clean_data/final_sub_saharan_african_pa_data.csv") %>% 
   filter(complete.cases(across(
     c(woody_cover_change, venter_woody_cover_trend, woody_cover_sd_ha_coef, woody_cover_sd_km_coef, 
-      mat_change, prec_change, n_deposition, fire_frequency, burned_area_coef)
+      mat_coef, prec_coef, n_deposition, fire_frequency, burned_area_coef)
   )))
 
 ### create model data ---------------------------------
@@ -54,10 +54,10 @@ dt_tier_raw <- data.table(
 
 tier_resp <- CJ(response = responses, tier = tiers) %>% 
   mutate(terms = case_when(
-    response == "woody_cover_change" ~ "'mat_change', 'prec_change', 'n_deposition', 'fire_frequency', 'burned_area_coef', 'spatial_predictor1', 'spatial_predictor2', 'spatial_predictor3', 'spatial_predictor4', 'spatial_predictor5'",
-    response == "venter_woody_cover_trend" ~ "'mat_change', 'prec_change', 'n_deposition', 'fire_frequency', 'burned_area_coef', 'spatial_predictor1', 'spatial_predictor2', 'spatial_predictor3', 'spatial_predictor4', 'spatial_predictor5'",
-    response == "woody_cover_sd_ha_coef" ~ "'mat_change', 'prec_change', 'n_deposition', 'fire_frequency', 'burned_area_coef', 'spatial_predictor1', 'spatial_predictor2', 'spatial_predictor3', 'spatial_predictor4', 'spatial_predictor5'",
-    response == "woody_cover_sd_km_coef" ~ "'mat_change', 'prec_change', 'n_deposition', 'fire_frequency', 'burned_area_coef', 'spatial_predictor1', 'spatial_predictor2', 'spatial_predictor3', 'spatial_predictor4', 'spatial_predictor5'"
+    response == "woody_cover_change" ~ "'mat_coef', 'prec_coef', 'mean_prec', 'n_deposition', 'fire_frequency', 'burned_area_coef', 'spatial_predictor1', 'spatial_predictor2', 'spatial_predictor3', 'spatial_predictor4', 'spatial_predictor5'",
+    response == "venter_woody_cover_trend" ~ "'mat_coef', 'prec_coef', 'mean_prec', 'n_deposition', 'fire_frequency', 'burned_area_coef', 'spatial_predictor1', 'spatial_predictor2', 'spatial_predictor3', 'spatial_predictor4', 'spatial_predictor5'",
+    response == "woody_cover_sd_ha_coef" ~ "'mat_coef', 'prec_coef', 'mean_prec', 'n_deposition', 'fire_frequency', 'burned_area_coef', 'spatial_predictor1', 'spatial_predictor2', 'spatial_predictor3', 'spatial_predictor4', 'spatial_predictor5'",
+    response == "woody_cover_sd_km_coef" ~ "'mat_coef', 'prec_coef', 'mean_prec', 'n_deposition', 'fire_frequency', 'burned_area_coef', 'spatial_predictor1', 'spatial_predictor2', 'spatial_predictor3', 'spatial_predictor4', 'spatial_predictor5'"
   )) %>% mutate(
     response_tier = paste0(response, "_", tier))
 
@@ -87,16 +87,15 @@ dt_tier <- dt_tier[!dt_tier$n < 120]
 ##############################################################################    
 
 c(met.brewer(name = "Egypt"))
-c(met.brewer(name = "Archambault"))
+c(met.brewer(name = "Archambault", n = 10))
 
-
-palette_groups <- c("Herbivory" = "#88a0dc", "Global Change" = "#7c4b73", "Fire" =  "#ed968c")
+palette_groups <- c("Herbivory" = "#4E2A67", "Global Change" = "#C77D83", "Fire" =  "#AB3329", "Rainfall" = "#88A0DC")
 
 palette_methods <- c("gbm" = "#dd5129", "rf" = "#0f7ba2", "xgbTree" = "#43b284", "ensemble" = "#fab255")
 
 dt_names <- data.table(
-  term = c("chelsa_mat", "chelsa_map",
-           "mat_change", "prec_change", 
+  term = c("chelsa_mat", "mean_prec",
+           "mat_coef", "prec_coef", 
            "CW_mean_species_body_mass", "herbi_fun_div_distq1", "n_herbi_sp_reserve", 
            "grazer_biomass_kgkm2", "browser_biomass_kgkm2", "mixed_feeder_biomass_kgkm2", 
            "herbi_biomass_kgkm2", "fire_frequency", "burned_area_coef", "n_deposition", "elephant_biomass_kgkm2"),
@@ -113,7 +112,8 @@ dt_names <- data.table(
                   "grazer_biomass_kgkm2", "browser_biomass_kgkm2", "mixed_feeder_biomass_kgkm2", 
                   "herbi_biomass_kgkm2", "elephant_biomass_kgkm2") ~ "Herbivory", 
       term %in% c("fire_frequency", "burned_area_coef") ~ "Fire", 
-      term %in% c("n_deposition", "mat_change", "prec_change") ~ "Global Change", 
+      term %in% c("n_deposition", "mat_coef", "prec_coef") ~ "Global Change", 
+      term %in% c("mean_prec") ~ "Rainfall"
     )
   )
 

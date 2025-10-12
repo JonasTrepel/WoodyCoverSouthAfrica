@@ -21,7 +21,7 @@ library(patchwork)
 dt <- fread("data/clean_data/final_reserve_data.csv") %>% 
   filter(complete.cases(across(
     c(woody_cover_change, venter_woody_cover_trend, woody_cover_sd_ha_coef, woody_cover_sd_km_coef, 
-      mat_change, prec_change, n_deposition,  mean_mat, mean_prec,
+      mat_coef, prec_coef, mean_prec, n_deposition,  mean_mat, mean_prec,
       CW_mean_species_body_mass, herbi_fun_div_distq1, n_herbi_sp_reserve,
       grazer_biomass_ha, browser_biomass_ha, 
       herbi_biomass_ha, fire_frequency, burned_area_coef)
@@ -57,7 +57,7 @@ for(response in unique(responses)){
 
 dt_mod <- dt_coords %>% 
   dplyr::select(all_of(response), 
-                mat_change, prec_change, n_deposition, 
+                mat_coef, prec_coef, mean_prec, n_deposition, 
                 CW_mean_species_body_mass,  mean_mat, mean_prec,
                 herbi_fun_div_distq1, n_herbi_sp_reserve,
                 grazer_biomass_ha, browser_biomass_ha, herbi_biomass_ha,
@@ -65,7 +65,7 @@ dt_mod <- dt_coords %>%
   filter(complete.cases(.))
 
 form <- as.formula(paste0(response, 
-                          " ~ mat_change + prec_change + n_deposition + 
+                          " ~ mat_coef + prec_coef + mean_prec + n_deposition + 
                           CW_mean_species_body_mass + herbi_fun_div_distq1 +
                           n_herbi_sp_reserve + grazer_biomass_ha +
                           browser_biomass_ha + herbi_biomass_ha +
@@ -125,7 +125,7 @@ for(response in unique(responses)){
   
   dt_mod <- dt_coords %>% 
     dplyr::select(all_of(response), 
-                  mat_change, prec_change, n_deposition, 
+                  mat_coef, prec_coef, mean_prec, n_deposition, 
                   CW_mean_species_body_mass, 
                   herbi_fun_div_distq1, n_herbi_sp_reserve,
                   grazer_biomass_ha, browser_biomass_ha, herbi_biomass_ha,
@@ -133,7 +133,7 @@ for(response in unique(responses)){
     filter(complete.cases(.))
   
   form <- as.formula(paste0(response, 
-                            " ~ mat_change + prec_change +  n_deposition + 
+                            " ~ mat_coef + prec_coef + mean_prec +  n_deposition + 
                           CW_mean_species_body_mass + herbi_fun_div_distq1 +
                           n_herbi_sp_reserve + grazer_biomass_ha +
                           browser_biomass_ha + herbi_biomass_ha +
@@ -198,7 +198,7 @@ ggsave(plot = p_res_comb, "builds/plots/revision/supplement/reserves_spatial_aut
 dt_sap <- fread("data/clean_data/final_south_african_pa_data.csv") %>% 
   filter(complete.cases(across(
     c(woody_cover_change, venter_woody_cover_trend, woody_cover_sd_ha_coef, woody_cover_sd_km_coef, 
-      mat_change, prec_change, n_deposition, 
+      mat_coef, prec_coef, mean_prec, n_deposition, 
      fire_frequency, burned_area_coef)
   ))) %>% 
   mutate(unique_id = as.character(WDPA_PID))
@@ -234,12 +234,12 @@ for(response in unique(responses)){
   
   dt_sap_mod <- dt_sap_coords %>% 
     dplyr::select(all_of(response), 
-                  mat_change, prec_change, n_deposition, 
+                  mat_coef, prec_coef, mean_prec, n_deposition, 
                   fire_frequency, burned_area_coef, x, y) %>% 
     filter(complete.cases(.))
   
   form <- as.formula(paste0(response, 
-                            " ~ mat_change + prec_change + n_deposition +
+                            " ~ mat_coef + prec_coef + mean_prec + n_deposition +
                           fire_frequency + burned_area_coef"))
   
   gbm_fit <- gbm(
@@ -296,13 +296,13 @@ for(response in unique(responses)){
   
   dt_sap_mod <- dt_sap_coords %>% 
     dplyr::select(all_of(response), 
-                  mat_change, prec_change, n_deposition, 
+                  mat_coef, prec_coef, mean_prec, n_deposition, 
                   fire_frequency, burned_area_coef, x, y,
                   spatial_predictor1, spatial_predictor2, spatial_predictor3, spatial_predictor4, spatial_predictor5) %>% 
     filter(complete.cases(.))
   
   form <- as.formula(paste0(response, 
-                            " ~ mat_change + prec_change + n_deposition + 
+                            " ~ mat_coef + prec_coef + mean_prec + n_deposition + 
                           fire_frequency + burned_area_coef +
                             spatial_predictor1 + spatial_predictor2 + spatial_predictor3 + spatial_predictor4 + spatial_predictor5"))
   
@@ -366,7 +366,7 @@ ggsave(plot = p_res_comb, "builds/plots/revision/supplement/south_african_pa_spa
 dt_ssa <- fread("data/clean_data/final_sub_saharan_african_pa_data.csv") %>% 
   filter(complete.cases(across(
     c(woody_cover_change, venter_woody_cover_trend, woody_cover_sd_ha_coef, woody_cover_sd_km_coef, 
-      mat_change, prec_change, n_deposition, 
+      mat_coef, prec_coef, mean_prec, n_deposition, 
       fire_frequency, burned_area_coef)
   ))) %>% 
   mutate(unique_id = as.character(WDPA_PID))
@@ -402,12 +402,12 @@ for(response in unique(responses)){
   
   dt_ssa_mod <- dt_ssa_coords %>% 
     dplyr::select(all_of(response), 
-                  mat_change, prec_change, n_deposition, 
+                  mat_coef, prec_coef, mean_prec, n_deposition, 
                   fire_frequency, burned_area_coef, x, y) %>% 
     filter(complete.cases(.))
   
   form <- as.formula(paste0(response, 
-                            " ~ mat_change + prec_change + n_deposition +
+                            " ~ mat_coef + prec_coef + mean_prec + n_deposition +
                           fire_frequency + burned_area_coef"))
   
   gbm_fit <- gbm(
@@ -464,13 +464,13 @@ for(response in unique(responses)){
   
   dt_ssa_mod <- dt_ssa_coords %>% 
     dplyr::select(all_of(response), 
-                  mat_change, prec_change, n_deposition,
+                  mat_coef, prec_coef, mean_prec, n_deposition,
                   fire_frequency, burned_area_coef, x, y,
                   spatial_predictor1, spatial_predictor2, spatial_predictor3, spatial_predictor4, spatial_predictor5) %>% 
     filter(complete.cases(.))
   
   form <- as.formula(paste0(response, 
-                            " ~ mat_change + prec_change + n_deposition +
+                            " ~ mat_coef + prec_coef + mean_prec + n_deposition +
                           fire_frequency + burned_area_coef +
                             spatial_predictor1 + spatial_predictor2 + spatial_predictor3 + spatial_predictor4 + spatial_predictor5"))
   

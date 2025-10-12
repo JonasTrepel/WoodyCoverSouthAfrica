@@ -1,5 +1,4 @@
-#require(remotes)
-#install_version("caretEnsemble", version = "2.0.3", repos = "http://cran.us.r-project.org")
+
 
 library(tidyverse)
 library(data.table)
@@ -24,20 +23,21 @@ n_workers = 4 #how many cores do you want to use for models?
 dt <- fread("data/clean_data/final_reserve_data.csv") %>% 
   filter(complete.cases(across(
     c(woody_cover_change, venter_woody_cover_trend, woody_cover_sd_ha_coef, woody_cover_sd_km_coef, 
-      mat_change, prec_change, n_deposition, 
+      mat_coef, prec_coef, n_deposition, 
       CW_mean_species_body_mass, herbi_fun_div_distq1, n_herbi_sp_reserve,
       grazer_biomass_ha, browser_biomass_ha, 
       herbi_biomass_ha, fire_frequency, burned_area_coef)
   ))) #%>% sample_n(100)
 
+plot(dt$mean_prec, dt$mean_prec)
 
 ### create model data ---------------------------------
 
 ##### SUBSET #####
 
-guide_subset <- "tier %in% c('main', 'high_biomass')"
+#guide_subset <- "tier %in% c('main', 'high_biomass')"
 
-#guide_subset <- NULL
+guide_subset <- NULL
 ##############################################################################            
 ################################## CREATE MODEL GUIDE ########################         
 ##############################################################################    
@@ -68,10 +68,10 @@ dt_tier_raw <- data.table(
 
 tier_resp <- CJ(response = responses, tier = tiers) %>% 
   mutate(terms = case_when(
-    response == "woody_cover_change" ~ "'mat_change', 'prec_change', 'n_deposition', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_frequency', 'burned_area_coef'",
-    response == "venter_woody_cover_trend" ~ "'mat_change', 'prec_change', 'n_deposition', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_frequency', 'burned_area_coef', 'spatial_predictor1'",
-    response == "woody_cover_sd_ha_coef" ~ "'mat_change', 'prec_change', 'n_deposition', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_frequency', 'burned_area_coef'",
-    response == "woody_cover_sd_km_coef" ~ "'mat_change', 'prec_change', 'n_deposition', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_frequency', 'burned_area_coef'"
+    response == "woody_cover_change" ~ "'mat_coef', 'prec_coef', 'mean_prec', 'n_deposition', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_frequency', 'burned_area_coef'",
+    response == "venter_woody_cover_trend" ~ "'mat_coef', 'prec_coef', 'mean_prec', 'n_deposition', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_frequency', 'burned_area_coef', 'spatial_predictor1'",
+    response == "woody_cover_sd_ha_coef" ~ "'mat_coef', 'prec_coef', 'mean_prec', 'n_deposition', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_frequency', 'burned_area_coef'",
+    response == "woody_cover_sd_km_coef" ~ "'mat_coef', 'prec_coef', 'mean_prec', 'n_deposition', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_frequency', 'burned_area_coef'"
   )) %>% mutate(
     response_tier = paste0(response, "_", tier))
 
@@ -101,16 +101,15 @@ dt_tier <- dt_tier[!dt_tier$n < 120]
 ##############################################################################    
 
 c(met.brewer(name = "Egypt"))
-c(met.brewer(name = "Archambault"))
+c(met.brewer(name = "Archambault", n = 10))
 
-
-palette_groups <- c("Herbivory" = "#88a0dc", "Global Change" = "#7c4b73", "Fire" =  "#ed968c")
+palette_groups <- c("Herbivory" = "#4E2A67", "Global Change" = "#C77D83", "Fire" =  "#AB3329", "Rainfall" = "#88A0DC")
 
 palette_methods <- c("gbm" = "#dd5129", "rf" = "#0f7ba2", "xgbTree" = "#43b284", "ensemble" = "#fab255")
 
 dt_names <- data.table(
-  term = c("chelsa_mat", "chelsa_map",
-           "mat_change", "prec_change", 
+  term = c("chelsa_mat", "mean_prec",
+           "mat_coef", "prec_coef", 
            "CW_mean_species_body_mass", "herbi_fun_div_distq1", "n_herbi_sp_reserve", 
            "grazer_biomass_kgkm2", "browser_biomass_kgkm2", "mixed_feeder_biomass_kgkm2", 
            "herbi_biomass_kgkm2", "fire_frequency", "burned_area_coef", "n_deposition", "elephant_biomass_kgkm2"),
@@ -127,7 +126,8 @@ dt_names <- data.table(
                   "grazer_biomass_kgkm2", "browser_biomass_kgkm2", "mixed_feeder_biomass_kgkm2", 
                   "herbi_biomass_kgkm2", "elephant_biomass_kgkm2") ~ "Herbivory", 
       term %in% c("fire_frequency", "burned_area_coef") ~ "Fire", 
-      term %in% c("n_deposition", "mat_change", "prec_change") ~ "Global Change", 
+      term %in% c("n_deposition", "mat_coef", "prec_coef") ~ "Global Change", 
+      term %in% c("mean_prec") ~ "Rainfall"
     )
   )
 
