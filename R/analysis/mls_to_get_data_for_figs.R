@@ -167,6 +167,7 @@ var_imp_storage <- data.table()
 preds_storage <- data.table()
 marg_storage <- data.table()
 dt_rug_storage <- data.table()
+stats_storage <- data.table()
 
 ##############################################################################            
 ################################## LOOOOOOOOOOOOP ############################            
