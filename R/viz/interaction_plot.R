@@ -48,7 +48,7 @@ for(i in 1:nrow(dt_var_combs)){
   p <- plot_interaction_tile(m = m_wcc_main, var1 = dt_var_combs[i,]$var1, var2 = dt_var_combs[i,]$var2, 
                              var1_name = dt_var_combs[i,]$var1_name, var2_name = dt_var_combs[i,]$var2_name,
                              data = dt) +
-    scale_fill_scico(palette = "bamako", direction = -1) +
+    scale_fill_scico(palette = "bamako", direction = 1, end = 0.9) +
     labs(fill = "Woody\nCover\nChange\n(%/year)") 
   
   list_p_wcc_main[[i]] <- p
@@ -74,7 +74,7 @@ for(i in 1:nrow(dt_var_combs)){
   p <- plot_interaction_tile(m = m_wcc_high_biomass, var1 = dt_var_combs[i,]$var1, var2 = dt_var_combs[i,]$var2, 
                              var1_name = dt_var_combs[i,]$var1_name, var2_name = dt_var_combs[i,]$var2_name,
                              data = dt_high_biomass) +
-    scale_fill_scico(palette = "bamako", direction = -1) +
+    scale_fill_scico(palette = "bamako", direction = 1, end = 0.9) +
     labs(fill = "Woody\nCover\nChange\n(%/year)") 
   
   list_p_wcc_high_biomass[[i]] <- p
@@ -116,7 +116,7 @@ for(i in 1:nrow(dt_var_combs)){
   p <- plot_interaction_tile(m = m_vwct_main, var1 = dt_var_combs[i,]$var1, var2 = dt_var_combs[i,]$var2, 
                              var1_name = dt_var_combs[i,]$var1_name, var2_name = dt_var_combs[i,]$var2_name,
                              data = dt) +
-    scale_fill_scico(palette = "bamako", direction = -1) +
+    scale_fill_scico(palette = "batlow", direction = 1, end = 0.9) +
     labs(fill = "Venter's\nWoody\nCover\nChange\n(%/year)") 
   
   list_p_vwct_main[[i]] <- p
@@ -142,7 +142,7 @@ for(i in 1:nrow(dt_var_combs)){
   p <- plot_interaction_tile(m = m_vwct_high_biomass, var1 = dt_var_combs[i,]$var1, var2 = dt_var_combs[i,]$var2, 
                              var1_name = dt_var_combs[i,]$var1_name, var2_name = dt_var_combs[i,]$var2_name,
                              data = dt_high_biomass) +
-    scale_fill_scico(palette = "bamako", direction = -1) +
+    scale_fill_scico(palette = "bamako", direction = 1, end = 0.9) +
     labs(fill = "Venter's\nWoody\nCover\nChange\n(%/year)") 
   
   list_p_vwct_high_biomass[[i]] <- p
@@ -169,7 +169,7 @@ ggsave(plot = p_vwct_comb, "builds/plots/revision/vwct_interaction_plots.png",
 
 ### main -----
 m_wcsdha_main <- readRDS("builds/models/reserve_models/woody_cover_sd_ha_coef_main.Rds")
-m_wcsdha_main <- m_wcsdha_main$models$xgbTree #this one was the most important 
+#m_wcsdha_main <- m_wcsdha_main$models$xgbTree #this one was the most important 
 
 hstats_wcsdha_main <- hstats(m_wcsdha_main, X = dt, v = c('mat_change', 'prec_change', 'n_deposition',
                                                       'CW_mean_species_body_mass', 'herbi_fun_div_distq1',
@@ -185,7 +185,7 @@ for(i in 1:nrow(dt_var_combs)){
   p <- plot_interaction_tile(m = m_wcsdha_main, var1 = dt_var_combs[i,]$var1, var2 = dt_var_combs[i,]$var2, 
                              var1_name = dt_var_combs[i,]$var1_name, var2_name = dt_var_combs[i,]$var2_name,
                              data = dt) +
-    scale_fill_scico(palette = "batlow", direction = 1) +
+    scale_fill_scico(palette = "lajolla", direction = 1, end = 0.9) +
     labs(fill = "Woody\nCover\nHetero-\ngeneity\nChange") 
   
   list_p_wcsdha_main[[i]] <- p
@@ -211,7 +211,7 @@ for(i in 1:nrow(dt_var_combs)){
   p <- plot_interaction_tile(m = m_wcsdha_high_biomass, var1 = dt_var_combs[i,]$var1, var2 = dt_var_combs[i,]$var2, 
                              var1_name = dt_var_combs[i,]$var1_name, var2_name = dt_var_combs[i,]$var2_name,
                              data = dt_high_biomass) +
-    scale_fill_scico(palette = "batlow", direction = 1) +
+    scale_fill_scico(palette = "lajolla", direction = 1, end = 0.9) +
     labs(fill = "Woody\nCover\nHetero-\ngeneity\nChange") 
   
   list_p_wcsdha_high_biomass[[i]] <- p
@@ -254,7 +254,7 @@ for(i in 1:nrow(dt_var_combs)){
   p <- plot_interaction_tile(m = m_wcsdkm_main, var1 = dt_var_combs[i,]$var1, var2 = dt_var_combs[i,]$var2, 
                              var1_name = dt_var_combs[i,]$var1_name, var2_name = dt_var_combs[i,]$var2_name,
                              data = dt) +
-    scale_fill_scico(palette = "batlow", direction = 1) +
+    scale_fill_scico(palette = "lajolla", direction = 1, end = 0.9) +
     labs(fill = "Woody\nCover\nHetero-\ngeneity\nChange") 
   
   list_p_wcsdkm_main[[i]] <- p
@@ -280,7 +280,7 @@ for(i in 1:nrow(dt_var_combs)){
   p <- plot_interaction_tile(m = m_wcsdkm_high_biomass, var1 = dt_var_combs[i,]$var1, var2 = dt_var_combs[i,]$var2, 
                              var1_name = dt_var_combs[i,]$var1_name, var2_name = dt_var_combs[i,]$var2_name,
                              data = dt_high_biomass) +
-    scale_fill_scico(palette = "batlow", direction = 1) +
+    scale_fill_scico(palette = "lajolla", direction = 1, end = 0.9) +
     labs(fill = "Woody\nCover\nHetero-\ngeneity\nChange") 
   
   list_p_wcsdkm_high_biomass[[i]] <- p

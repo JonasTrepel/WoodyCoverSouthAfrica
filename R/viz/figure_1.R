@@ -17,8 +17,15 @@ library(terra)
 library(ggspatial)
 library(scico)
 
-dt <- fread("data/clean_data/final_reserve_data.csv")
 
+dt <- fread("data/clean_data/final_reserve_data.csv") %>% 
+  filter(complete.cases(across(
+    c(woody_cover_change, venter_woody_cover_trend, woody_cover_sd_ha_coef, woody_cover_sd_km_coef, 
+      mat_coef, prec_coef, n_deposition, 
+      CW_mean_species_body_mass, herbi_fun_div_distq1, n_herbi_sp_reserve,
+      grazer_biomass_ha, browser_biomass_ha, 
+      herbi_biomass_ha, fire_frequency, burned_area_coef)
+  )))
 ########### RESERVE DISTRIBUTION ################################
 
 ## Biome -----------
@@ -229,10 +236,10 @@ dt$cat <- ifelse(dt$source %in% c("SANParks"), "no", "yes")
 
 
 p_dens_map <- ggplot() +
-  geom_density_line(data = dt, aes(x = prec_change, fill = prec_change),
+  geom_density_line(data = dt, aes(x = mean_prec, fill = mean_prec),
                     linewidth = 1, fill = "wheat2", color = "wheat2") +
   scale_fill_viridis_c() +
-  labs(fill = "MAP change/n(%/year)", x = "Annual precipitation change (%/year)", y = "") +
+  labs(fill = "MAP", x = "Mean Annual Precipitation (mm)", y = "") +
   theme_classic() +
   theme(axis.ticks.y = element_blank(), 
         axis.text = element_text(size = 12),
@@ -241,18 +248,18 @@ p_dens_map <- ggplot() +
         legend.position = "none")
 p_dens_map
 
-p_dens_mat <- ggplot() +
-  geom_density_line(data = dt, aes(x = mat_change, fill = mat_change),
-                    linewidth = 1, fill = "wheat2", color = "wheat2") +
-  scale_fill_viridis_c() +
-  labs(fill = "MAT change/n(%/year)", x = "Mean annual temperature change (%/year)", y = "") +
-  theme_classic() +
-  theme(axis.ticks.y = element_blank(), 
-        axis.text = element_text(size = 12),
-        axis.title = element_text(size = 14),
-        axis.text.y = element_blank(),
-        legend.position = "none")
-p_dens_mat
+# p_dens_mat <- ggplot() +
+#   geom_density_line(data = dt, aes(x = mat_coef, fill = mat_coef),
+#                     linewidth = 1, fill = "wheat2", color = "wheat2") +
+#   scale_fill_viridis_c() +
+#   labs(fill = "MAT change/n(%/year)", x = "Mean annual temperature change (%/year)", y = "") +
+#   theme_classic() +
+#   theme(axis.ticks.y = element_blank(), 
+#         axis.text = element_text(size = 12),
+#         axis.title = element_text(size = 14),
+#         axis.text.y = element_blank(),
+#         legend.position = "none")
+# p_dens_mat
 
 
 p_dens_ndep <- ggplot() +
@@ -296,13 +303,32 @@ p_dens_hsp <- ggplot() +
 p_dens_hsp
 
 
-#Combine
+#### Venter vs Dynamic World Woody Cover  ---------------------
+p_wc_vs_wc <- ggplot(data = dt, aes(x = venter_woody_cover_trend, y = woody_cover_change)) +
+  geom_point(
+             fill = "wheat4", color = "wheat4", alpha = 0.75) +
+  scale_fill_viridis_c() +
+ # geom_abline() +
+  labs(x = "Venter's Woody Cover Change", y = "DW Woody Cover Change",
+       subtitle = paste0("Cor = ", round(cor(dt$venter_woody_cover_trend,
+                                            dt$woody_cover_change), 2)) 
+         ) +
+  theme_classic() +
+  theme(#axis.ticks.y = element_blank(), 
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+       # axis.text.y = element_blank(),
+        legend.position = "none")
+p_wc_vs_wc
 
-p_dens <- grid.arrange(p_dens_ndep, p_dens_mat, p_dens_map, p_dens_hbm, p_dens_hsp, ncol = 1)
+
+#Combine -------------
+
+p_dens <- grid.arrange(p_dens_ndep, p_dens_map, p_dens_hbm, p_dens_hsp, ncol = 1)
 
 p_upper <- grid.arrange(p_dens, p_cent, widths = c(1, 2.5))
 
-p_lower <- grid.arrange(p_wcc, p_vwct, p_wcsd,
+p_lower <- grid.arrange(p_wcc, p_vwct, p_wc_vs_wc,
                         ncol = 3)
 
 p_fig1 <- grid.arrange(p_upper, p_lower, heights = c(2, 1.25))

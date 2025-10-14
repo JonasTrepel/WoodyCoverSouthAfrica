@@ -46,8 +46,31 @@ dt_bt_preds <- dt_preds_bt_raw %>%
   mutate(x = ifelse(x < min_x | x > max_x, NA, x)) %>% 
   filter(!is.na(x))
 
-palette_groups <- c("Herbivory" = "#88a0dc", "Global Change" = "#7c4b73", "Fire" =  "#ed968c")
+palette_groups <- c("Herbivory" = "#4E2A67", "Global Change" = "#C77D83", "Fire" =  "#AB3329", "Rainfall" = "#88A0DC")
 
+dt_names <- data.table(
+  term = c("chelsa_mat", "mean_prec",
+           "mat_coef", "prec_coef", 
+           "CW_mean_species_body_mass", "herbi_fun_div_distq1", "n_herbi_sp_reserve", 
+           "grazer_biomass_kgkm2", "browser_biomass_kgkm2", "mixed_feeder_biomass_kgkm2", 
+           "herbi_biomass_kgkm2", "fire_frequency", "burned_area_coef", "n_deposition", "elephant_biomass_kgkm2"),
+  clean_term = c("MAT (°C)", "MAP (mm)",
+                 "Temperature Change", "Precipitation Change",
+                 "Mean body mass (kg; cwm)", "Herbivore functional diversity", 
+                 "Herbivore species richness", "Grazer biomass (kg/km²)", 
+                 "Browser biomass (kg/km²)", "Mixed feeder biomass (kg/km²)",
+                 "Herbivore biomass (kg/km²)", "Fire frequency", "Burned area trend", 
+                 "N deposition ([kg/km²]/year)", "Elephant biomass (kg/km²)")) %>% 
+  mutate(
+    response_group = case_when(
+      term %in% c("CW_mean_species_body_mass", "herbi_fun_div_distq1", "n_herbi_sp_reserve", 
+                  "grazer_biomass_kgkm2", "browser_biomass_kgkm2", "mixed_feeder_biomass_kgkm2", 
+                  "herbi_biomass_kgkm2", "elephant_biomass_kgkm2") ~ "Herbivory", 
+      term %in% c("fire_frequency", "burned_area_coef") ~ "Fire", 
+      term %in% c("n_deposition", "mat_coef", "prec_coef") ~ "Global Change", 
+      term %in% c("mean_prec") ~ "Rainfall"
+    )
+  )
 ########### Woody Cover Change ###############
 
 ##### _variable importance 

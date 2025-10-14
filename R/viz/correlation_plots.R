@@ -3,8 +3,15 @@ library(tidyverse)
 library(data.table)
 library(gridExtra)
 
-dt <- fread("data/clean_data/final_reserve_data.csv")
 
+dt <- fread("data/clean_data/final_reserve_data.csv") %>% 
+  filter(complete.cases(across(
+    c(woody_cover_change, venter_woody_cover_trend, woody_cover_sd_ha_coef, woody_cover_sd_km_coef, 
+      mat_coef, prec_coef, n_deposition, 
+      CW_mean_species_body_mass, herbi_fun_div_distq1, n_herbi_sp_reserve,
+      grazer_biomass_ha, browser_biomass_ha, 
+      herbi_biomass_ha, fire_frequency, burned_area_coef)
+  )))
 quantile(dt$herbi_biomass_kgkm2, na.rm = T)
 
 
@@ -17,7 +24,7 @@ nrow(dt[herbi_biomass_kgkm2 > 10000 & Biome == "Savanna", ])/nrow(dt[Biome == "S
 #### 
 
 names(dt)
-dt.long <- dt %>% 
+dt_long <- dt %>% 
   filter(!is.na(woody_cover_change)) %>% 
   mutate(woody_trend_yn = ifelse(woody_cover_change > 0, "increasing", "decreasing")) %>% 
   rename(`Mean body mass (CWM)` = CW_mean_species_body_mass, 
@@ -28,8 +35,9 @@ dt.long <- dt %>%
          `N herbivore species` = n_herbi_sp_reserve, 
          `Functional diversity` = herbi_fun_div_distq1, 
          `Burned area trend` = burned_area_coef,
-         `MAT trend` = mat_change, 
-         `MAP trend` = prec_change, 
+         `MAT trend` = mat_coef, 
+         `MAP` = mean_prec, 
+         `MAP trend` = prec_coef, 
          `Fire frequency` = fire_frequency, 
          `N deposition` = n_deposition, 
          `Woody cover change` = woody_cover_change, 
@@ -39,30 +47,30 @@ dt.long <- dt %>%
   ) %>% 
   pivot_longer(cols = c(`Mean body mass (CWM)`, `Browser biomass`, `Grazer biomass`, `Mixed feeder biomass`,
                         `Herbivore biomass`,`N herbivore species`, `Functional diversity`,
-                        `Burned area trend`, `Fire frequency`, `MAT trend`, `MAP trend`, `N deposition`), 
+                        `Burned area trend`, `Fire frequency`, MAP, `MAT trend`, `MAP trend`, `N deposition`), 
                names_to = "var", values_to = "values") %>%
   mutate(values = ifelse(is.infinite(values), NA, values)) %>% filter(!is.na(values))
 
 library(ggridges)
 
-p.ridge <- ggplot() +
-  geom_density_ridges_gradient(data = dt.long, aes(x = values, y = woody_trend_yn, fill = woody_trend_yn), color = "white") +
+p_ridge <- ggplot() +
+  geom_density_ridges_gradient(data = dt_long, aes(x = values, y = woody_trend_yn, fill = woody_trend_yn), color = "white") +
   scale_fill_viridis_d(option = "H") +
   facet_wrap(~ var, scales = "free_x") +
   labs(y = "Woody cover change", x = "") +
   theme_bw() +
   theme(legend.position = "none")
-p.ridge
+p_ridge
 
-ggsave(plot = p.ridge, "builds/plots/revision/supplement/woody_cover_trend_ridges.png", dpi = 600)
+ggsave(plot = p_ridge, "builds/plots/revision/supplement/woody_cover_trend_ridges.png", dpi = 600)
 
 
 
 ### biomes vs environmental factors --------------------
 
-dt$Biome <-  reorder(dt$Biome, dt$chelsa_map, FUN = mean)
+dt$Biome <-  reorder(dt$Biome, dt$mean_prec, FUN = mean)
 
-bp1 <- ggplot(data = dt, aes(x = Biome, y = chelsa_map)) + 
+bp1 <- ggplot(data = dt, aes(x = Biome, y = mean_prec)) + 
   geom_jitter(aes(color = Biome), size = 2, alpha = 0.7) +
   geom_boxplot(aes(color = Biome), size = 1, alpha = 0.7) +
   scale_color_viridis_d() +
@@ -73,9 +81,9 @@ bp1 <- ggplot(data = dt, aes(x = Biome, y = chelsa_map)) +
   theme(legend.background = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 25, hjust = 1))
 bp1
 
-dt$Biome <-  reorder(dt$Biome, dt$chelsa_mat, FUN = mean)
+dt$Biome <-  reorder(dt$Biome, dt$mean_mat, FUN = mean)
 
-bp2 <- ggplot(data = dt, aes(x = Biome, y = chelsa_mat)) + 
+bp2 <- ggplot(data = dt, aes(x = Biome, y = mean_mat)) + 
   geom_jitter(aes(color = Biome), size = 2, alpha = 0.7) +
   geom_boxplot(aes(color = Biome), size = 1, alpha = 0.7) +
   scale_color_viridis_d() +
@@ -112,7 +120,7 @@ dt.corr <- dt %>%
                   grazer_biomass_ha, #mixed_feeder_biomass_ha,
                   herbi_biomass_ha, burned_area_coef,
                   n_herbi_sp_reserve, herbi_fun_div_distq1, 
-                  mat_change, prec_change, chelsa_mat, chelsa_map, 
+                  mat_coef, prec_coef, mean_mat, mean_prec, 
                   fire_frequency, n_deposition, woody_cover_change,
                   venter_woody_cover_trend, woody_cover_sd_ha_coef, woody_cover_sd_km_coef
                   )) %>% 
@@ -124,10 +132,10 @@ dt.corr <- dt %>%
          `N herbivore species` = n_herbi_sp_reserve, 
          `Herbivore Functional diversity` = herbi_fun_div_distq1, 
          `Burned area trend` = burned_area_coef,
-         `MAT trend` = mat_change, 
-         `MAP trend` = prec_change, 
-         `MAT (°C)` = chelsa_mat, 
-         `MAP (mm)` = chelsa_map, 
+         `MAT trend` = mat_coef, 
+         `MAP trend` = prec_coef, 
+         `MAT (°C)` = mean_mat, 
+         `MAP (mm)` = mean_prec, 
          `Fire frequency` = fire_frequency, 
          `N deposition` = n_deposition, 
          `Woody cover change` = woody_cover_change, 

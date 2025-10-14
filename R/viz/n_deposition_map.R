@@ -4,9 +4,11 @@ library(rnaturalearth)
 library(sf)
 library(terra)
 library(tidyverse)
+library(gridExtra)
+
 ### extract N deposition -----------
 #from: https://acp.copernicus.org/articles/23/7091/2023/
-ndep <- rast("../../../../../resources/spatial/N_deposition_Rubin_etal/total_N_dep.tif")
+ndep <- rast("data/spatial/pa_shapes/total_N_dep.tif")
 plot(ndep)
 
 sa.sh <- ne_countries(country = "south africa", type = "map_units")
