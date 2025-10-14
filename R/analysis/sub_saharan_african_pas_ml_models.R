@@ -19,11 +19,17 @@ library(MetBrewer)
 library(furrr)
 library(future)
 
+
+sa_pas <- fread("data/clean_data/final_south_african_pa_data.csv") %>% dplyr::select(unique_id) %>% pull()
+
+
 dt <- fread("data/clean_data/final_sub_saharan_african_pa_data.csv") %>% 
   filter(complete.cases(across(
     c(woody_cover_change, venter_woody_cover_trend, woody_cover_sd_ha_coef, woody_cover_sd_km_coef, 
       mat_coef, prec_coef, n_deposition, fire_frequency, burned_area_coef)
-  )))
+  ))) %>% 
+  mutate(south_africa = ifelse(unique_id %in% c(sa_pas), "yes", "no"))
+
 
 ### create model data ---------------------------------
 
@@ -38,11 +44,11 @@ guide.subset <- NULL
 
 
 
-subsets <- c("!is.na(unique_id)")
+subsets <- c("!is.na(unique_id)",  "south_africa == 'no'")
 
-tier_labels<- c("Full model")
+tier_labels<- c("Protected areas across Sub-Saharan Africa", "Sub-Saharan African protected areas outside South Africa")
 
-tiers <- c("main")
+tiers <- c("main", "outside_sa")
 
 responses <- c("woody_cover_change", "venter_woody_cover_trend", "woody_cover_sd_ha_coef", "woody_cover_sd_km_coef")
 

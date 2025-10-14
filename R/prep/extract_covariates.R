@@ -38,7 +38,7 @@ vect$lat <- coords[,2]
 ## get time series file paths sorted ---------------------
 
 #Precipitation
-prec_files <- data.table(file_path = list.files("data/spatial/time_series/",
+(prec_files <- data.table(file_path = list.files("data/spatial/time_series/",
                                                            pattern = "precipitation_sum", 
                                                            full.names = TRUE), 
                                      file_name = list.files("data/spatial/time_series/",
@@ -46,10 +46,10 @@ prec_files <- data.table(file_path = list.files("data/spatial/time_series/",
                                                            full.names = FALSE)
 ) %>% 
  # filter(grepl("100m", file_name)) %>% 
-  mutate(col_name =  gsub(".tif", "", file_name))
+  mutate(col_name =  gsub(".tif", "", file_name)))
 
 #MAT
-mat_files <- data.table(file_path = list.files("data/spatial/time_series/",
+(mat_files <- data.table(file_path = list.files("data/spatial/time_series/",
                                                pattern = "mat_", 
                                                full.names = TRUE), 
                          file_name = list.files("data/spatial/time_series/",
@@ -57,11 +57,11 @@ mat_files <- data.table(file_path = list.files("data/spatial/time_series/",
                                                full.names = FALSE)
 ) %>% 
   # filter(grepl("100m", file_name)) %>% 
-  mutate(col_name =  gsub(".tif", "", file_name))
+  mutate(col_name =  gsub(".tif", "", file_name)))
 
 
 #Burned area
-burned_area_files <- data.table(file_path = list.files("data/spatial/time_series/",
+(burned_area_files <- data.table(file_path = list.files("data/spatial/time_series/",
                                               pattern = "burned_area", 
                                               full.names = TRUE), 
                         file_name = list.files("data/spatial/time_series/",
@@ -69,10 +69,10 @@ burned_area_files <- data.table(file_path = list.files("data/spatial/time_series
                                               full.names = FALSE)
 ) %>% 
   # filter(grepl("100m", file_name)) %>% 
-  mutate(col_name =  gsub(".tif", "", file_name))
+  mutate(col_name =  gsub(".tif", "", file_name)))
 
 #Woody cover ha
-wc_files <- data.table(file_path = list.files("data/spatial/time_series/",
+(wc_files <- data.table(file_path = list.files("data/spatial/time_series/",
                                               pattern = "woody_cover_ha", 
                                               full.names = TRUE), 
                         file_name = list.files("data/spatial/time_series/",
@@ -80,10 +80,10 @@ wc_files <- data.table(file_path = list.files("data/spatial/time_series/",
                                               full.names = FALSE)
 ) %>% 
   # filter(grepl("100m", file_name)) %>% 
-  mutate(col_name =  gsub(".tif", "", file_name))
+  mutate(col_name =  gsub(".tif", "", file_name)))
 
 #Woody cover SD ha
-wc_sd_ha_files <- data.table(file_path = list.files("data/spatial/time_series/",
+(wc_sd_ha_files <- data.table(file_path = list.files("data/spatial/time_series/",
                                              pattern = "woody_cover_sd_ha", 
                                              full.names = TRUE), 
                        file_name = list.files("data/spatial/time_series/",
@@ -91,10 +91,10 @@ wc_sd_ha_files <- data.table(file_path = list.files("data/spatial/time_series/",
                                              full.names = FALSE)
 ) %>% 
   # filter(grepl("100m", file_name)) %>% 
-  mutate(col_name =  gsub(".tif", "", file_name))
+  mutate(col_name =  gsub(".tif", "", file_name)))
 
 #Woody cover SD km
-wc_sd_km_files <- data.table(file_path = list.files("data/spatial/time_series/",
+(wc_sd_km_files <- data.table(file_path = list.files("data/spatial/time_series/",
                                                    pattern = "woody_cover_sd_km", 
                                                    full.names = TRUE), 
                              file_name = list.files("data/spatial/time_series/",
@@ -102,7 +102,7 @@ wc_sd_km_files <- data.table(file_path = list.files("data/spatial/time_series/",
                                                    full.names = FALSE)
 ) %>% 
   # filter(grepl("100m", file_name)) %>% 
-  mutate(col_name =  gsub(".tif", "", file_name))
+  mutate(col_name =  gsub(".tif", "", file_name)))
 
 
 time_series_covs <- rbind(prec_files, 
@@ -148,7 +148,7 @@ covs <- rbind(time_series_covs, other_covs)
 
 ################################## LOOOOOOOOOOOOP ############################            
 options(future.globals.maxSize = 10 * 1024^3)  # 10 GB
-plan(multisession, workers = 21)
+plan(multisession, workers = 10)
 tic()
 
 
@@ -199,12 +199,12 @@ vect_covs <- vect %>%
   mutate(x = NULL, 
          geom = NULL,
          geometry = NULL) %>% 
-  mutate(mean_burned_area = rowMeans(select(., contains("burned_area")), na.rm = TRUE), 
-         mean_prec = rowMeans(select(., contains("precipitation")), na.rm = TRUE),
-         mean_mat = rowMeans(select(., contains("mat_")), na.rm = TRUE),
-         mean_woody_cover = rowMeans(select(., contains("woody_cover_ha")), na.rm = TRUE), 
-         mean_woody_cover_sd_ha = rowMeans(select(., contains("woody_cover_sd_ha")), na.rm = TRUE), 
-         mean_woody_cover_sd_km = rowMeans(select(., contains("woody_cover_sd_km")), na.rm = TRUE)) 
+  mutate(mean_burned_area = rowMeans(dplyr::select(., contains("burned_area")), na.rm = TRUE), 
+         mean_prec = rowMeans(dplyr::select(., contains("precipitation")), na.rm = TRUE),
+         mean_mat = rowMeans(dplyr::select(., contains("mat_")), na.rm = TRUE),
+         mean_woody_cover = rowMeans(dplyr::select(., contains("woody_cover_ha")), na.rm = TRUE), 
+         mean_woody_cover_sd_ha = rowMeans(dplyr::select(., contains("woody_cover_sd_ha")), na.rm = TRUE), 
+         mean_woody_cover_sd_km = rowMeans(dplyr::select(., contains("woody_cover_sd_km")), na.rm = TRUE)) 
 
 
 if(param == "reserves"){

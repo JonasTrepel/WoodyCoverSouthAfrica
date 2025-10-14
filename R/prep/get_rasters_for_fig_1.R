@@ -84,13 +84,28 @@ future_walk(1:length(tc_files),
 print(paste0("all done ", Sys.time()))
 plan(sequential)
 
-# crop and aggregate venter 
+# crop and aggregate venter ----------
+sa_sf <- ne_countries(country = "South Africa", returnclass = "sf")
+sa_vect <- vect(sa_sf)
+
 
 venter_r <- rast("data/spatial/covariates/venter_woody_cover_trend.tif")
-venter_r <- crop(venter_r, ext(sa_vect))
 #plot(dw_r)
 venter_r_km <- aggregate(
   venter_r,
+  fact = 10,
+  fun = "mean",
+  cores = 1,
+  filename = paste0("data/spatial/covariates/venter_woody_cover_trend_900m.tif"),
+  overwrite = TRUE
+)
+plot(venter_r_km)
+
+venter_r <- rast("data/spatial/covariates/venter_woody_cover_trend.tif")
+venter_r_sa <- crop(venter_r, ext(sa_vect))
+#plot(dw_r)
+venter_r_sa_km <- aggregate(
+  venter_r_sa,
   fact = 10,
   fun = "mean",
   cores = 1,

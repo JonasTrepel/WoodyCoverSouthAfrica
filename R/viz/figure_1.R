@@ -137,17 +137,18 @@ range(dt_biome$y)
 range(dt_biome$y)
 
 library(viridis)
-viridis(12)
+#viridis(12)
 ############################## Woody cover chaneg ################################
 
+#South Africa
 r_wcc <- rast("data/spatial/figure_1_tifs/sa_woody_cover_coef_km.tif")
 
 r_wcc_sa <- mask(r_wcc, sa)
 
 
 dt_wcc_sa_raw <- as.data.frame(r_wcc_sa, xy = TRUE)
-(uq <- quantile(dt_wcc_sa_raw$woody_cover_coef, .99))
-(lq <- quantile(dt_wcc_sa_raw$woody_cover_coef, .01))
+(uq <- quantile(dt_wcc_sa_raw$woody_cover_coef, .975))
+(lq <- quantile(dt_wcc_sa_raw$woody_cover_coef, .025))
 dt_wcc_sa <- dt_wcc_sa_raw %>% 
   mutate(woody_cover_coef = case_when(
     .default = woody_cover_coef, 
@@ -155,9 +156,38 @@ dt_wcc_sa <- dt_wcc_sa_raw %>%
     woody_cover_coef < lq ~ lq
   ))
 
-p_wcc <- ggplot() +
+p_wcc_sa <- ggplot() +
   geom_raster(data = dt_wcc_sa, aes(x = x, y = y, color = woody_cover_coef, fill = woody_cover_coef)) +
  # scale_color_scico(palette = "bam", midpoint = 0) +
+  scale_fill_scico(palette = "bam", midpoint = 0) +
+  labs(color = "Woody cover change (%/year)", fill = "Woody cover change (%/year)") +
+  theme_void() +
+  theme(legend.position = "bottom", 
+        legend.text = element_text(size = 12), 
+        legend.title = element_text(size = 14))
+p_wcc_sa
+
+
+# Sub saharan Africa
+v_africa <- vect(africa)
+
+r_wcc <- rast("data/spatial/covariates/woody_cover_coef_km.tif")
+
+r_wcc <- mask(r_wcc, africa)
+
+dt_wcc_raw <- as.data.frame(r_wcc, xy = TRUE)
+(uq <- quantile(dt_wcc_raw$woody_cover_coef, .975))
+(lq <- quantile(dt_wcc_raw$woody_cover_coef, .025))
+dt_wcc <- dt_wcc_raw %>% 
+  mutate(woody_cover_coef = case_when(
+    .default = woody_cover_coef, 
+    woody_cover_coef > uq ~ uq, 
+    woody_cover_coef < lq ~ lq
+  ))
+
+p_wcc <- ggplot() +
+  geom_raster(data = dt_wcc, aes(x = x, y = y, color = woody_cover_coef, fill = woody_cover_coef)) +
+  # scale_color_scico(palette = "bam", midpoint = 0) +
   scale_fill_scico(palette = "bam", midpoint = 0) +
   labs(color = "Woody cover change (%/year)", fill = "Woody cover change (%/year)") +
   theme_void() +
@@ -168,23 +198,23 @@ p_wcc
 
 ############################## Venter's Woody Cover Change ################################
 
-r_vwct <- rast("data/spatial/figure_1_tifs/sa_venter_woody_cover_trend_900m.tif")
+r_vwct_sa <- rast("data/spatial/figure_1_tifs/sa_venter_woody_cover_trend_900m.tif")
 
-r_vwct_sa <- mask(r_vwct, sa)
+r_vwct_sa <- mask(r_vwct_sa, sa)
 
 
 dt_vwct_sa_raw <- as.data.frame(r_vwct_sa, xy = TRUE)
 (uq <- quantile(dt_vwct_sa_raw$venter_woody_cover_trend, .99, na.rm = T))
 (lq <- quantile(dt_vwct_sa_raw$venter_woody_cover_trend, .01, na.rm = T))
-dt_vwct_sa <- dt_vwct_sa_raw %>% 
+dt_vwct_sa_sa <- dt_vwct_sa_raw %>% 
   mutate(venter_woody_cover_trend = case_when(
     .default = venter_woody_cover_trend, 
     venter_woody_cover_trend > uq ~ uq, 
     venter_woody_cover_trend < lq ~ lq
   ))
 
-p_vwct <- ggplot() +
-  geom_raster(data = dt_vwct_sa, aes(x = x, y = y, color = venter_woody_cover_trend, fill = venter_woody_cover_trend)) +
+p_vwct_sa <- ggplot() +
+  geom_raster(data = dt_vwct_sa_sa, aes(x = x, y = y, color = venter_woody_cover_trend, fill = venter_woody_cover_trend)) +
   # scale_color_scico(palette = "bam", midpoint = 0) +
   scale_fill_scico(palette = "bam", midpoint = 0) +
   labs(color = "Venter's woody cover\nchange (%/year)", fill = "Venter's woody cover\nchange (%/year)") +
@@ -192,7 +222,7 @@ p_vwct <- ggplot() +
   theme(legend.position = "bottom", 
         legend.text = element_text(size = 12), 
         legend.title = element_text(size = 14))
-p_vwct
+p_vwct_sa
 
 ############################## Woody Cover Heterogeneity ################################
 
