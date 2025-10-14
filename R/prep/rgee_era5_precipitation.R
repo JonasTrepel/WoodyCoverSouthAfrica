@@ -28,7 +28,7 @@ aoi <- ee$Geometry$Rectangle(
 Map$addLayer(aoi)
 # Define years and dates for Landsat image collection
 
-years <- c(2000:2024)
+years <- c(1986:2024)
 
 for(year in years){
   

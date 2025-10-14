@@ -4,6 +4,8 @@ library(data.table)
 library(future)
 library(furrr)
 library(tictoc)
+library(robustbase)
+library(performance)
 
 #param <- "reserves"
 #param = "sa_pas"
@@ -29,8 +31,8 @@ if(param == "reserves"){
 
 #dt <- dt %>% sample_n(1000)
 
-# Define a helper function to process trends
-process_trend <- function(cols_pattern, trend_name, dt) {
+# Define a helper functions to process trends
+parts_trend <- function(cols_pattern, trend_name, dt) {
   
   cols <- grep(cols_pattern, names(dt), value = TRUE)
   
@@ -56,6 +58,67 @@ process_trend <- function(cols_pattern, trend_name, dt) {
   gc()
 }
 
+rlm_trend <- function(cols_pattern, trend_name, dt) {
+  
+  library(robustbase)
+  library(performance)
+  
+  cols <- grep(cols_pattern, names(dt), value = TRUE)
+  trend_res <- data.frame()
+  
+  for(id in unique(dt$unique_id)){
+    
+    resp_v <- dt %>% 
+      filter(unique_id == id) %>% 
+      dplyr::select(all_of(cols)) %>% 
+      filter(complete.cases(.)) %>%
+      as.numeric()
+    
+    if(any(is.na(resp_v))){next}
+    
+    time_v <- c(1:length(resp_v))
+    
+    m <- lmrob(resp_v ~ time_v)
+    
+    if(!m$coefficients[2] == 0){
+     
+      m_tidy <- broom::tidy(m) %>% 
+      filter(term == "time_v")
+      estimate <- m_tidy$estimate
+      p_val <- m_tidy$p.value
+      r2 <- as.numeric(r2(m)$R2_adjusted)
+      
+    } else {
+      estimate <- 0
+      p_val <- 0
+      r2 <- 0
+    }
+    
+
+    sub_res <-  data.frame(estimate = estimate, 
+                           p_val = p_val,
+                           r2 = r2, 
+                           unique_id = id
+                           )
+    setnames(sub_res, old = c("estimate", "p_val", "r2", "unique_id"), 
+             new = c(paste0(trend_name, "_rlm_est"), 
+                     paste0(trend_name, "_rlm_p_val"),
+                     paste0(trend_name, "_rlm_r2"), 
+                     "unique_id"))
+
+
+    trend_res <- rbind(sub_res, trend_res)
+      
+    }
+
+  return(trend_res)
+  rm(trend_res)
+  rm(dt_sub)
+  
+  gc()
+}
+
+
 # List of trends
 trend_configs <- data.frame(
   pattern = c("mat_", "precipitation_", "burned_area_",
@@ -80,7 +143,11 @@ dt_trend_list <- future_map(1:nrow(trend_configs),
                                     #for(i in 1:nrow(trend_configs)){
                                     config <- trend_configs[i, ]
                                     
-                                    dt_sub <- process_trend(config$pattern, config$name, dt)
+                                    dt_sub_parts <- parts_trend(config$pattern, config$name, dt)
+                                    
+                                  #  dt_sub_rlm <- rlm_trend(config$pattern, config$name, dt)
+                                    dt_sub <- dt_sub_parts
+                                  #  dt_sub <- left_join(dt_sub_parts, dt_sub_rlm)
                                     
                                     return(dt_sub)
                                     
@@ -119,8 +186,7 @@ dt_res <- dt %>%
   rename(woody_cover_change = woody_cover_ha_coef)
 hist(dt_res$mat_change)
 hist(dt_res$mat_coef)
-hist(dt_res$woody_cover_sd_ha_coef)
-
+hist(dt_res$woody_cover_change)
 
 
 if(param == "reserves"){
