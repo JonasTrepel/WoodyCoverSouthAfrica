@@ -26,6 +26,12 @@ dt <- fread("data/clean_data/final_reserve_data.csv") %>%
       grazer_biomass_ha, browser_biomass_ha, 
       herbi_biomass_ha, fire_frequency, burned_area_coef)
   )))
+setDT(dt)
+
+nrow(dt[venter_woody_cover_trend > 0]) / nrow(dt)
+nrow(dt[woody_cover_change > 0]) / nrow(dt)
+
+
 ########### RESERVE DISTRIBUTION ################################
 
 ## Biome -----------
@@ -129,7 +135,7 @@ p_cent <- ggplot() +
   scale_color_manual(values = pal) +
   scale_fill_manual(values = pal) +
   guides(color = guide_legend(override.aes = list(size = 4))) +
-  annotation_scale(location = "tr", bar_cols = c("wheat3", "white")) +
+  annotation_scale(location = "tr", bar_cols = c("ivory4", "white")) +
   theme_void() +
   theme(
     legend.text = element_text(size = 12),  # Adjust the size of the legend text
@@ -165,43 +171,19 @@ dt_wcc_sa <- dt_wcc_sa_raw %>%
 
 p_wcc_sa <- ggplot() +
   geom_raster(data = dt_wcc_sa, aes(x = x, y = y, color = woody_cover_coef, fill = woody_cover_coef)) +
- # scale_color_scico(palette = "bam", midpoint = 0) +
+  geom_sf(data = sa, color = "grey25", fill = "transparent") +
   scale_fill_scico(palette = "bam", midpoint = 0) +
-  labs(color = "Woody cover change (%/year)", fill = "Woody cover change (%/year)") +
+  labs(color = "DW woody cover\nchange (%/year)", fill = "DW woody cover\nchange (%/year)") +
   theme_void() +
-  theme(legend.position = "bottom", 
+  theme(legend.position = "bottom",
+        #legend.position = c(0.05, 0.85),
+        #legend.direction = "horizontal",
+        #legend.justification = c(0, 0),   
         legend.text = element_text(size = 12), 
         legend.title = element_text(size = 14))
 p_wcc_sa
 
 
-# Sub saharan Africa
-v_africa <- vect(africa)
-
-r_wcc <- rast("data/spatial/covariates/woody_cover_coef_km.tif")
-
-r_wcc <- mask(r_wcc, africa)
-
-dt_wcc_raw <- as.data.frame(r_wcc, xy = TRUE)
-(uq <- quantile(dt_wcc_raw$woody_cover_coef, .975))
-(lq <- quantile(dt_wcc_raw$woody_cover_coef, .025))
-dt_wcc <- dt_wcc_raw %>% 
-  mutate(woody_cover_coef = case_when(
-    .default = woody_cover_coef, 
-    woody_cover_coef > uq ~ uq, 
-    woody_cover_coef < lq ~ lq
-  ))
-
-p_wcc <- ggplot() +
-  geom_raster(data = dt_wcc, aes(x = x, y = y, color = woody_cover_coef, fill = woody_cover_coef)) +
-  # scale_color_scico(palette = "bam", midpoint = 0) +
-  scale_fill_scico(palette = "bam", midpoint = 0) +
-  labs(color = "Woody cover change (%/year)", fill = "Woody cover change (%/year)") +
-  theme_void() +
-  theme(legend.position = "bottom", 
-        legend.text = element_text(size = 12), 
-        legend.title = element_text(size = 14))
-p_wcc
 
 ############################## Venter's Woody Cover Change ################################
 
@@ -222,14 +204,21 @@ dt_vwct_sa_sa <- dt_vwct_sa_raw %>%
 
 p_vwct_sa <- ggplot() +
   geom_raster(data = dt_vwct_sa_sa, aes(x = x, y = y, color = venter_woody_cover_trend, fill = venter_woody_cover_trend)) +
-  # scale_color_scico(palette = "bam", midpoint = 0) +
+  geom_sf(data = sa, color = "grey25", fill = "transparent") +
   scale_fill_scico(palette = "bam", midpoint = 0) +
   labs(color = "Venter's woody cover\nchange (%/year)", fill = "Venter's woody cover\nchange (%/year)") +
   theme_void() +
-  theme(legend.position = "bottom", 
+  theme(legend.position = "bottom",
+        #legend.position = c(0.05, 0.85),
+        #legend.direction = "horizontal",
+        #legend.justification = c(0, 0),   
         legend.text = element_text(size = 12), 
         legend.title = element_text(size = 14))
 p_vwct_sa
+
+
+#sub sahran africa 
+
 
 ############################## Woody Cover Heterogeneity ################################
 
@@ -267,7 +256,7 @@ dt$cat <- ifelse(dt$source %in% c("SANParks"), "no", "yes")
 
 p_dens_map <- ggplot() +
   geom_density_line(data = dt, aes(x = mean_prec, fill = mean_prec),
-                    linewidth = 1, fill = "wheat2", color = "wheat2") +
+                    linewidth = 1, fill = "ivory3", color = "ivory3") +
   scale_fill_viridis_c() +
   labs(fill = "MAP", x = "Mean Annual Precipitation (mm)", y = "") +
   theme_classic() +
@@ -280,7 +269,7 @@ p_dens_map
 
 # p_dens_mat <- ggplot() +
 #   geom_density_line(data = dt, aes(x = mat_coef, fill = mat_coef),
-#                     linewidth = 1, fill = "wheat2", color = "wheat2") +
+#                     linewidth = 1, fill = "ivory3", color = "ivory3") +
 #   scale_fill_viridis_c() +
 #   labs(fill = "MAT change/n(%/year)", x = "Mean annual temperature change (%/year)", y = "") +
 #   theme_classic() +
@@ -294,7 +283,7 @@ p_dens_map
 
 p_dens_ndep <- ggplot() +
   geom_density_line(data = dt, aes(x = n_deposition, fill = n_deposition), 
-                    linewidth = 1, fill = "wheat2", color = "wheat2") +
+                    linewidth = 1, fill = "ivory3", color = "ivory3") +
   scale_fill_viridis_c() +
   labs(fill = "MAT/n(°C)", x = bquote("Atmospheric Nitrogen Deposition ([kg/"~km^2*"])/year"), y = "") +
   theme_classic() +
@@ -307,7 +296,7 @@ p_dens_ndep
 
 p_dens_hbm <- ggplot() +
   geom_density_line(data = dt, aes(x = herbi_biomass_kgkm2, fill = MAT), 
-                    linewidth = 1, fill = "wheat2", color = "wheat2") +
+                    linewidth = 1, fill = "ivory3", color = "ivory3") +
   scale_fill_viridis_c() +
   labs(fill = "/n(°C)", x = bquote("Herbivore Biomass (kg/"~km^2*")"), y = "") +
   theme_classic() +
@@ -321,7 +310,7 @@ p_dens_hbm
 
 p_dens_hsp <- ggplot() +
   geom_density_line(data = dt, aes(x = n_herbi_sp_reserve, fill = MAT),
-                    linewidth = 1, fill = "wheat2", color = "wheat2") +
+                    linewidth = 1, fill = "ivory3", color = "ivory3") +
   scale_fill_viridis_c() +
   labs(fill = "/n(°C)", x = "Herbivore Species Richness", y = "") +
   theme_classic() +
@@ -336,10 +325,10 @@ p_dens_hsp
 #### Venter vs Dynamic World Woody Cover  ---------------------
 p_wc_vs_wc <- ggplot(data = dt, aes(x = venter_woody_cover_trend, y = woody_cover_change)) +
   geom_point(
-             fill = "wheat4", color = "wheat4", alpha = 0.75) +
+             fill = "ivory4", color = "ivory4", alpha = 0.75) +
   scale_fill_viridis_c() +
  # geom_abline() +
-  labs(x = "Venter's Woody Cover Change", y = "DW Woody Cover Change",
+  labs(x = "Venter's Woody Cover Change", y = "DW woody cover\nChange",
        subtitle = paste0("Cor = ", round(cor(dt$venter_woody_cover_trend,
                                             dt$woody_cover_change), 2)) 
          ) +
@@ -358,9 +347,14 @@ p_dens <- grid.arrange(p_dens_ndep, p_dens_map, p_dens_hbm, p_dens_hsp, ncol = 1
 
 p_upper <- grid.arrange(p_dens, p_cent, widths = c(1, 2.5))
 
-p_lower <- grid.arrange(p_wcc, p_vwct, p_wc_vs_wc,
-                        ncol = 3)
+p_empty <- ggplot() + theme_void()
 
-p_fig1 <- grid.arrange(p_upper, p_lower, heights = c(2, 1.25))
+p_lower <- grid.arrange(p_vwct_sa, p_wcc_sa, 
+                        ncol = 2)
+
+p_fig1 <- grid.arrange(p_upper,p_empty, p_lower, heights = c(1.5, 0.1, 1.5))
 
 ggsave(plot = p_fig1, "builds/plots/revision/figure_1.png", dpi = 600, height = 12, width = 14)
+ggsave(plot = p_wcc_sa, "builds/plots/revision/wcc_sa.png", dpi = 600)
+ggsave(plot = p_vwct_sa, "builds/plots/revision/vwct_sa.png", dpi = 600)
+
