@@ -15,6 +15,9 @@ library(MetBrewer)
 library(furrr)
 library(future)
 
+
+n_workers <- 8
+
 dt <- fread("data/clean_data/final_reserve_data.csv") %>% 
   filter(complete.cases(across(
     c(woody_cover_change, venter_woody_cover_trend, woody_cover_sd_ha_coef, woody_cover_sd_km_coef, 
@@ -63,7 +66,7 @@ dt_tier_raw <- data.table(
 tier_resp <- CJ(response = responses, tier = tiers) %>% 
   mutate(terms = case_when(
     response == "woody_cover_change" ~ "'mat_coef', 'prec_coef', 'mean_prec', 'n_deposition', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_frequency', 'burned_area_coef'",
-    response == "venter_woody_cover_trend" ~ "'mat_coef', 'prec_coef', 'mean_prec', 'n_deposition', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_frequency', 'burned_area_coef', 'spatial_predictor1'",
+    response == "venter_woody_cover_trend" ~ "'mat_coef', 'prec_coef', 'mean_prec', 'n_deposition', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_frequency', 'burned_area_coef'",
     response == "woody_cover_sd_ha_coef" ~ "'mat_coef', 'prec_coef', 'mean_prec', 'n_deposition', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_frequency', 'burned_area_coef'",
     response == "woody_cover_sd_km_coef" ~ "'mat_coef', 'prec_coef', 'mean_prec', 'n_deposition', 'CW_mean_species_body_mass', 'herbi_fun_div_distq1', 'n_herbi_sp_reserve', 'grazer_biomass_kgkm2', 'browser_biomass_kgkm2', 'herbi_biomass_kgkm2', 'fire_frequency', 'burned_area_coef'"
   )) %>% mutate(
@@ -173,7 +176,7 @@ stats_storage <- data.table()
 ################################## LOOOOOOOOOOOOP ############################            
 ##############################################################################    
 options(future.globals.maxSize = 10 * 1024^3)  # 10 GB
-plan(multisession, workers = 4)
+plan(multisession, workers = n_workers)
 
 tic()
 

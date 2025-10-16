@@ -18,7 +18,7 @@ library(MetBrewer)
 library(furrr)
 library(future)
 
-n_workers = 4 #how many cores do you want to use for models?
+n_workers = 5 #how many cores do you want to use for models?
 
 dt <- fread("data/clean_data/final_reserve_data.csv") %>% 
   filter(complete.cases(across(
@@ -35,10 +35,10 @@ cor.test(dt$mean_prec, dt$prec_coef)
 
 ##### SUBSET #####
 
-#guide_subset <- "tier %in% c('main', 'high_biomass')"
+#guide_subset <- "response %in% c('venter_woody_cover_trend')"
 
 guide_subset <- NULL
-##############################################################################            
+###############################################################################            
 ################################## CREATE MODEL GUIDE ########################         
 ##############################################################################    
 
