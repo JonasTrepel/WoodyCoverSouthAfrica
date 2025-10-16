@@ -29,7 +29,7 @@ dt <- fread("data/clean_data/final_reserve_data.csv") %>%
       herbi_biomass_ha, fire_frequency, burned_area_coef)
   ))) #%>% sample_n(100)
 
-plot(dt$mean_prec, dt$mean_prec)
+cor.test(dt$mean_prec, dt$prec_coef)
 
 ### create model data ---------------------------------
 

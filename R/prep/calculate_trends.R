@@ -7,9 +7,9 @@ library(tictoc)
 library(robustbase)
 library(performance)
 
-#param <- "reserves"
+param <- "reserves"
 #param = "sa_pas"
-param = "sub_saharan_pas"
+#param = "sub_saharan_pas"
 
 if(param == "reserves"){
  

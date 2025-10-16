@@ -525,6 +525,6 @@ p_res_comb <- p_mor_no_sp_ssa / p_empty / p_mor_sp_ssa +
   plot_layout(heights = c(1, 0.1, 1))
 p_res_comb
 
-ggsave(plot = p_res_comb, "builds/plots/revision/supplement/south_african_pa_spatial_autocorrelation.png", 
+ggsave(plot = p_res_comb, "builds/plots/revision/supplement/sub_saharan_african_pa_spatial_autocorrelation.png", 
        dpi = 600, height = 12, width = 9)
 

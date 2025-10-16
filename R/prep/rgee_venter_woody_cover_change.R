@@ -25,11 +25,17 @@ aoi <- ee$Geometry$Rectangle(
 
 Map$addLayer(aoi)
 # Define years and dates for Landsat image collection
-
+#Trend ------------------------
 
 img <- ee$
   Image('users/lukiejohn/WPE_Venter_etal_2018')$
   select("trend")
+
+mask <- ee$
+  Image('users/lukiejohn/WPE_Venter_etal_2018')$
+  select("mask")
+
+img <- img$updateMask(mask)
 
 
 img$projection()$getInfo()
@@ -107,4 +113,83 @@ googledrive::drive_rm("rgee_backup_venter_woody_cover_trend")
 
 print(paste0("Done. Time: ", Sys.time()))
 
+
+#Mask for plotting -----------------
+
+
+
+mask_img <- ee$
+  Image('users/lukiejohn/WPE_Venter_etal_2018')$
+  select("mask")
+
+
+mask_img$projection()$getInfo()
+
+mask_img_projection <- mask_img$projection()
+
+mask_img_900m <- mask_img$reduceResolution(
+  reducer = ee$Reducer$mode(),
+  maxPixels = 1000
+)$reproject(
+  crs = mask_img_projection,
+  scale = 900
+)$rename("venter_woody_cover_mask")
+
+
+Map$addLayer(
+  mask_img_900m,
+  #visParams = vis_params,
+  name = 'mask'
+)
+
+#woody cover SD ha
+export_woody_cover_mask <- ee_image_to_drive(
+  image = mask_img_900m,
+  region = aoi,
+  folder = "rgee_backup_venter_woody_cover_mask",
+  description = "venter_woody_cover_mask",
+  scale = 90,
+  timePrefix = FALSE,
+  maxPixels = 1e13
+)
+export_woody_cover_mask$start()
+
+Sys.sleep(60)
+monitor_gee_task(pattern = "venter_woody_cover_mask", path = "rgee_backup_venter_woody_cover_mask",
+                 last_sleep_time = 600, mail = "jonas.trepel@gmail.com")
+
+Sys.sleep(600)
+(woody_cover_mask_drive_files <- drive_ls(path = "rgee_backup_venter_woody_cover_mask",
+                                           pattern = "venter_woody_cover_mask") %>%
+    dplyr::select(name) %>% 
+    unique())
+
+for(filename in unique(woody_cover_mask_drive_files$name)){
+  
+  path_name = paste0("data/spatial/raw_tiles/", filename)
+  drive_download(file = filename, path = path_name, overwrite = TRUE)
+}
+
+
+woody_cover_mask_files <- list.files("data/spatial/raw_tiles",
+                                      full.names = T, pattern = "venter_woody_cover_mask")
+
+woody_cover_mask_raster_list <- lapply(woody_cover_mask_files, rast)
+
+woody_cover_mask_file_name_merge <- paste0("data/spatial/covariates/venter_woody_cover_mask.tif")
+
+data_type_woody_cover_mask <- terra::datatype(woody_cover_mask_raster_list[[1]])
+
+woody_cover_mask_r <- merge(sprc(woody_cover_mask_raster_list),
+                             filename = woody_cover_mask_file_name_merge,
+                             overwrite = TRUE,
+                             datatype = data_type_woody_cover_mask)
+plot(woody_cover_mask_r)
+
+
+file.remove(woody_cover_mask_files)
+googledrive::drive_rm(unique(woody_cover_mask_drive_files$name))
+googledrive::drive_rm("rgee_backup_venter_woody_cover_mask")
+
+print(paste0("Done. Time: ", Sys.time()))
 

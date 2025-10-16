@@ -10,9 +10,9 @@ library(terra)
 library(exactextractr)
 ### define if we want to run it for control or PA 
 
-#param <- "reserves"
+param <- "reserves"
 #param = "sa_pas"
-param = "sub_saharan_pas"
+#param = "sub_saharan_pas"
 
 if(param == "reserves"){
   vect <- read_sf("data/spatial/pa_shapes/reserve_shapes.gpkg")
