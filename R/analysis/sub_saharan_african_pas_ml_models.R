@@ -167,7 +167,7 @@ stats_storage <- data.table()
 ################################## LOOOOOOOOOOOOP ############################            
 ##############################################################################    
 options(future.globals.maxSize = 10 * 1024^3)  # 10 GB
-plan(multisession, workers = 4)
+plan(multisession, workers = 8)
 
 tic()
 
