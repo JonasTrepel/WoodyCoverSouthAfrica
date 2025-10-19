@@ -20,7 +20,7 @@ nrow(dt[herbi_biomass_kgkm2 > 7500, ])
 
 nrow(dt[herbi_biomass_kgkm2 > 10000 & Biome == "Savanna", ])/nrow(dt[Biome == "Savanna", ])
 
-
+cor.test(dt$prec_coef, dt$n_deposition)
 #### 
 
 names(dt)
@@ -120,9 +120,9 @@ dt.corr <- dt %>%
                   grazer_biomass_ha, #mixed_feeder_biomass_ha,
                   herbi_biomass_ha, burned_area_coef,
                   n_herbi_sp_reserve, herbi_fun_div_distq1, 
-                  mat_coef, prec_coef, mean_mat, mean_prec, 
+                  mat_coef, prec_coef, mean_prec, 
                   fire_frequency, n_deposition, woody_cover_change,
-                  venter_woody_cover_trend, woody_cover_sd_ha_coef, woody_cover_sd_km_coef
+                  venter_woody_cover_trend#, woody_cover_sd_ha_coef, woody_cover_sd_km_coef
                   )) %>% 
   rename(`Mean body mass (CWM)` = CW_mean_species_body_mass, 
          `Browser biomass` = browser_biomass_ha, 
@@ -134,14 +134,14 @@ dt.corr <- dt %>%
          `Burned area trend` = burned_area_coef,
          `MAT trend` = mat_coef, 
          `MAP trend` = prec_coef, 
-         `MAT (°C)` = mean_mat, 
+       #  `MAT (°C)` = mean_mat, 
          `MAP (mm)` = mean_prec, 
          `Fire frequency` = fire_frequency, 
          `N deposition` = n_deposition, 
          `Woody cover change` = woody_cover_change, 
          `Venter woody cover change` = venter_woody_cover_trend, 
-         `Woody cover SD 100m trend` = woody_cover_sd_ha_coef, 
-         `Woody cover SD 1000m trend` = woody_cover_sd_km_coef
+         #`Woody cover SD 100m trend` = woody_cover_sd_ha_coef, 
+         #`Woody cover SD 1000m trend` = woody_cover_sd_km_coef
   ) %>% filter(complete.cases(.))
 
 

@@ -13,6 +13,8 @@ dt <- fread("data/clean_data/final_sub_saharan_african_pa_data.csv") %>%
     c(woody_cover_change, venter_woody_cover_trend, woody_cover_sd_ha_coef, woody_cover_sd_km_coef, 
       mat_coef, prec_coef, n_deposition, fire_frequency, burned_area_coef)
   )))
+setDT(dt)
+nrow(dt[woody_cover_change > 0])/nrow(dt)
 
 pa_shapes <- read_sf("data/spatial/pa_shapes/sub_saharan_african_pas.gpkg") %>% 
   filter(WDPA_PID %in% unique(dt$unique_id))
