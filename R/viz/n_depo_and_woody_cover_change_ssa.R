@@ -45,10 +45,13 @@ dt_wcc <- dt_wcc_raw %>%
 
 
 p_wcc <- ggplot() +
-  geom_raster(data = dt_wcc, aes(x = x, y = y, color = woody_cover_coef, fill = woody_cover_coef)) +
+  geom_raster(data = dt_wcc, aes(x = x, y = y, fill = woody_cover_coef)) +
   geom_sf(data = africa_cropped, color = "grey50", fill = "transparent") +
-  # scale_color_scico(palette = "bam", midpoint = 0) +
-  scale_fill_scico(palette = "bam", midpoint = 0) +
+  scale_fill_gradient2(  low = muted("#65014B"),
+                         mid = "white",
+                         high = muted("#0C4C00"),
+                         midpoint = 0,
+                         na.value = "grey50") +
   labs(color = "DW woody cover\nchange (%/year)", fill = "DW woody cover\nchange (%/year)") +
   theme_void() +
   theme(legend.position = "inside", 
@@ -74,9 +77,14 @@ dt_vwct <- dt_vwct_raw %>%
   ))
 
 p_vwct <- ggplot() +
-  geom_raster(data = dt_vwct, aes(x = x, y = y, color = venter_woody_cover_trend, fill = venter_woody_cover_trend)) +
+  geom_raster(data = dt_vwct, aes(x = x, y = y, fill = venter_woody_cover_trend)) +
   geom_sf(data = africa_cropped, color = "grey50", fill = "transparent") +
-  geom_sf(data = sa, color = "black", fill = "transparent") +  scale_fill_scico(palette = "bam", midpoint = 0) +
+  geom_sf(data = sa, color = "black", fill = "transparent") + 
+  scale_fill_gradient2(  low = muted("#65014B"),
+                         mid = "white",
+                         high = muted("#0C4C00"),
+                         midpoint = 0,
+                         na.value = "grey50") +
   labs(color = "Venter's woody cover\nchange (%/year)", fill = "Venter's woody cover\nchange (%/year)") +
   theme_void() +
   theme(legend.position = "inside", 

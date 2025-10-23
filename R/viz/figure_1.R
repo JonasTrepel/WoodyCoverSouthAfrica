@@ -153,6 +153,12 @@ library(viridis)
 #viridis(12)
 ############################## Woody cover chaneg ################################
 
+scico(n = 14, palette = "bam")
+
+palette = c("#65014B", "#8F2D75", "#B04E97", "#CA73B4", "#DF9FCE", "#EECAE4", "#DCEAC7", "#B0CE8D",
+            "#80AB59", "#588B39", "#366D1E", "#0C4C00")
+
+
 #South Africa
 r_wcc <- rast("data/spatial/figure_1_tifs/sa_woody_cover_coef_km.tif")
 
@@ -169,10 +175,17 @@ dt_wcc_sa <- dt_wcc_sa_raw %>%
     woody_cover_coef < lq ~ lq
   ))
 
+nrow(dt_wcc_sa[dt_wcc_sa$woody_cover_coef == 0,])/nrow(dt_wcc_sa)
+
 p_wcc_sa <- ggplot() +
-  geom_raster(data = dt_wcc_sa, aes(x = x, y = y, color = woody_cover_coef, fill = woody_cover_coef)) +
+  geom_raster(data = dt_wcc_sa, aes(x = x, y = y, fill = woody_cover_coef)) +
   geom_sf(data = sa, color = "grey25", fill = "transparent") +
-  scale_fill_scico(palette = "bam", midpoint = 0) +
+ # scale_fill_scico(palette = "bam", midpoint = 0) +
+  scale_fill_gradient2(  low = muted("#65014B"),
+                         mid = "white",
+                         high = muted("#0C4C00"),
+                         midpoint = 0,
+                         na.value = "grey50") +
   labs(color = "DW woody cover\nchange (%/year)", fill = "DW woody cover\nchange (%/year)") +
   theme_void() +
   theme(legend.position = "bottom",
@@ -183,7 +196,7 @@ p_wcc_sa <- ggplot() +
         legend.title = element_text(size = 14))
 p_wcc_sa
 
-
+hist(dt_wcc_sa$woody_cover_coef)
 
 ############################## Venter's Woody Cover Change ################################
 
@@ -205,7 +218,11 @@ dt_vwct_sa_sa <- dt_vwct_sa_raw %>%
 p_vwct_sa <- ggplot() +
   geom_raster(data = dt_vwct_sa_sa, aes(x = x, y = y, color = venter_woody_cover_trend, fill = venter_woody_cover_trend)) +
   geom_sf(data = sa, color = "grey25", fill = "transparent") +
-  scale_fill_scico(palette = "bam", midpoint = 0) +
+  scale_fill_gradient2(  low = muted("#65014B"),
+                         mid = "white",
+                         high = muted("#0C4C00"),
+                         midpoint = 0,
+                         na.value = "grey50") +
   labs(color = "Venter's woody cover\nchange (%/year)", fill = "Venter's woody cover\nchange (%/year)") +
   theme_void() +
   theme(legend.position = "bottom",
@@ -358,3 +375,10 @@ ggsave(plot = p_fig1, "builds/plots/revision/figure_1.png", dpi = 600, height = 
 ggsave(plot = p_wcc_sa, "builds/plots/revision/wcc_sa.png", dpi = 600)
 ggsave(plot = p_vwct_sa, "builds/plots/revision/vwct_sa.png", dpi = 600)
 
+p_af <- ggplot(africa) +
+  geom_sf(fill = "grey90", color = "grey50") +
+  geom_sf(data = sa, fill = "grey25") +
+  theme_void()
+p_af
+
+ggsave(plot = p_af, "builds/plots/revision/africa.png", dpi = 600)
