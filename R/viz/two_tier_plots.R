@@ -136,7 +136,7 @@ pdp_wcc <- ggplot()+
   coord_cartesian(clip = "off") +
   ylim(min(dt_marg_wcc[tier == "main"]$y, na.rm =T), max(dt_marg_wcc[tier == "main"]$y, na.rm = T)) +
   theme_classic() +
-  labs(y = "Woody cover change (%/year)", x = "") +
+  labs(y = "Tree cover change (%/year)", x = "") +
   theme(legend.position = "none",
         strip.text.x = element_text(face = "bold", size = 8), 
         panel.grid = element_line(color = "white"), 
@@ -299,7 +299,7 @@ pdp_wcsdha <- ggplot()+
   coord_cartesian(clip = "off") +
   ylim(min(dt_marg_wcsdha[tier == "main"]$y, na.rm =T), max(dt_marg_wcsdha[tier == "main"]$y, na.rm = T)) +
   theme_classic() +
-  labs(y = "Woody cover heterogeneity change", x = "") +
+  labs(y = "Tree cover heterogeneity change", x = "") +
   theme(legend.position = "none",
         strip.text.x = element_text(face = "bold", size = 8), 
         panel.grid = element_line(color = "white"), 
@@ -382,7 +382,7 @@ pdp_wcsdkm <- ggplot()+
   coord_cartesian(clip = "off") +
   ylim(min(dt_marg_wcsdkm[tier == "main"]$y, na.rm =T), max(dt_marg_wcsdkm[tier == "main"]$y, na.rm = T)) +
   theme_classic() +
-  labs(y = "Woody cover heterogeneity change", x = "") +
+  labs(y = "Tree cover heterogeneity change", x = "") +
   theme(legend.position = "none",
         strip.text.x = element_text(face = "bold", size = 8), 
         panel.grid = element_line(color = "white"), 

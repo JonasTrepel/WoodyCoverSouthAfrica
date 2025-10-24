@@ -196,7 +196,9 @@ p_wcc_sa <- ggplot() +
         legend.title = element_text(size = 14))
 p_wcc_sa
 
-hist(dt_wcc_sa$woody_cover_coef)
+#library(plotly) 
+#ggplotly(p_wcc_sa)
+#hist(dt_wcc_sa$woody_cover_coef)
 
 ############################## Venter's Woody Cover Change ################################
 
