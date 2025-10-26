@@ -522,10 +522,10 @@ future_walk(1:nrow(dt_tier),
               
               clean_label <- case_when(
                 .default = response, 
-                response == "woody_cover_change" ~ "Woody cover change (%/year)",
+                response == "woody_cover_change" ~ "Tree cover change (%/year)",
                 response == "venter_woody_cover_trend" ~ "Venter woody cover change (%/year)",
-                response == "woody_cover_sd_ha_coef" ~ "Woody cover heterogeneity change (ha-scale)", 
-                response == "woody_cover_sd_km_coef" ~ "Woody cover heterogeneity change (km²-scale)")
+                response == "woody_cover_sd_ha_coef" ~ "Tree cover heterogeneity change (ha-scale)", 
+                response == "woody_cover_sd_km_coef" ~ "Tree cover heterogeneity change (km²-scale)")
               
               p_var_comp <- ggplot(data = var_imp_means) +
                 geom_col(aes(y = clean_term, x = mean_rel_imp, fill = method, group = method),
@@ -827,10 +827,10 @@ future_walk(1:nrow(dt_tier),
               
               clean_label <- case_when(
                 .default = response, 
-                response == "woody_cover_change" ~ "Woody cover change (%/year)",
+                response == "woody_cover_change" ~ "Tree cover change (%/year)",
                 response == "venter_woody_cover_trend" ~ "Venter woody cover change (%/year)",
-                response == "woody_cover_sd_ha_coef" ~ "Woody cover heterogeneity change (ha-scale)", 
-                response == "woody_cover_sd_km_coef" ~ "Woody cover heterogeneity change (km²-scale)")
+                response == "woody_cover_sd_ha_coef" ~ "Tree cover heterogeneity change (ha-scale)", 
+                response == "woody_cover_sd_km_coef" ~ "Tree cover heterogeneity change (km²-scale)")
               
               p_pd_final <- ggplot()+
                 geom_line(data = marg_plot, aes(x=x, y=y, color = response_group), linewidth = 1.1) +
